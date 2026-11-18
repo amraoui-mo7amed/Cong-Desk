@@ -368,7 +368,7 @@ function renderEmployeeCards(list) {
     const hasBalance = prevBal > 0;
 
     card.innerHTML = `
-      <!-- Card Top: Identity & Status (Pure Language Isolated) -->
+      <!-- Card Top: Identity (Pure Language Isolated) -->
       <div class="emp-card-header">
         <div class="emp-identity">
           <div class="emp-avatar-wrapper">
@@ -380,11 +380,6 @@ function renderEmployeeCards(list) {
             <span class="emp-dept-pill"><i class="fa-solid fa-building"></i> ${empService}</span>
           </div>
         </div>
-
-        <span class="status-badge ${hasBalance ? 'active-ok' : 'active-warn'}">
-          <span class="status-pulse-dot"></span>
-          ${hasBalance ? dict.activeOk : dict.activeWarn}
-        </span>
       </div>
 
       <!-- Card Meta Badges Grid -->
