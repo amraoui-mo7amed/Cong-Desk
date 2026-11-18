@@ -6,7 +6,7 @@ let currentDocLang = 'fr'; // 'fr' or 'ar'
 let currentTheme = 'light'; // 'light' (default) or 'dark'
 let currentZoom = 1.0;
 let isPreviewDataOnly = false; // Toggle between full document and transparent pre-printed overlay mode
-let currentView = 'directors'; // 'directors', 'history', 'settings'
+let currentView = 'home'; // 'home', 'directors', 'history', 'settings'
 let currentSettingsTab = 'general'; // 'general', 'data', 'about'
 
 let employees = []; // Holds directors
@@ -21,7 +21,16 @@ window.addEventListener('DOMContentLoaded', async () => {
   currentTheme = (savedTheme === 'dark') ? 'dark' : 'light';
   applyTheme(currentTheme);
 
-  // 2. Sidebar collapsed state
+  // 2. Language initialization
+  const savedLang = localStorage.getItem('congedesk_lang');
+  if (savedLang === 'ar' || savedLang === 'fr') {
+    currentAppLang = savedLang;
+    currentDocLang = savedLang;
+    document.documentElement.setAttribute('lang', currentAppLang);
+    document.documentElement.setAttribute('dir', (currentAppLang === 'ar') ? 'rtl' : 'ltr');
+  }
+
+  // 3. Sidebar collapsed state
   const isSidebarCollapsed = localStorage.getItem('congedesk_sidebar_collapsed') === 'true';
   if (isSidebarCollapsed) {
     document.getElementById('app-sidebar')?.classList.add('collapsed');
@@ -29,7 +38,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     if (icon) icon.className = 'ti ti-layout-sidebar-left-expand';
   }
 
-  // 3. Set default dates
+  // 4. Set default dates
   const today = new Date();
   const issueDateEl = document.getElementById('f-issue-date');
   if (issueDateEl) issueDateEl.value = today.toISOString().split('T')[0];
@@ -41,12 +50,13 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   onDateDepartInput();
 
-  // 4. Load directors and leave history from SQLite
+  // 5. Load directors and leave history from SQLite
   await loadEmployees();
   await loadHistory();
   loadAppSettings();
+  updateHomeDashboard();
 
-  // 5. Drawer real-time inputs
+  // 6. Drawer real-time inputs
   const inputs = document.querySelectorAll('.input-ctrl');
   inputs.forEach(inp => {
     inp.addEventListener('input', () => {
@@ -68,7 +78,7 @@ function switchAppView(view) {
   if (activeNav) activeNav.classList.add('active');
 
   // Toggle pages
-  const pages = ['directors', 'history', 'settings'];
+  const pages = ['home', 'directors', 'history', 'settings'];
   pages.forEach(p => {
     const pageEl = document.getElementById(`page-${p}`);
     if (pageEl) {
@@ -82,9 +92,80 @@ function switchAppView(view) {
     }
   });
 
-  if (view === 'history') {
+  if (view === 'home') {
+    updateHomeDashboard();
+  } else if (view === 'history') {
     renderHistoryTable();
   }
+}
+
+// ================= HOME DASHBOARD =================
+function updateHomeDashboard() {
+  const countDirectors = employees.length || 64;
+  const countIssued = leaveHistory.length || 0;
+
+  const kpiDir = document.getElementById('home-kpi-directors');
+  if (kpiDir) kpiDir.textContent = countDirectors;
+
+  const kpiIss = document.getElementById('home-kpi-issued');
+  if (kpiIss) kpiIss.textContent = countIssued;
+
+  const recentList = document.getElementById('home-recent-leaves-list');
+  if (!recentList) return;
+
+  if (leaveHistory.length === 0) {
+    recentList.innerHTML = `
+      <div style="padding: 24px; text-align: center; color: var(--text-dim); font-size: 13px;">
+        <i class="ti ti-file-off" style="font-size: 28px; margin-bottom: 6px; display: block; color: var(--text-dim);"></i>
+        Aucun titre de congé émis récemment.
+      </div>
+    `;
+    return;
+  }
+
+  const recents = leaveHistory.slice(0, 4);
+  recentList.innerHTML = recents.map(r => `
+    <div class="home-recent-item">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(37,99,235,0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">
+          ${r.leave_days || 0}j
+        </div>
+        <div>
+          <strong style="font-size: 13.5px; color: var(--text-main); display: block;">${escapeHtml(r.agent_name || 'Directeur')}</strong>
+          <span style="font-size: 11.5px; color: var(--text-dim);">${escapeHtml(r.service || '')} &bull; Du ${escapeHtml(r.dep_date || '—')} au ${escapeHtml(r.ret_date || '—')}</span>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-secondary" onclick="viewHistoryDoc('${r.id}')">
+        <i class="ti ti-file-text"></i> Titre
+      </button>
+    </div>
+  `).join('');
+}
+
+function openQuickNewVacation() {
+  if (employees.length > 0) {
+    openLeaveDrawerFor(employees[0].id);
+  } else {
+    switchAppView('directors');
+  }
+}
+
+// ================= LANGUAGE TOGGLE =================
+function toggleAppLanguage() {
+  currentAppLang = (currentAppLang === 'fr') ? 'ar' : 'fr';
+  currentDocLang = currentAppLang;
+  localStorage.setItem('congedesk_lang', currentAppLang);
+
+  document.documentElement.setAttribute('lang', currentAppLang);
+  document.documentElement.setAttribute('dir', (currentAppLang === 'ar') ? 'rtl' : 'ltr');
+
+  const fabLang = document.getElementById('fab-lang-btn');
+  if (fabLang) {
+    fabLang.title = (currentAppLang === 'ar') ? "Passer au Français" : "التبديل إلى العربية";
+  }
+
+  filterAndRenderDirectors();
+  if (currentView === 'home') updateHomeDashboard();
 }
 
 // ================= SIDEBAR COLLAPSE TOGGLE =================

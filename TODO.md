@@ -1,11 +1,15 @@
 - [x] Change the icon of the taskbar and the logo, be more professional 
 - [x] Create a sidebar with collapse option to show the pages and settings tab
+- [x] Add a home Page
 - [x] Settings button must:
     - [x] Be at the bottom of the sidebar
     - [x] Open Settings Page in a dedicate page
 - [x] Settings Page Must include beside of the already existing settings:
-    - [x] An about tabbed-page that show the app's about and the CNAS logo and the ver and a custom dedication to "aya attoui"
-- [x] Remove the Header and put the add button and theme button at the bottom left/right edge above each other making them icon only
+    - [x] An about tabbed-page that show the app's about and the CNAS logo
+    - [x] Remove the dedication part 
+    - [x] Style the buttons in settings page 
+- [x] Remove the Header and put the add button and lang button at the bottom left/right edge above each other making them icon only
+- [x] theme/lang button Must Be Squared
 - [x] Rename the employee to director 
 - [x] Populate the data of 'data.xlsx' directly into the app with:
     - [x] allowing user to edit and delete and view details of a director 
@@ -14,3 +18,4 @@
     - [x] use tabler icons to modify/delete 
     - [x] use a modal for delete confirmation 
     - [x] use a text only with button of adding a vacation
+- [x] Style all the modals
