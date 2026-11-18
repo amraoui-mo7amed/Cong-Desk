@@ -422,14 +422,9 @@ function renderEmployeeCards(list) {
         </div>
       </div>
 
-      <!-- Card Footer Actions: Preview, Leave, Delete -->
+      <!-- Card Footer Actions: Create/Manage Leave & Delete -->
       <div class="emp-card-actions">
-        <!-- Direct Preview Button -->
-        <button class="btn btn-sm btn-card-preview" onclick="openPreviewModalFor('${emp.id}')" title="${dict.cardPreviewBtn}">
-          <i class="fa-solid fa-file-lines"></i> <span>${dict.cardPreviewBtn}</span>
-        </button>
-
-        <!-- Create Leave Button -->
+        <!-- Main Action: Open Leave Workspace (Form + Live Sheet Preview) -->
         <button class="btn btn-sm btn-card-leave" onclick="openLeaveDrawerFor('${emp.id}')" title="${dict.cardLeaveBtn}">
           <i class="fa-solid fa-file-signature"></i> <span>${dict.cardLeaveBtn}</span>
         </button>
@@ -501,114 +496,18 @@ async function seedRandomDataUI() {
   }
 }
 
-// ================= DEDICATED PREVIEW FUNCTION (PREVIEW MODAL) =================
+// ================= DEDICATED PREVIEW FALLBACK =================
 function openPreviewModalFor(empId) {
-  activeEmployee = employees.find(e => e.id === empId);
-  if (!activeEmployee) return;
-
-  // Set document language to match active UI language
-  currentDocLang = currentAppLang;
-
-  // Sync drawer fields for this employee
-  populateDrawerFields(activeEmployee, currentDocLang);
-
-  // Update modal titles strictly in active language
-  const isAr = (currentDocLang === 'ar');
-  const empName = isAr ? (activeEmployee.name_ar || activeEmployee.name_fr) : (activeEmployee.name_fr || activeEmployee.name_ar);
-  const empRole = isAr ? (activeEmployee.grade_ar || activeEmployee.grade_fr) : (activeEmployee.grade_fr || activeEmployee.grade_ar);
-
-  document.getElementById('preview-modal-emp-name').textContent = `${empName} - ${isAr ? 'بيان العطلة السنوية GRH.22' : 'Titre de Congé GRH.22'}`;
-  document.getElementById('preview-modal-emp-sub').textContent = empRole;
-
-  // Sync tabs in modal
-  document.getElementById('modal-tab-fr').classList.toggle('active', currentDocLang === 'fr');
-  document.getElementById('modal-tab-ar').classList.toggle('active', currentDocLang === 'ar');
-
-  setDocumentPrintMode(isPreviewDataOnly);
-
-  // Render sheet into modal paper container
-  renderModalDocumentSheet();
-
-  // Show modal
-  document.getElementById('preview-modal').style.display = 'flex';
+  // Directly open the unified workspace (Form + Live Sheet Preview)
+  openLeaveDrawerFor(empId);
 }
 
 function closePreviewModal() {
-  document.getElementById('preview-modal').style.display = 'none';
+  closeLeaveDrawer();
 }
 
 function setPreviewModalLanguage(lang) {
-  currentDocLang = lang;
-  document.getElementById('modal-tab-fr').classList.toggle('active', lang === 'fr');
-  document.getElementById('modal-tab-ar').classList.toggle('active', lang === 'ar');
-  
-  // Also sync drawer tabs
-  document.getElementById('btn-tab-fr').classList.toggle('active', lang === 'fr');
-  document.getElementById('btn-tab-ar').classList.toggle('active', lang === 'ar');
-
-  if (activeEmployee) {
-    const isAr = (lang === 'ar');
-    const empName = isAr ? (activeEmployee.name_ar || activeEmployee.name_fr) : (activeEmployee.name_fr || activeEmployee.name_ar);
-    const empRole = isAr ? (activeEmployee.grade_ar || activeEmployee.grade_fr) : (activeEmployee.grade_fr || activeEmployee.grade_ar);
-    const titleEl = document.getElementById('drawer-agent-title');
-    const subEl = document.getElementById('drawer-agent-subtitle');
-    if (titleEl) titleEl.textContent = `${empName} - GRH.22`;
-    if (subEl) subEl.textContent = empRole;
-    const modalNameEl = document.getElementById('preview-modal-emp-name');
-    const modalSubEl = document.getElementById('preview-modal-emp-sub');
-    if (modalNameEl) modalNameEl.textContent = `${empName} - ${isAr ? 'بيان العطلة السنوية GRH.22' : 'Titre de Congé GRH.22'}`;
-    if (modalSubEl) modalSubEl.textContent = empRole;
-    populateDrawerFields(activeEmployee, lang);
-  }
-
-  setDocumentPrintMode(isPreviewDataOnly);
-  renderModalDocumentSheet();
-  recalcAndRender();
-}
-
-function renderModalDocumentSheet() {
-  const isAr = (currentDocLang === 'ar');
-  const data = getFormData();
-  const html = buildDocumentSheetHTML(data, isAr, isPreviewDataOnly);
-  const container = document.getElementById('preview-modal-paper-container');
-  if (container) {
-    container.innerHTML = html;
-    const sheet = container.querySelector('.document-page');
-    if (sheet) {
-      sheet.style.transform = `scale(${modalZoom})`;
-    }
-  }
-}
-
-function adjustModalZoom(delta) {
-  modalZoom = Math.min(Math.max(modalZoom + delta, 0.5), 1.6);
-  document.getElementById('modal-zoom-txt').textContent = `${Math.round(modalZoom * 100)}%`;
-  const sheet = document.querySelector('#preview-modal-paper-container .document-page');
-  if (sheet) {
-    sheet.style.transform = `scale(${modalZoom})`;
-  }
-}
-
-function resetModalZoom() {
-  modalZoom = 0.85;
-  document.getElementById('modal-zoom-txt').textContent = `${Math.round(modalZoom * 100)}%`;
-  const sheet = document.querySelector('#preview-modal-paper-container .document-page');
-  if (sheet) {
-    sheet.style.transform = `scale(${modalZoom})`;
-  }
-}
-
-function openLeaveDrawerFromPreview() {
-  closePreviewModal();
-  if (activeEmployee) {
-    openLeaveDrawerFor(activeEmployee.id);
-  }
-}
-
-function openDedicatedPreviewFromDrawer() {
-  if (activeEmployee) {
-    openPreviewModalFor(activeEmployee.id);
-  }
+  setDrawerLanguage(lang);
 }
 
 // ================= SLIDE-OVER DRAWER & LEAVE CALCULATOR =================
