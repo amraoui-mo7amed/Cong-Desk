@@ -371,51 +371,54 @@ function renderEmployeeCards(list) {
       <!-- Card Top: Identity & Status (Pure Language Isolated) -->
       <div class="emp-card-header">
         <div class="emp-identity">
-          <div class="emp-avatar">${initials}</div>
+          <div class="emp-avatar-wrapper">
+            <div class="emp-avatar">${initials}</div>
+            <span class="emp-avatar-status ${hasBalance ? 'online' : 'busy'}"></span>
+          </div>
           <div class="emp-name-block">
             <span class="emp-name-fr">${empName}</span>
+            <span class="emp-dept-pill"><i class="fa-solid fa-building"></i> ${empService}</span>
           </div>
         </div>
 
         <span class="status-badge ${hasBalance ? 'active-ok' : 'active-warn'}">
-          <i class="fa-solid ${hasBalance ? 'fa-circle-check' : 'fa-circle-exclamation'}"></i>
+          <span class="status-pulse-dot"></span>
           ${hasBalance ? dict.activeOk : dict.activeWarn}
         </span>
       </div>
 
-      <!-- Card Meta Details -->
-      <div class="emp-card-details">
-        <div class="detail-line">
+      <!-- Card Meta Badges Grid -->
+      <div class="emp-meta-chips">
+        <div class="emp-chip">
           <i class="fa-solid fa-briefcase"></i>
-          <span>${empGrade}</span>
-        </div>
-        <div class="detail-line">
-          <i class="fa-solid fa-building"></i>
-          <span>${empService}</span>
+          <span class="chip-label">${empGrade}</span>
         </div>
         ${empAddress ? `
-        <div class="detail-line">
+        <div class="emp-chip">
           <i class="fa-solid fa-location-dot"></i>
-          <span>${empAddress}</span>
+          <span class="chip-label" title="${empAddress}">${empAddress}</span>
         </div>` : ''}
       </div>
 
-      <!-- Vacation Balance Meter Card -->
+      <!-- Vacation Balance Liquid Meter Card -->
       <div class="emp-balance-card">
         <div class="balance-top-row">
           <div class="balance-hero-num ${prevBal > 5 ? '' : (prevBal > 0 ? 'warn' : 'danger')}">
-            <i class="fa-solid fa-umbrella-beach"></i>
-            <span>${prevBal} ${dict.daysRemainingLabel}</span>
+            <div class="balance-icon-ring"><i class="fa-solid fa-umbrella-beach"></i></div>
+            <div class="balance-val-group">
+              <span class="balance-val">${prevBal}</span>
+              <span class="balance-unit">${dict.daysRemainingLabel}</span>
+            </div>
           </div>
 
           <div class="balance-stats-mini">
-            <span>${dict.n1Reliquat}: <span class="balance-stat-pill">${prevBal}${dict.daysUnit}</span></span>
-            <span>${dict.annualQuota}: <span class="balance-stat-pill">${annual}${dict.daysUnit}</span></span>
+            <span class="balance-stat-pill" title="${dict.n1Reliquat}">N-1: <strong>${prevBal}${dict.daysUnit}</strong></span>
+            <span class="balance-stat-pill" title="${dict.annualQuota}">Droit: <strong>${annual}${dict.daysUnit}</strong></span>
           </div>
         </div>
 
         <div class="balance-progress-track">
-          <div class="balance-progress-fill" style="width: ${Math.max(pct, 12)}%; background: ${isBalanceHealthy ? 'var(--success)' : (hasBalance ? 'var(--warning)' : 'var(--danger)')};"></div>
+          <div class="balance-progress-fill" style="width: ${Math.max(pct, 10)}%; background: ${isBalanceHealthy ? 'linear-gradient(90deg, #10b981, #059669)' : (hasBalance ? 'linear-gradient(90deg, #f59e0b, #d97706)' : 'linear-gradient(90deg, #ef4444, #dc2626)')};"></div>
         </div>
       </div>
 
@@ -423,12 +426,12 @@ function renderEmployeeCards(list) {
       <div class="emp-card-actions">
         <!-- Direct Preview Button -->
         <button class="btn btn-sm btn-card-preview" onclick="openPreviewModalFor('${emp.id}')" title="${dict.cardPreviewBtn}">
-          <i class="fa-solid fa-eye"></i> ${dict.cardPreviewBtn}
+          <i class="fa-solid fa-file-lines"></i> <span>${dict.cardPreviewBtn}</span>
         </button>
 
         <!-- Create Leave Button -->
         <button class="btn btn-sm btn-card-leave" onclick="openLeaveDrawerFor('${emp.id}')" title="${dict.cardLeaveBtn}">
-          <i class="fa-solid fa-file-signature"></i> ${dict.cardLeaveBtn}
+          <i class="fa-solid fa-file-signature"></i> <span>${dict.cardLeaveBtn}</span>
         </button>
 
         <!-- Delete Employee Button -->
@@ -1108,12 +1111,12 @@ function generatePrintHTML(dataOnly = false) {
     .lang-fr .field-location { top: 65.8%; left: 45.6%; font-size: 13px; font-weight: 700; }
     .lang-fr .field-date { top: 65.8%; left: 65.5%; font-size: 13px; font-weight: 700; }
     .lang-fr .field-signatory { top: 70.0%; left: 63.5%; font-size: 13px; font-style: italic; }
-    .lang-fr .rights-values .field-item { left: 39.2%; width: 13.0%; text-align: center; font-size: 14px; font-weight: 700; }
-    .lang-fr .right-val-prev { top: 77.2%; }
-    .lang-fr .right-val-cur  { top: 80.0%; }
-    .lang-fr .right-val-tot  { top: 82.8%; }
-    .lang-fr .right-val-granted { top: 85.6%; }
-    .lang-fr .right-val-new { top: 91.0%; font-size: 15px; font-weight: 800; }
+    .lang-fr .rights-values .field-item { left: 39.2%; width: 13.0%; text-align: center; font-size: 14.5px; font-weight: 800; }
+    .lang-fr .right-val-prev { top: 78.3%; }
+    .lang-fr .right-val-cur  { top: 81.0%; }
+    .lang-fr .right-val-tot  { top: 83.8%; }
+    .lang-fr .right-val-granted { top: 86.5%; }
+    .lang-fr .right-val-new { top: 90.7%; font-size: 15.5px; font-weight: 900; }
 
     /* Arabic Coordinates */
     .lang-ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
@@ -1135,12 +1138,12 @@ function generatePrintHTML(dataOnly = false) {
     .lang-ar .field-location { top: 65.6%; right: 46.0%; font-size: 14px; font-weight: 700; }
     .lang-ar .field-date { top: 65.6%; right: 67.0%; font-size: 14px; font-weight: 700; }
     .lang-ar .field-signatory { top: 69.8%; right: 64.0%; font-size: 14px; }
-    .lang-ar .rights-values .field-item { left: 48.9%; width: 14.8%; text-align: center; font-size: 15px; font-weight: 700; }
-    .lang-ar .right-val-prev { top: 77.0%; }
-    .lang-ar .right-val-cur  { top: 79.8%; }
-    .lang-ar .right-val-tot  { top: 82.6%; }
-    .lang-ar .right-val-granted { top: 85.4%; }
-    .lang-ar .right-val-new { top: 90.8%; font-size: 16px; font-weight: 800; }
+    .lang-ar .rights-values .field-item { left: 48.9%; width: 14.8%; text-align: center; font-size: 15px; font-weight: 800; }
+    .lang-ar .right-val-prev { top: 78.0%; }
+    .lang-ar .right-val-cur  { top: 80.8%; }
+    .lang-ar .right-val-tot  { top: 83.6%; }
+    .lang-ar .right-val-granted { top: 86.4%; }
+    .lang-ar .right-val-new { top: 90.8%; font-size: 16px; font-weight: 900; }
   </style>
 </head>
 <body>
