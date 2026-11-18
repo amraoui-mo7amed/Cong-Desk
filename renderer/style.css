@@ -789,24 +789,38 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 .btn-vacation-text {
   width: 100%;
-  padding: 10px 14px;
-  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
   color: #ffffff;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--radius-md);
-  font-size: 13.5px;
+  font-family: inherit;
+  font-size: 14px;
   font-weight: 800;
   cursor: pointer;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
   letter-spacing: 0.2px;
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.28), inset 0 1px 1px rgba(255, 255, 255, 0.35);
   transition: all var(--transition-fast);
 }
 
 .btn-vacation-text:hover {
-  background: linear-gradient(135deg, #1d4ed8, #1e40af);
-  box-shadow: 0 6px 18px rgba(37, 99, 235, 0.42);
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.42);
   transform: translateY(-1.5px);
+}
+
+.btn-vacation-text i {
+  font-size: 16px;
+}
+
+[dir="rtl"] .btn-vacation-text {
+  font-family: 'Tajawal', sans-serif !important;
+  font-size: 14.5px;
+  font-weight: 700;
 }
 
 /* ================= FLOATING ACTION BUTTONS DOCK ================= */
@@ -1350,10 +1364,10 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 12px;
+  font-size: 12.5px;
   font-weight: 700;
   font-family: inherit;
-  padding: 6px 14px;
+  padding: 7px 16px;
   border-radius: var(--radius-pill);
   cursor: pointer;
   display: inline-flex;
@@ -1362,10 +1376,20 @@ input[type="range"]::-webkit-slider-thumb:hover {
   transition: all var(--transition-fast);
 }
 
+.drawer-tab-btn:hover {
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.08);
+}
+
 .drawer-tab-btn.active {
-  background: var(--primary);
-  color: #fff;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff !important;
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.38);
+}
+
+[dir="rtl"] .drawer-tab-btn {
+  font-family: 'Tajawal', sans-serif !important;
+  font-size: 13px;
 }
 
 .drawer-body {
@@ -1672,15 +1696,101 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .drawer-footer {
-  height: 68px;
-  border-top: 1px solid var(--glass-border-subtle);
+  height: 72px;
+  border-top: 1px solid rgba(226, 232, 240, 0.95);
   padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--glass-header-bg);
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
   flex-shrink: 0;
   gap: 12px;
+}
+
+[data-theme="dark"] .drawer-footer {
+  background: rgba(15, 23, 42, 0.98);
+  border-top: 1px solid rgba(51, 65, 85, 0.85);
+}
+
+.drawer-footer .btn {
+  padding: 10px 18px;
+  font-size: 13.5px;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all var(--transition-fast);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.05);
+}
+
+.drawer-footer .btn i {
+  font-size: 16px;
+}
+
+/* Secondary buttons in footer (Return, PDF, Print all) */
+.drawer-footer .btn-secondary {
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+}
+
+.drawer-footer .btn-secondary:hover {
+  background: #f8fafc;
+  border-color: #2563eb;
+  color: #2563eb;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.16);
+}
+
+[data-theme="dark"] .drawer-footer .btn-secondary {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .drawer-footer .btn-secondary:hover {
+  background: #334155;
+  border-color: #3b82f6;
+  color: #60a5fa;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.25);
+}
+
+/* Primary button in footer (Print Official Paper) */
+.drawer-footer .btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.drawer-footer .btn-primary:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+  transform: translateY(-1.5px);
+}
+
+/* Success button in footer (Save & Deduct) */
+.drawer-footer .btn-success {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(16, 185, 129, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.4);
+}
+
+.drawer-footer .btn-success:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+  transform: translateY(-1.5px);
+}
+
+[dir="rtl"] .drawer-footer .btn {
+  font-family: 'Tajawal', sans-serif !important;
+  font-size: 14px;
+  font-weight: 700;
 }
 
 /* ==========================================================================
@@ -1881,7 +1991,7 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .document-page.lang-ar .field-leave-days {
-  top: 46.2%; right: 34.0%; width: 9.5%; text-align: center; font-size: 15px; font-weight: 800;
+  top: 46.2%; right: 28.0%; width: 7.5%; text-align: center; font-size: 15px; font-weight: 800;
 }
 
 .document-page.lang-ar .group-dep {
@@ -1891,12 +2001,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
   top: 53.8%; width: 100%; right: 0; left: auto;
 }
 
-.document-page.lang-ar .cell-d1 { left: 66.0%; width: 3.2%; text-align: center; font-size: 13.5px; }
-.document-page.lang-ar .cell-d2 { left: 69.2%; width: 3.4%; text-align: center; font-size: 13.5px; }
+.document-page.lang-ar .cell-d1 { left: 52.5%; width: 3.2%; text-align: center; font-size: 13.5px; }
+.document-page.lang-ar .cell-d2 { left: 55.7%; width: 3.3%; text-align: center; font-size: 13.5px; }
 .document-page.lang-ar .cell-m1 { left: 59.0%; width: 3.5%; text-align: center; font-size: 13.5px; }
 .document-page.lang-ar .cell-m2 { left: 62.5%; width: 3.5%; text-align: center; font-size: 13.5px; }
-.document-page.lang-ar .cell-y1 { left: 52.5%; width: 3.2%; text-align: center; font-size: 13.5px; }
-.document-page.lang-ar .cell-y2 { left: 55.7%; width: 3.3%; text-align: center; font-size: 13.5px; }
+.document-page.lang-ar .cell-y1 { left: 66.0%; width: 3.2%; text-align: center; font-size: 13.5px; }
+.document-page.lang-ar .cell-y2 { left: 69.2%; width: 3.4%; text-align: center; font-size: 13.5px; }
 
 .document-page.lang-ar .field-leave-address {
   top: 56.4%; right: 33.5%; font-size: 13.5px; font-weight: 700;
@@ -2212,6 +2322,11 @@ input[type="range"]::-webkit-slider-thumb:hover {
 
 [dir="rtl"] .launchpad-card:hover .launchpad-arrow {
   transform: rotate(180deg) translateX(4px);
+}
+
+[dir="rtl"] .home-view-arrow {
+  transform: rotate(180deg);
+  display: inline-block;
 }
 
 /* Home Recent Titles Card */
