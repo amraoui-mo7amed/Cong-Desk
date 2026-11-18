@@ -55,6 +55,9 @@ Les fichiers exécutables (.exe d'installation NSIS et version Portable autonome
 
 ---
 
-## 📄 Licence
+## 🔒 Confidentialité & Propriété
 
-Distribué sous licence MIT.
+Ce logiciel est une solution **propriétaire privée**, réservée à un usage interne exclusif.
+- **Dépôt Privé & Code Fermé** (Non Open-Source).
+- Tous droits de propriété intellectuelle réservés © 2026.
+- Toute reproduction, redistribution ou exploitation non autorisée est strictement prohibée.

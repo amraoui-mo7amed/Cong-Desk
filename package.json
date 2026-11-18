@@ -17,7 +17,8 @@
     "grh22"
   ],
   "author": "Mohamed",
-  "license": "MIT",
+  "license": "UNLICENSED",
+  "private": true,
   "build": {
     "appId": "com.congedesk.app",
     "productName": "CongéDesk",
