@@ -44,17 +44,17 @@
       <nav class="sidebar-nav">
         <button class="nav-item active" id="nav-home" onclick="switchAppView('home')">
           <i class="ti ti-smart-home"></i>
-          <span class="nav-label">Accueil</span>
+          <span class="nav-label" data-i18n="nav_home">Accueil</span>
         </button>
 
         <button class="nav-item" id="nav-directors" onclick="switchAppView('directors')">
           <i class="ti ti-users"></i>
-          <span class="nav-label">Directeurs</span>
+          <span class="nav-label" data-i18n="nav_directors">Directeurs</span>
         </button>
 
         <button class="nav-item" id="nav-history" onclick="switchAppView('history')">
           <i class="ti ti-history"></i>
-          <span class="nav-label">Historique</span>
+          <span class="nav-label" data-i18n="nav_history">Historique</span>
         </button>
       </nav>
 
@@ -63,7 +63,7 @@
         <div class="sidebar-footer-row">
           <button class="nav-item nav-settings" id="nav-settings" onclick="switchAppView('settings')">
             <i class="ti ti-settings"></i>
-            <span class="nav-label">Paramètres</span>
+            <span class="nav-label" data-i18n="nav_settings">Paramètres</span>
           </button>
           <button class="btn-theme-sidebar" onclick="toggleAppTheme()" title="Basculer le Thème (Sombre / Clair)">
             <i class="ti ti-moon" id="sidebar-theme-icon"></i>
@@ -84,23 +84,23 @@
         <div class="home-hero-card">
           <div class="home-hero-content">
             <div class="home-badge">
-              <i class="ti ti-shield-check"></i> Caisse Nationale des Assurances Sociales
+              <i class="ti ti-shield-check"></i> <span data-i18n="home_badge">Caisse Nationale des Assurances Sociales</span>
             </div>
-            <h2 class="home-hero-title">Portail CongéDesk — Gestion des Congés CNAS GRH.22</h2>
-            <p class="home-hero-desc">
+            <h2 class="home-hero-title" data-i18n="home_title">Portail CongéDesk — Gestion des Congés CNAS GRH.22</h2>
+            <p class="home-hero-desc" data-i18n-html="home_desc">
               Plateforme institutionnelle d'administration des congés annuels et d'édition conforme du Titre Officiel <strong>GRH.22</strong> pour les directeurs d'agences des 58 Wilayas et structures spécialisées de la CNAS.
             </p>
             <div class="home-hero-actions">
               <button class="btn btn-primary" onclick="switchAppView('directors')">
-                <i class="ti ti-users"></i> Consulter l'Annuaire des Directeurs
+                <i class="ti ti-users"></i> <span data-i18n="home_btn_directors">Consulter l'Annuaire des Directeurs</span>
               </button>
               <button class="btn btn-secondary" onclick="openQuickNewVacation()">
-                <i class="ti ti-file-certificate"></i> Nouveau Titre de Congé
+                <i class="ti ti-file-certificate"></i> <span data-i18n="home_btn_new">Nouveau Titre de Congé</span>
               </button>
             </div>
           </div>
           <div class="home-hero-emblem">
-            <img src="../assets/cnas_logo.png" alt="CNAS" class="home-cnas-emblem-img">
+            <img src="../assets/logo.png" alt="CNAS" class="home-cnas-emblem-img">
           </div>
         </div>
 
@@ -111,7 +111,7 @@
               <i class="ti ti-building-community"></i>
             </div>
             <div class="kpi-details">
-              <span class="kpi-label">Agences & Établissements</span>
+              <span class="kpi-label" data-i18n="kpi_directors">Agences & Établissements</span>
               <span class="kpi-value" id="home-kpi-directors">64</span>
             </div>
           </div>
@@ -121,8 +121,8 @@
               <i class="ti ti-map-2"></i>
             </div>
             <div class="kpi-details">
-              <span class="kpi-label">Wilayas Couvertes</span>
-              <span class="kpi-value">58 Wilayas</span>
+              <span class="kpi-label" data-i18n="kpi_wilayas">Wilayas Couvertes</span>
+              <span class="kpi-value" id="home-kpi-wilayas-val" data-i18n="kpi_wilayas_val">58 Wilayas</span>
             </div>
           </div>
 
@@ -131,7 +131,7 @@
               <i class="ti ti-file-certificate"></i>
             </div>
             <div class="kpi-details">
-              <span class="kpi-label">Titres GRH.22 Émis</span>
+              <span class="kpi-label" data-i18n="kpi_issued">Titres GRH.22 Émis</span>
               <span class="kpi-value" id="home-kpi-issued">0</span>
             </div>
           </div>
@@ -141,8 +141,8 @@
               <i class="ti ti-calendar-event"></i>
             </div>
             <div class="kpi-details">
-              <span class="kpi-label">Droit Annuel Réglementaire</span>
-              <span class="kpi-value">30 Jours</span>
+              <span class="kpi-label" data-i18n="kpi_legal_days">Droit Annuel Réglementaire</span>
+              <span class="kpi-value" id="home-kpi-legal-val" data-i18n="kpi_legal_days_val">30 Jours</span>
             </div>
           </div>
         </section>
@@ -154,19 +154,19 @@
               <i class="ti ti-id-badge-2"></i>
             </div>
             <div class="launchpad-info">
-              <h3>Annuaire Officiel CNAS</h3>
-              <p>Rechercher parmi les 64 directeurs de wilayas, consulter leurs soldes et modifier les informations.</p>
+              <h3 data-i18n="launch_1_title">Annuaire Officiel CNAS</h3>
+              <p data-i18n="launch_1_desc">Rechercher parmi les 64 directeurs de wilayas, consulter leurs soldes et modifier les informations.</p>
             </div>
             <i class="ti ti-chevron-right launchpad-arrow"></i>
           </div>
 
           <div class="launchpad-card" onclick="openQuickNewVacation()">
             <div class="launchpad-icon-box emerald">
-              <i class="ti ti-file-signature"></i>
+              <i class="ti ti-file-certificate"></i>
             </div>
             <div class="launchpad-info">
-              <h3>Édition Rapide GRH.22</h3>
-              <p>Calculer les droits, dates de départ et reprise avec impression recto (FR) / verso (AR) conforme.</p>
+              <h3 data-i18n="launch_2_title">Édition Rapide GRH.22</h3>
+              <p data-i18n="launch_2_desc">Calculer les droits, dates de départ et reprise avec impression recto (FR) / verso (AR) conforme.</p>
             </div>
             <i class="ti ti-chevron-right launchpad-arrow"></i>
           </div>
@@ -176,8 +176,8 @@
               <i class="ti ti-history"></i>
             </div>
             <div class="launchpad-info">
-              <h3>Registre & Historique</h3>
-              <p>Consulter les congés accordés, suivre les déductions de solde et exporter les registres en CSV.</p>
+              <h3 data-i18n="launch_3_title">Registre & Historique</h3>
+              <p data-i18n="launch_3_desc">Consulter les congés accordés, suivre les déductions de solde et exporter les registres en CSV.</p>
             </div>
             <i class="ti ti-chevron-right launchpad-arrow"></i>
           </div>
@@ -210,7 +210,7 @@
         <div class="directors-top-bar">
           <div class="search-box">
             <i class="ti ti-search search-icon"></i>
-            <input type="text" class="search-input" id="search-employee-input" placeholder="Rechercher par nom, wilaya, agence..." oninput="onSearchInput()">
+            <input type="text" class="search-input" id="search-employee-input" placeholder="Rechercher par nom, wilaya, agence..." data-i18n-placeholder="search_placeholder" oninput="onSearchInput()">
             <button class="search-clear-btn" id="search-clear-btn" onclick="clearSearchInput()" style="display: none;">
               <i class="ti ti-x"></i>
             </button>
@@ -220,7 +220,7 @@
           <div class="custom-dropdown" id="wilaya-dropdown">
             <button type="button" class="custom-dropdown-trigger" id="wilaya-dropdown-trigger" onclick="toggleWilayaDropdown(event)">
               <i class="ti ti-map-pin dropdown-pin-icon"></i>
-              <span class="dropdown-selected-label" id="wilaya-selected-label">Toutes les Wilayas & Établissements</span>
+              <span class="dropdown-selected-label" id="wilaya-selected-label" data-i18n="dropdown_all_wilayas">Toutes les Wilayas & Établissements</span>
               <i class="ti ti-chevron-down dropdown-arrow" id="wilaya-dropdown-arrow"></i>
             </button>
 
@@ -228,7 +228,7 @@
             <div class="custom-dropdown-menu" id="wilaya-dropdown-menu" style="display: none;">
               <div class="dropdown-search-box">
                 <i class="ti ti-search"></i>
-                <input type="text" id="wilaya-dropdown-search" placeholder="Filtrer une wilaya..." oninput="onWilayaDropdownSearch(event)">
+                <input type="text" id="wilaya-dropdown-search" placeholder="Filtrer une wilaya..." data-i18n-placeholder="dropdown_search_placeholder" oninput="onWilayaDropdownSearch(event)">
               </div>
               <div class="dropdown-items-list" id="wilaya-dropdown-items">
                 <!-- Dynamically populated custom overflow items -->
@@ -246,7 +246,7 @@
         <div class="section-title-bar">
           <div class="title-with-badge">
             <i class="ti ti-id-badge-2" style="color: var(--primary); font-size: 20px;"></i>
-            <h2>Annuaire des Directeurs d'Agences de Wilayas & Établissements CNAS</h2>
+            <h2 data-i18n="dir_section_title">Annuaire des Directeurs d'Agences de Wilayas & Établissements CNAS</h2>
           </div>
         </div>
 
@@ -427,7 +427,7 @@
             </div>
 
             <div class="about-cnas-emblem-box">
-              <img src="../assets/cnas_logo.png" alt="Logo Officiel CNAS" class="about-cnas-logo">
+              <img src="../assets/logo.png" alt="Logo Officiel CNAS" class="about-cnas-logo">
               <div class="about-cnas-meta">
                 <strong style="font-size: 14px; color: var(--text-main);">Caisse Nationale des Assurances Sociales des Travailleurs Salariés</strong>
                 <span style="font-size: 12.5px; color: var(--text-dim); display: block; font-family: 'Tajawal', sans-serif; direction: rtl; margin-top: 2px;">
@@ -640,9 +640,9 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeNewEmployeeModal()">Annuler</button>
-        <button class="btn btn-primary" onclick="submitNewEmployee()">
-          <i class="ti ti-check"></i> <span>Enregistrer</span>
+        <button class="btn btn-secondary" id="btn-cancel-new-director" onclick="closeNewEmployeeModal()">Annuler</button>
+        <button class="btn btn-primary" id="btn-save-new-director" onclick="submitNewEmployee()">
+          <i class="ti ti-check"></i> <span id="btn-save-new-director-text">Enregistrer</span>
         </button>
       </div>
     </div>
@@ -874,7 +874,7 @@
           </button>
           <!-- Export Transparent Data-Only PDF -->
           <button class="btn btn-secondary" onclick="saveAsPDF(true)" title="Générer un PDF transparent avec les données seules pour papier existant">
-            <i class="ti ti-file-shield"></i> <span>PDF Données Seules</span>
+            <i class="ti ti-file-text"></i> <span>PDF Données Seules</span>
           </button>
           <!-- Export Full Document PDF -->
           <button class="btn btn-secondary" onclick="saveAsPDF(false)" title="Exporter le document complet en PDF">

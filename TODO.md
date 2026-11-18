@@ -1,4 +1,4 @@
-- [x] Change the icon of the taskbar and the logo, be more professional; Use the cnas logo 
+- [x] Change the icon of the taskbar and the logo, be more professional; Use the cnas logo 'logo.png'
 - [x] Create a sidebar with collapse option to show the pages and settings tab
 - [x] Add a home Page
 - [x] all the buttons are not styled, style them

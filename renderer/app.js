@@ -14,6 +14,125 @@ let activeEmployee = null;
 let leaveHistory = [];
 let directorToDeleteId = null;
 
+// ================= I18N BILINGUAL SYSTEM =================
+const i18n = {
+  fr: {
+    nav_home: "Accueil",
+    nav_directors: "Directeurs",
+    nav_history: "Historique",
+    nav_settings: "Paramètres",
+
+    home_badge: "Caisse Nationale des Assurances Sociales",
+    home_title: "Portail CongéDesk — Gestion des Congés CNAS GRH.22",
+    home_desc: "Plateforme institutionnelle d'administration des congés annuels et d'édition conforme du Titre Officiel <strong>GRH.22</strong> pour les directeurs d'agences des 58 Wilayas et structures spécialisées de la CNAS.",
+    home_btn_directors: "Consulter l'Annuaire des Directeurs",
+    home_btn_new: "Nouveau Titre de Congé",
+    kpi_directors: "Agences & Établissements",
+    kpi_wilayas: "Wilayas Couvertes",
+    kpi_wilayas_val: "58 Wilayas",
+    kpi_issued: "Titres GRH.22 Émis",
+    kpi_legal_days: "Droit Annuel Réglementaire",
+    kpi_legal_days_val: "30 Jours",
+    launch_1_title: "Annuaire Officiel CNAS",
+    launch_1_desc: "Rechercher parmi les 64 directeurs de wilayas, consulter leurs soldes et modifier les informations.",
+    launch_2_title: "Édition Rapide GRH.22",
+    launch_2_desc: "Calculer les droits, dates de départ et reprise avec impression recto (FR) / verso (AR) conforme.",
+    launch_3_title: "Registre & Historique",
+    launch_3_desc: "Consulter les congés accordés, suivre les déductions de solde et exporter les registres en CSV.",
+    home_recent_title: "Derniers Titres de Congé Émis",
+    home_view_all: "Voir tout l'historique",
+
+    search_placeholder: "Rechercher par nom, wilaya, agence...",
+    dropdown_all_wilayas: "Toutes les Wilayas & Établissements",
+    dropdown_search_placeholder: "Filtrer une wilaya...",
+    dir_section_title: "Annuaire des Directeurs d'Agences de Wilayas & Établissements CNAS"
+  },
+  ar: {
+    nav_home: "الرئيسية",
+    nav_directors: "المدراء",
+    nav_history: "سجل العطل",
+    nav_settings: "الإعدادات",
+
+    home_badge: "الصندوق الوطني للتأمينات الاجتماعية للعمال الأجراء",
+    home_title: "بوابة إجازاتي — تسيير العطل وإصدار سند العطلة كناس GRH.22",
+    home_desc: "المنصة الإدارية الرسمية لتسيير العطل السنوية وإصدار سند العطلة الرسمي <strong>GRH.22</strong> لمدراء وكالات الولايات الـ 58 والمؤسسات المتخصصة التابعة للصندوق الوطني للتأمينات الاجتماعية.",
+    home_btn_directors: "دليل مدراء الوكالات والمؤسسات",
+    home_btn_new: "إصدار سند عطلة جديد",
+    kpi_directors: "الوكالات والمؤسسات",
+    kpi_wilayas: "الولايات المغطاة",
+    kpi_wilayas_val: "58 ولاية",
+    kpi_issued: "سندات GRH.22 الصادرة",
+    kpi_legal_days: "الحق السنوي القانوني",
+    kpi_legal_days_val: "30 يوماً",
+    launch_1_title: "الدليل الرسمي كناس",
+    launch_1_desc: "البحث في قائمة مدراء وكالات الولايات، متابعة الأرصدة وتعديل البيانات الرسمية.",
+    launch_2_title: "الإصدار السريع GRH.22",
+    launch_2_desc: "حساب الحقوق وتواريخ المغادرة والاستئناف وطباعة وجه (فرنسي) / ظهر (عربي) مطابق قانونياً.",
+    launch_3_title: "سجل الإجازات والأرشيف",
+    launch_3_desc: "مراجعة العطل الممنوحة ومتابعة اقتطاعات الأرصدة وتصدير السجلات إلى CSV.",
+    home_recent_title: "آخر سندات العطل الصادرة",
+    home_view_all: "عرض كامل السجل",
+
+    search_placeholder: "بحث بالاسم، الولاية، أو الوكالة...",
+    dropdown_all_wilayas: "جميع الولايات والمؤسسات",
+    dropdown_search_placeholder: "تصفية حسب الولاية...",
+    dir_section_title: "دليل مدراء وكالات الولايات والمؤسسات المتخصصة كناس"
+  }
+};
+
+function applyLanguage(lang) {
+  currentAppLang = (lang === 'ar') ? 'ar' : 'fr';
+  currentDocLang = currentAppLang;
+  localStorage.setItem('congedesk_lang', currentAppLang);
+
+  const isAr = (currentAppLang === 'ar');
+  document.documentElement.setAttribute('lang', currentAppLang);
+  document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+
+  const fabLang = document.getElementById('fab-lang-btn');
+  if (fabLang) {
+    fabLang.title = isAr ? "Passer au Français" : "التبديل إلى العربية";
+  }
+
+  // Update data-i18n text
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (i18n[currentAppLang] && i18n[currentAppLang][key] !== undefined) {
+      el.textContent = i18n[currentAppLang][key];
+    }
+  });
+
+  // Update data-i18n-html
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (i18n[currentAppLang] && i18n[currentAppLang][key] !== undefined) {
+      el.innerHTML = i18n[currentAppLang][key];
+    }
+  });
+
+  // Update placeholders
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (i18n[currentAppLang] && i18n[currentAppLang][key] !== undefined) {
+      el.placeholder = i18n[currentAppLang][key];
+    }
+  });
+
+  // Update Wilaya trigger label if default
+  const wilayaLabel = document.getElementById('wilaya-selected-label');
+  if (wilayaLabel && (!selectedWilayaCode || selectedWilayaCode === '')) {
+    wilayaLabel.textContent = i18n[currentAppLang].dropdown_all_wilayas;
+  }
+
+  if (cachedWilayaList && cachedWilayaList.length > 0) {
+    renderWilayaDropdownItems(cachedWilayaList);
+  }
+
+  filterAndRenderDirectors();
+  if (currentView === 'home') updateHomeDashboard();
+  if (currentView === 'history') renderHistoryTable();
+}
+
 // ================= INITIALIZATION =================
 window.addEventListener('DOMContentLoaded', async () => {
   // 1. Theme initialization
@@ -25,10 +144,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   const savedLang = localStorage.getItem('congedesk_lang');
   if (savedLang === 'ar' || savedLang === 'fr') {
     currentAppLang = savedLang;
-    currentDocLang = savedLang;
-    document.documentElement.setAttribute('lang', currentAppLang);
-    document.documentElement.setAttribute('dir', (currentAppLang === 'ar') ? 'rtl' : 'ltr');
+  } else {
+    currentAppLang = 'fr';
   }
+  applyLanguage(currentAppLang);
 
   // 3. Sidebar collapsed state
   const isSidebarCollapsed = localStorage.getItem('congedesk_sidebar_collapsed') === 'true';
@@ -113,11 +232,12 @@ function updateHomeDashboard() {
   const recentList = document.getElementById('home-recent-leaves-list');
   if (!recentList) return;
 
+  const isAr = (currentAppLang === 'ar');
   if (leaveHistory.length === 0) {
     recentList.innerHTML = `
       <div style="padding: 24px; text-align: center; color: var(--text-dim); font-size: 13px;">
         <i class="ti ti-file-off" style="font-size: 28px; margin-bottom: 6px; display: block; color: var(--text-dim);"></i>
-        Aucun titre de congé émis récemment.
+        ${isAr ? 'لا توجد سندات عطل صادرة مؤخراً.' : 'Aucun titre de congé émis récemment.'}
       </div>
     `;
     return;
@@ -128,15 +248,15 @@ function updateHomeDashboard() {
     <div class="home-recent-item">
       <div style="display: flex; align-items: center; gap: 12px;">
         <div style="width: 36px; height: 36px; border-radius: 8px; background: rgba(37,99,235,0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px;">
-          ${r.leave_days || 0}j
+          ${r.leave_days || 0}${isAr ? 'ي' : 'j'}
         </div>
         <div>
-          <strong style="font-size: 13.5px; color: var(--text-main); display: block;">${escapeHtml(r.agent_name || 'Directeur')}</strong>
-          <span style="font-size: 11.5px; color: var(--text-dim);">${escapeHtml(r.service || '')} &bull; Du ${escapeHtml(r.dep_date || '—')} au ${escapeHtml(r.ret_date || '—')}</span>
+          <strong style="font-size: 13.5px; color: var(--text-main); display: block;">${escapeHtml(r.agent_name || (isAr ? 'مدير' : 'Directeur'))}</strong>
+          <span style="font-size: 11.5px; color: var(--text-dim);">${escapeHtml(r.service || '')} &bull; ${isAr ? 'من' : 'Du'} ${escapeHtml(r.dep_date || '—')} ${isAr ? 'إلى' : 'au'} ${escapeHtml(r.ret_date || '—')}</span>
         </div>
       </div>
       <button class="btn btn-sm btn-secondary" onclick="viewHistoryDoc('${r.id}')">
-        <i class="ti ti-file-text"></i> Titre
+        <i class="ti ti-file-text"></i> ${isAr ? 'السند' : 'Titre'}
       </button>
     </div>
   `).join('');
@@ -152,20 +272,8 @@ function openQuickNewVacation() {
 
 // ================= LANGUAGE TOGGLE =================
 function toggleAppLanguage() {
-  currentAppLang = (currentAppLang === 'fr') ? 'ar' : 'fr';
-  currentDocLang = currentAppLang;
-  localStorage.setItem('congedesk_lang', currentAppLang);
-
-  document.documentElement.setAttribute('lang', currentAppLang);
-  document.documentElement.setAttribute('dir', (currentAppLang === 'ar') ? 'rtl' : 'ltr');
-
-  const fabLang = document.getElementById('fab-lang-btn');
-  if (fabLang) {
-    fabLang.title = (currentAppLang === 'ar') ? "Passer au Français" : "التبديل إلى العربية";
-  }
-
-  filterAndRenderDirectors();
-  if (currentView === 'home') updateHomeDashboard();
+  const nextLang = (currentAppLang === 'fr') ? 'ar' : 'fr';
+  applyLanguage(nextLang);
 }
 
 // ================= SIDEBAR COLLAPSE TOGGLE =================
@@ -383,10 +491,13 @@ function renderWilayaDropdownItems(items) {
   const container = document.getElementById('wilaya-dropdown-items');
   if (!container) return;
 
+  const isAr = (currentAppLang === 'ar');
+  const allLabel = isAr ? 'جميع الولايات والمؤسسات' : 'Toutes les Wilayas & Établissements';
+
   let html = `
-    <div class="dropdown-item ${!selectedWilayaCode ? 'active' : ''}" onclick="selectWilayaDropdownItem('', 'Toutes les Wilayas & Établissements')">
+    <div class="dropdown-item ${!selectedWilayaCode ? 'active' : ''}" onclick="selectWilayaDropdownItem('', '${escapeJsStr(allLabel)}')">
       <div class="dropdown-item-badge"><i class="ti ti-world"></i></div>
-      <span class="dropdown-item-name">Toutes les Wilayas & Établissements</span>
+      <span class="dropdown-item-name">${escapeHtml(allLabel)}</span>
       ${!selectedWilayaCode ? '<i class="ti ti-check dropdown-item-check"></i>' : ''}
     </div>
   `;
@@ -395,7 +506,7 @@ function renderWilayaDropdownItems(items) {
     const isActive = (selectedWilayaCode === w.code);
     const badgeText = w.code.length <= 4 ? w.code : 'DG';
     html += `
-      <div class="dropdown-item ${isActive ? 'active' : ''}" onclick="selectWilayaDropdownItem('${escapeHtml(w.code)}', '${escapeHtml(w.label)}')">
+      <div class="dropdown-item ${isActive ? 'active' : ''}" onclick="selectWilayaDropdownItem('${escapeHtml(w.code)}', '${escapeJsStr(w.label)}')">
         <div class="dropdown-item-badge">${escapeHtml(badgeText)}</div>
         <span class="dropdown-item-name">${escapeHtml(w.label)}</span>
         ${isActive ? '<i class="ti ti-check dropdown-item-check"></i>' : ''}
@@ -486,16 +597,19 @@ function renderEmployeeCards(list) {
   if (!container) return;
   container.innerHTML = '';
 
+  const isAr = (currentAppLang === 'ar');
   const badgeText = document.getElementById('directors-count-text');
-  if (badgeText) badgeText.textContent = `${list.length} Directeur${list.length > 1 ? 's' : ''}`;
+  if (badgeText) {
+    badgeText.textContent = isAr ? `${list.length} مديراً` : `${list.length} Directeur${list.length > 1 ? 's' : ''}`;
+  }
 
   if (list.length === 0) {
     container.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-dim); background: var(--glass-card); border: 1px dashed var(--glass-border-subtle); border-radius: var(--radius-xl);">
         <i class="ti ti-user-x" style="font-size: 38px; margin-bottom: 12px; display: block; color: var(--text-dim);"></i>
-        <span style="font-size: 15px; font-weight: 700; display: block; margin-bottom: 8px;">Aucun directeur trouvé</span>
-        <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 16px;">Vérifiez vos termes de recherche ou réinitialisez le filtre de wilaya.</p>
-        <button class="btn btn-secondary" onclick="resetToCNASDirectors()"><i class="ti ti-refresh"></i> Recharger la liste CNAS</button>
+        <span style="font-size: 15px; font-weight: 700; display: block; margin-bottom: 8px;">${isAr ? 'لم يتم العثور على أي مدير' : 'Aucun directeur trouvé'}</span>
+        <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 16px;">${isAr ? 'يرجى التحقق من عبارات البحث أو إعادة ضبط تصفية الولاية.' : 'Vérifiez vos termes de recherche ou réinitialisez le filtre de wilaya.'}</p>
+        <button class="btn btn-secondary" onclick="resetToCNASDirectors()"><i class="ti ti-refresh"></i> ${isAr ? 'إعادة تحميل قائمة كناس' : 'Recharger la liste CNAS'}</button>
       </div>
     `;
     return;
@@ -510,26 +624,35 @@ function renderEmployeeCards(list) {
     const annual = parseFloat(emp.annual_entitlement) || 30;
     const totalAvail = prevBal + annual;
 
+    const displayName = isAr ? (emp.name_ar || emp.name_fr) : (emp.name_fr || emp.name_ar);
+    const displayService = isAr ? (emp.service_ar || emp.service_fr || emp.agency) : (emp.service_fr || emp.agency || 'Direction');
+    const displayGrade = isAr ? (emp.grade_ar || emp.grade_fr || 'مدير وكالة كناس الولائية') : (emp.grade_fr || "Directeur d'Agence de Wilaya");
+    const statText = isAr ? 'يوماً متاحاً' : 'jours disponibles';
+    const btnText = isAr ? 'عطلة جديدة' : 'Nouveau Congé';
+    const titleDetails = isAr ? 'تفاصيل وبيانات المدير' : 'Détails du Directeur';
+    const titleEdit = isAr ? 'تعديل' : 'Modifier';
+    const titleDel = isAr ? 'حذف' : 'Supprimer';
+
     card.innerHTML = `
       <!-- Card Header: Wilaya, Name, Agency, Action Icons -->
       <div class="director-card-header">
         <div class="director-avatar-box">
-          <span class="wilaya-num">${wilayaDisplay}</span>
+          <span class="wilaya-num">${escapeHtml(wilayaDisplay)}</span>
         </div>
         <div class="director-info">
-          <h3 class="director-name" title="${escapeHtml(emp.name_fr)}">${escapeHtml(emp.name_fr)}</h3>
-          <span class="director-agency" title="${escapeHtml(emp.service_fr || emp.agency || '')}">
-            ${escapeHtml(emp.service_fr || emp.agency || 'Direction')}
+          <h3 class="director-name" title="${escapeHtml(displayName)}">${escapeHtml(displayName)}</h3>
+          <span class="director-agency" title="${escapeHtml(displayService)}">
+            ${escapeHtml(displayService)}
           </span>
         </div>
         <div class="director-card-actions">
-          <button class="btn-card-icon" onclick="openDirectorDetailsModal('${emp.id}')" title="Détails du Directeur">
+          <button class="btn-card-icon" onclick="openDirectorDetailsModal('${emp.id}')" title="${titleDetails}">
             <i class="ti ti-eye"></i>
           </button>
-          <button class="btn-card-icon" onclick="openEditDirectorModal('${emp.id}')" title="Modifier">
+          <button class="btn-card-icon" onclick="openEditDirectorModal('${emp.id}')" title="${titleEdit}">
             <i class="ti ti-edit"></i>
           </button>
-          <button class="btn-card-icon btn-card-delete" onclick="promptDeleteDirector('${emp.id}', '${escapeJsStr(emp.name_fr)}', '${escapeJsStr(emp.agency || '')}')" title="Supprimer">
+          <button class="btn-card-icon btn-card-delete" onclick="promptDeleteDirector('${emp.id}', '${escapeJsStr(displayName)}', '${escapeJsStr(displayService)}')" title="${titleDel}">
             <i class="ti ti-trash"></i>
           </button>
         </div>
@@ -539,17 +662,17 @@ function renderEmployeeCards(list) {
       <div class="director-card-body">
         <div class="director-stat-pill">
           <span class="stat-num">${totalAvail}</span>
-          <span class="stat-text">jours disponibles</span>
+          <span class="stat-text">${statText}</span>
         </div>
-        <span class="director-grade-tag" title="${escapeHtml(emp.grade_fr || "Directeur d'Agence")}">
-          ${escapeHtml(emp.grade_fr || "Directeur d'Agence")}
+        <span class="director-grade-tag" title="${escapeHtml(displayGrade)}">
+          ${escapeHtml(displayGrade)}
         </span>
       </div>
 
-      <!-- Card Footer: Text Only Button for Adding Vacation -->
+      <!-- Card Footer: Text Button with Certificate Icon for Adding Vacation -->
       <div class="director-card-footer">
         <button class="btn-vacation-text" onclick="openLeaveDrawerFor('${emp.id}')">
-          Nouveau Congé
+          <i class="ti ti-file-certificate"></i> ${btnText}
         </button>
       </div>
     `;
@@ -642,9 +765,15 @@ async function executeConfirmedDelete() {
 
 // ================= MODAL: ADD / EDIT DIRECTOR =================
 function openNewEmployeeModal() {
+  const isAr = (currentAppLang === 'ar');
   document.getElementById('modal-director-title').innerHTML = `
-    <i class="ti ti-user-plus" style="color: var(--primary);"></i> <span>Ajouter un Nouveau Directeur</span>
+    <i class="ti ti-user-plus" style="color: var(--primary);"></i> <span>${isAr ? 'إضافة مدير جديد' : 'Ajouter un Nouveau Directeur'}</span>
   `;
+  const saveText = document.getElementById('btn-save-new-director-text');
+  if (saveText) saveText.textContent = isAr ? 'حفظ' : 'Enregistrer';
+  const cancelBtn = document.getElementById('btn-cancel-new-director');
+  if (cancelBtn) cancelBtn.textContent = isAr ? 'إلغاء' : 'Annuler';
+
   document.getElementById('m-director-id').value = '';
   document.getElementById('m-code-wilaya').value = '';
   document.getElementById('m-agency').value = '';
@@ -665,9 +794,15 @@ function openEditDirectorModal(dirId) {
   const dir = employees.find(e => e.id === dirId);
   if (!dir) return;
 
+  const isAr = (currentAppLang === 'ar');
   document.getElementById('modal-director-title').innerHTML = `
-    <i class="ti ti-edit" style="color: var(--primary);"></i> <span>Modifier le Directeur</span>
+    <i class="ti ti-edit" style="color: var(--primary);"></i> <span>${isAr ? 'تعديل بيانات ومعلومات المدير' : 'Modifier les Informations du Directeur'}</span>
   `;
+  const saveText = document.getElementById('btn-save-new-director-text');
+  if (saveText) saveText.textContent = isAr ? 'حفظ التعديلات' : 'Enregistrer';
+  const cancelBtn = document.getElementById('btn-cancel-new-director');
+  if (cancelBtn) cancelBtn.textContent = isAr ? 'إلغاء' : 'Annuler';
+
   document.getElementById('m-director-id').value = dir.id;
   document.getElementById('m-code-wilaya').value = dir.code_wilaya || '';
   document.getElementById('m-agency').value = dir.agency || '';

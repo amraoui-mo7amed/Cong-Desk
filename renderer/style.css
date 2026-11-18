@@ -435,9 +435,15 @@ body {
 /* ================= KPI STATS OVERVIEW ================= */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 16px;
   width: 100%;
+}
+
+@media (max-width: 1280px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .kpi-card {
@@ -446,12 +452,13 @@ body {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
-  padding: 18px 20px;
+  padding: 16px 20px;
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   box-shadow: var(--shadow-sm);
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .kpi-card:hover {
@@ -479,22 +486,26 @@ body {
 .kpi-details {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
+  min-width: 0;
+  white-space: nowrap;
 }
 
 .kpi-label {
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--text-dim);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
 }
 
 .kpi-value {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 800;
   color: var(--text-main);
   letter-spacing: -0.4px;
+  white-space: nowrap;
 }
 
 /* SECTION TITLE BAR */
@@ -653,18 +664,21 @@ body {
   display: flex;
   align-items: baseline;
   gap: 4px;
+  white-space: nowrap;
 }
 
 .director-stat-pill .stat-num {
   font-size: 17px;
   font-weight: 800;
   color: var(--success);
+  white-space: nowrap;
 }
 
 .director-stat-pill .stat-text {
   font-size: 11.5px;
   font-weight: 600;
   color: var(--text-dim);
+  white-space: nowrap;
 }
 
 .director-grade-tag {
@@ -2069,10 +2083,11 @@ body {
 }
 
 .launchpad-info h3 {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 800;
   color: var(--text-main);
   letter-spacing: -0.2px;
+  white-space: nowrap;
 }
 
 .launchpad-info p {
@@ -2085,11 +2100,20 @@ body {
   font-size: 18px;
   color: var(--text-dim);
   transition: transform 0.2s ease, color 0.2s ease;
+  flex-shrink: 0;
 }
 
 .launchpad-card:hover .launchpad-arrow {
   color: var(--primary);
   transform: translateX(4px);
+}
+
+[dir="rtl"] .launchpad-arrow {
+  transform: rotate(180deg);
+}
+
+[dir="rtl"] .launchpad-card:hover .launchpad-arrow {
+  transform: rotate(180deg) translateX(4px);
 }
 
 /* Home Recent Titles Card */
@@ -2236,7 +2260,7 @@ body {
   color: var(--text-main);
 }
 
-/* ================= ULTRA LIQUID GLASS MODAL STYLES ================= */
+/* ================= ULTRA LIQUID GLASS MODAL STYLES (OVERFLOWED) ================= */
 .modal-overlay {
   background: rgba(7, 13, 24, 0.68);
   backdrop-filter: blur(18px) saturate(160%);
@@ -2247,6 +2271,8 @@ body {
   align-items: center;
   justify-content: center;
   z-index: 9999;
+  padding: 24px 16px;
+  overflow-y: auto;
 }
 
 .modal-card {
@@ -2255,12 +2281,38 @@ body {
   -webkit-backdrop-filter: blur(36px) saturate(200%);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
-  padding: 28px;
+  padding: 24px 28px;
   box-shadow: 0 30px 70px -15px rgba(0, 0, 0, 0.5), inset 0 1px 1px 0 rgba(255, 255, 255, 0.85);
   animation: modalPopIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   max-width: 640px;
   width: 90%;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
+.modal-card::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal-card::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.45);
+  border-radius: 9999px;
+}
+
+.modal-card-large {
+  max-width: 780px;
+  max-height: calc(100vh - 48px);
+}
+
+.modal-card-sm {
+  max-width: 480px;
+  max-height: calc(100vh - 48px);
 }
 
 @keyframes modalPopIn {
@@ -2316,6 +2368,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  overflow-y: auto;
 }
 
 .modal-footer {
@@ -2326,6 +2379,11 @@ body {
   border-top: 1px solid var(--glass-border-subtle);
   padding-top: 20px;
   margin-top: 8px;
+}
+
+[dir="rtl"] .fab-dock {
+  right: auto;
+  left: 28px;
 }
 
 
