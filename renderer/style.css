@@ -115,13 +115,26 @@ body {
 /* ================= UNIVERSAL TAJAWAL FONT FOR ALL ARABIC TEXT & RTL MODE ================= */
 [dir="rtl"],
 [dir="rtl"] body,
-[dir="rtl"] *,
 [lang="ar"],
-[lang="ar"] *,
-.rtl-text,
-.lang-ar,
-.lang-ar * {
-  font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+.rtl-text {
+  font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+[dir="rtl"] *:not([class*="ti"]):not([class*="fa"]):not(i) {
+  font-family: 'Tajawal', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+/* STRICT ICON FONT PROTECTION (NEVER OVERRIDE ICON FONTS) */
+[class*=" ti-"],
+[class^="ti-"],
+.ti {
+  font-family: "tabler-icons" !important;
+}
+
+[class*=" fa-"],
+[class^="fa-"],
+.fa, .fas, .far, .fab {
+  font-family: "Font Awesome 6 Free", "FontAwesome" !important;
 }
 
 /* ================= CUSTOM SLIDER / SCROLLBAR FOR EVERYTHING IN THE APP ================= */
