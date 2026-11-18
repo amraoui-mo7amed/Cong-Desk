@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CongéDesk - Gestion des Congés & Titre GRH.22</title>
+  <!-- Favicons -->
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="64x64" href="../assets/favicon.png">
+  <link rel="shortcut icon" href="../assets/favicon.ico">
+  <!-- Google Fonts: Tajawal -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <!-- FontAwesome Local & CDN Fallback -->
+  <link rel="stylesheet" href="../node_modules/@fortawesome/fontawesome-free/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- TOP APP HEADER -->
+  <header class="main-header">
+    <div class="brand-wrapper">
+      <div class="brand-logo-box">
+        <img src="../assets/logo.png" alt="CongéDesk Logo" class="brand-logo-img">
+      </div>
+      <div class="brand-meta">
+        <h1>CongéDesk</h1>
+        <span data-i18n="appSubtitle">Système de Gestion des Congés CNAS GRH.22</span>
+      </div>
+    </div>
+
+    <!-- Search & Actions -->
+    <div class="header-controls">
+      <div class="search-wrapper">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" class="search-field" id="search-employee-input" placeholder="Rechercher employé, grade, service..." oninput="onSearchInput()">
+      </div>
+
+      <!-- Language Switcher (FR / AR) - ICON ONLY -->
+      <button class="btn-icon" id="lang-toggle-btn" onclick="toggleAppLanguage()" title="Changer de langue / تغيير اللغة">
+        <i class="fa-solid fa-language"></i>
+      </button>
+
+      <!-- Theme Switcher (Dark / Light) - ICON ONLY -->
+      <button class="btn-icon" id="theme-toggle-btn" onclick="toggleAppTheme()" title="Thème Sombre / Clair">
+        <i class="fa-solid fa-moon" id="theme-btn-icon"></i>
+      </button>
+
+      <!-- Add Employee Button -->
+      <button class="btn btn-primary" onclick="openNewEmployeeModal()">
+        <i class="fa-solid fa-user-plus"></i> <span data-i18n="addEmployee">Ajouter Employé</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN VIEWPORT (EMPLOYEE HUB) -->
+  <main class="main-viewport">
+
+    <!-- KPI STATS OVERVIEW -->
+    <section class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-blue">
+          <i class="fa-solid fa-users"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-label" data-i18n="kpiTotal">Total Employés</span>
+          <span class="kpi-value" id="kpi-total-employees">3</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-emerald">
+          <i class="fa-solid fa-calendar-check"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-label" data-i18n="kpiQuota">Droit Annuel Légal</span>
+          <span class="kpi-value" data-i18n="kpiQuotaVal">30 Jours</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-amber">
+          <i class="fa-solid fa-file-circle-check"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-label" data-i18n="kpiIssued">Titres Émis</span>
+          <span class="kpi-value" id="kpi-issued-titles">0</span>
+        </div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-icon-box kpi-indigo">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+        <div class="kpi-details">
+          <span class="kpi-label" data-i18n="kpiReserve">Total Reliquats N-1</span>
+          <span class="kpi-value" id="kpi-total-reserve">44 j</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SECTION TITLE BAR -->
+    <div class="section-title-bar">
+      <div class="title-with-badge">
+        <i class="fa-solid fa-id-card" style="color: var(--primary);"></i>
+        <h2 data-i18n="directoryTitle">Annuaire des Employés & Soldes de Congé</h2>
+        <span class="count-pill" id="employee-count-badge">3 Employés</span>
+      </div>
+      <div class="view-hint">
+        <i class="fa-solid fa-grip"></i>
+        <span data-i18n="cardsViewLabel">Affichage Cartes</span>
+      </div>
+    </div>
+
+    <!-- EMPLOYEE CARDS GRID -->
+    <section class="cards-viewport">
+      <div class="employee-cards-grid" id="employee-cards-container">
+        <!-- Dynamically populated cards -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- DEDICATED PREVIEW MODAL (FUNCTION PREVIEW) -->
+  <div class="modal-overlay" id="preview-modal" style="display: none;">
+    <div class="preview-modal-dialog">
+      <!-- Preview Header -->
+      <div class="preview-modal-header">
+        <div class="preview-modal-title">
+          <i class="fa-solid fa-eye" style="color: var(--primary); font-size: 18px;"></i>
+          <div>
+            <h3 id="preview-modal-emp-name">Aperçu Titre de Congé GRH.22</h3>
+            <span id="preview-modal-emp-sub" style="font-size: 12px; color: var(--text-dim);">Aperçu officiel avant impression et archivage</span>
+          </div>
+        </div>
+
+        <!-- Mode Toggle: Full vs Pre-printed Paper -->
+        <div class="drawer-tabs">
+          <button class="drawer-tab-btn active" id="modal-mode-full" onclick="setDocumentPrintMode(false)">
+            <i class="fa-solid fa-file-invoice"></i> <span data-i18n="modeFullDoc">Modèle Complet</span>
+          </button>
+          <button class="drawer-tab-btn" id="modal-mode-overlay" onclick="setDocumentPrintMode(true)">
+            <i class="fa-solid fa-layer-group"></i> <span data-i18n="modePrePrinted">Papier Pré-imprimé</span>
+          </button>
+        </div>
+
+        <!-- Language Pill Switch in Preview -->
+        <div class="drawer-tabs">
+          <button class="drawer-tab-btn active" id="modal-tab-fr" onclick="setPreviewModalLanguage('fr')">
+            <i class="fa-solid fa-file-lines"></i> Page 1 : FR
+          </button>
+          <button class="drawer-tab-btn" id="modal-tab-ar" onclick="setPreviewModalLanguage('ar')">
+            <i class="fa-solid fa-file-lines"></i> ص 2 : AR
+          </button>
+        </div>
+
+        <!-- Zoom Controls -->
+        <div class="preview-zoom-bar">
+          <button class="btn-icon" onclick="adjustModalZoom(-0.05)" title="Zoom Arrière"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+          <span id="modal-zoom-txt" style="font-size: 11px; font-weight: 700; min-width: 38px; text-align: center;">100%</span>
+          <button class="btn-icon" onclick="adjustModalZoom(0.05)" title="Zoom Avant"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+          <button class="btn-icon" onclick="resetModalZoom()" title="Réinitialiser Zoom"><i class="fa-solid fa-rotate-left"></i></button>
+        </div>
+
+        <button class="btn-icon" onclick="closePreviewModal()" title="Fermer"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <!-- Preview Modal Body (Sheet Canvas) -->
+      <div class="preview-modal-body" id="preview-modal-paper-wrapper">
+        <div id="preview-modal-paper-container">
+          <!-- Live rendered document sheet -->
+        </div>
+      </div>
+
+      <!-- Preview Modal Footer Toolbar -->
+      <div class="preview-modal-footer">
+        <button class="btn btn-secondary" onclick="openLeaveDrawerFromPreview()">
+          <i class="fa-solid fa-sliders"></i> <span data-i18n="modifyParameters">Ajuster Paramètres</span>
+        </button>
+
+        <div style="display: flex; gap: 8px;">
+          <!-- Print on Official Pre-printed Paper (Data only) -->
+          <button class="btn btn-primary" onclick="printDocument(true)" title="Imprimer les données seules sur le papier pré-imprimé déjà présent dans l'imprimante">
+            <i class="fa-solid fa-print"></i> <span data-i18n="printPrePrinted">Imprimer (Papier Officiel)</span>
+          </button>
+          <!-- Print Full Document (Template + Data) -->
+          <button class="btn btn-secondary" onclick="printDocument(false)" title="Imprimer le document complet avec en-tête et modèle">
+            <i class="fa-solid fa-file-lines"></i> <span data-i18n="printFullDoc">Imprimer Tout</span>
+          </button>
+          <!-- Export Transparent Data-Only PDF -->
+          <button class="btn btn-secondary" onclick="saveAsPDF(true)" title="Générer un PDF transparent avec uniquement les données pour papier existant">
+            <i class="fa-solid fa-file-shield"></i> <span data-i18n="pdfDataOnly">PDF Données Seules</span>
+          </button>
+          <!-- Export Full Document PDF -->
+          <button class="btn btn-secondary" onclick="saveAsPDF(false)" title="Exporter le document complet en PDF">
+            <i class="fa-solid fa-file-pdf"></i> <span data-i18n="pdfFullDoc">PDF Complet</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE-OVER DRAWER: LEAVE CALCULATOR & GRH.22 FILL/PRINT -->
+  <div class="drawer-backdrop" id="leave-drawer">
+    <div class="drawer-panel">
+      
+      <!-- Drawer Header -->
+      <div class="drawer-header">
+        <div class="drawer-title-group">
+          <i class="fa-solid fa-file-signature" style="color: var(--primary); font-size: 18px;"></i>
+          <div>
+            <h2 style="font-size: 15px; font-weight: 700;" id="drawer-agent-title">Titre de Congé GRH.22</h2>
+            <span style="font-size: 11px; color: var(--text-dim);" id="drawer-agent-subtitle">Calcul & Remplissage automatique</span>
+          </div>
+        </div>
+
+        <!-- Mode Toggle in Drawer -->
+        <div class="drawer-tabs">
+          <button class="drawer-tab-btn active" id="drawer-mode-full" onclick="setDocumentPrintMode(false)">
+            <i class="fa-solid fa-file-invoice"></i> <span data-i18n="modeFullDoc">Modèle</span>
+          </button>
+          <button class="drawer-tab-btn" id="drawer-mode-overlay" onclick="setDocumentPrintMode(true)">
+            <i class="fa-solid fa-layer-group"></i> <span data-i18n="modePrePrinted">Papier Officiel</span>
+          </button>
+        </div>
+
+        <!-- Language Pill Switch -->
+        <div class="drawer-tabs">
+          <button class="drawer-tab-btn active" id="btn-tab-fr" onclick="setDrawerLanguage('fr')">
+            <i class="fa-solid fa-file-lines"></i> Page 1 : FR
+          </button>
+          <button class="drawer-tab-btn" id="btn-tab-ar" onclick="setDrawerLanguage('ar')">
+            <i class="fa-solid fa-file-lines"></i> ص 2 : AR
+          </button>
+        </div>
+
+        <!-- Preview Modal Shortcut Button -->
+        <button class="btn btn-secondary btn-sm" onclick="openDedicatedPreviewFromDrawer()" title="Aperçu Grand Format">
+          <i class="fa-solid fa-maximize"></i> <span data-i18n="fullPreview">Grand Aperçu</span>
+        </button>
+
+        <button class="btn-icon" onclick="closeLeaveDrawer()" title="Fermer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Drawer Body Split: Left Form & Calculator / Right Live Document Preview -->
+      <div class="drawer-body">
+        
+        <!-- Left: Calculator & Form -->
+        <div class="drawer-left-form">
+
+          <!-- Real-Time Vacation Days Left Hero Card -->
+          <div class="drawer-calculator-card">
+            <div class="calc-headline">
+              <span class="calc-title"><i class="fa-solid fa-calculator"></i> <span data-i18n="vacationDaysLeft">Jours de Congé Restants</span></span>
+              <span class="d-stat-label" style="color: #38bdf8;" data-i18n="autoCalcBadge">Calcul Automatique</span>
+            </div>
+
+            <div class="calc-result-number" id="calc-days-left">14 jours</div>
+            <div class="calc-result-sub" id="calc-days-left-sub">restants sur 44 jours de droit total</div>
+
+            <div class="drawer-stats-row">
+              <div class="d-stat-item">
+                <span class="d-stat-label" data-i18n="n1Reliquat">Reliquat N-1</span>
+                <span class="d-stat-val" id="stat-n1">14 j</span>
+              </div>
+              <div class="d-stat-item">
+                <span class="d-stat-label" data-i18n="annualQuota">Droit Annuel</span>
+                <span class="d-stat-val" id="stat-annual">30 j</span>
+              </div>
+              <div class="d-stat-item">
+                <span class="d-stat-label" data-i18n="requestedDays">Demandé</span>
+                <span class="d-stat-val" id="stat-requested" style="color: #38bdf8;">30 j</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Alert Badge -->
+          <div class="calc-alert ok" id="calc-alert-banner">
+            <i class="fa-solid fa-circle-check" id="calc-alert-icon"></i>
+            <span id="calc-alert-text">Solde suffisant. L'employé conservera 14 jours en réserve.</span>
+          </div>
+
+          <!-- SECTION: LEAVE PERIOD & DATES -->
+          <div class="form-section">
+            <div class="sec-title"><i class="fa-solid fa-calendar-days"></i> <span data-i18n="secPeriod">Période & Durée du Congé</span></div>
+            
+            <div class="form-grid-2">
+              <div class="form-field">
+                <label data-i18n="lblLeaveDays">Jours Accordés</label>
+                <input type="number" class="input-ctrl text-center font-bold" id="f-leave-days" value="30" min="1" oninput="onLeaveDaysInput()">
+              </div>
+              <div class="form-field">
+                <label data-i18n="lblDateDepart">Date de Départ</label>
+                <input type="date" class="input-ctrl" id="f-date-depart" onchange="onDateDepartInput()">
+              </div>
+            </div>
+
+            <!-- Quick presets -->
+            <div class="preset-days-row">
+              <button class="preset-btn" onclick="applyPreset(7)">+7 j</button>
+              <button class="preset-btn" onclick="applyPreset(15)">+15 j</button>
+              <button class="preset-btn" onclick="applyPreset(21)">+21 j</button>
+              <button class="preset-btn" onclick="applyPreset(30)">+30 j (1 Mois)</button>
+            </div>
+
+            <div class="form-grid-2" style="margin-top: 4px;">
+              <div class="form-field">
+                <label data-i18n="lblDateRetour">Date de Reprise Calculée</label>
+                <input type="date" class="input-ctrl" id="f-date-retour" onchange="onDateRetourInput()">
+              </div>
+              <div class="form-field">
+                <label data-i18n="lblLeaveAddress">Adresse Durant le Congé</label>
+                <input type="text" class="input-ctrl" id="f-leave-address" placeholder="ex. Villa Jasmin, Béjaïa">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION: AGENT DETAILS -->
+          <div class="form-section">
+            <div class="sec-title"><i class="fa-solid fa-user-tie"></i> <span data-i18n="secAgent">Informations de l'Agent</span></div>
+
+            <div class="form-field">
+              <label data-i18n="lblName">Nom & Prénom</label>
+              <input type="text" class="input-ctrl" id="f-agent-name" placeholder="Nom et Prénom">
+            </div>
+
+            <div class="form-grid-2">
+              <div class="form-field">
+                <label data-i18n="lblGrade">Grade / Fonction</label>
+                <input type="text" class="input-ctrl" id="f-grade" placeholder="Grade">
+              </div>
+              <div class="form-field">
+                <label data-i18n="lblService">Service / Structure</label>
+                <input type="text" class="input-ctrl" id="f-service" placeholder="Service">
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label data-i18n="lblAddress">Adresse Personnelle</label>
+              <input type="text" class="input-ctrl" id="f-address" placeholder="Adresse personnelle">
+            </div>
+          </div>
+
+          <!-- SECTION: BALANCES OVERRIDE -->
+          <div class="form-section">
+            <div class="sec-title"><i class="fa-solid fa-scale-balanced"></i> <span data-i18n="secBalances">Détail des Droits & Reliquats</span></div>
+
+            <div class="form-grid-3">
+              <div class="form-field">
+                <label data-i18n="n1Reliquat">Reliquat N-1</label>
+                <input type="number" class="input-ctrl text-center" id="f-prev-balance" value="14" min="0" oninput="recalcAndRender()">
+              </div>
+              <div class="form-field">
+                <label data-i18n="annualQuota">Droit Annuel</label>
+                <input type="number" class="input-ctrl text-center" id="f-annual-entitlement" value="30" min="0" oninput="recalcAndRender()">
+              </div>
+              <div class="form-field">
+                <label data-i18n="totalAvail">Total Disponible</label>
+                <input type="number" class="input-ctrl text-center font-bold" id="f-total-entitlement" value="44" readonly style="background: rgba(255,255,255,0.03);">
+              </div>
+            </div>
+          </div>
+
+          <!-- SECTION: ISSUING & LOCATION -->
+          <div class="form-section">
+            <div class="sec-title"><i class="fa-solid fa-signature"></i> <span data-i18n="secIssuing">Émission & Signatures</span></div>
+
+            <div class="form-grid-2">
+              <div class="form-field">
+                <label data-i18n="lblCity">Fait à</label>
+                <input type="text" class="input-ctrl" id="f-location" value="Alger">
+              </div>
+              <div class="form-field">
+                <label data-i18n="lblDate">Le (Date)</label>
+                <input type="date" class="input-ctrl" id="f-issue-date">
+              </div>
+            </div>
+
+            <div class="form-field">
+              <label data-i18n="lblSignatory">Qualité du Signataire</label>
+              <input type="text" class="input-ctrl" id="f-signatory" value="Le Directeur,">
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: Live Official Document Sheet Preview inside Drawer -->
+        <div class="drawer-right-preview">
+          
+          <div class="preview-top-actions">
+            <div>
+              <i class="fa-solid fa-eye" style="color: var(--primary);"></i>
+              <span id="preview-page-pill" style="font-weight: 700; margin-left: 6px;">Page 1 : Français (TITRE DE CONGÉ)</span>
+            </div>
+
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button class="btn-icon" onclick="adjustZoom(-0.05)" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+              <span id="zoom-txt" style="font-size: 11px; font-weight: 700; min-width: 34px; text-align: center;">100%</span>
+              <button class="btn-icon" onclick="adjustZoom(0.05)" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+              <button class="btn-icon" onclick="resetZoom()" title="Reset Zoom"><i class="fa-solid fa-rotate-left"></i></button>
+            </div>
+          </div>
+
+          <!-- Paper Canvas -->
+          <div class="document-sheet-container" id="drawer-paper-container">
+            <!-- Rendered in real time -->
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Drawer Footer Action Bar -->
+      <div class="drawer-footer">
+        <button class="btn btn-secondary" onclick="closeLeaveDrawer()">
+          <i class="fa-solid fa-arrow-left"></i> <span data-i18n="backBtn">Retour à l'Annuaire</span>
+        </button>
+
+        <div style="display: flex; gap: 8px;">
+          <!-- Print on Official Pre-printed Paper (Data only) -->
+          <button class="btn btn-primary" onclick="printDocument(true)" title="Imprimer les données seules sur papier officiel pré-imprimé présent dans l'imprimante">
+            <i class="fa-solid fa-print"></i> <span data-i18n="printPrePrinted">Imprimer (Papier Officiel)</span>
+          </button>
+          <!-- Print Complete Document (Full template + data) -->
+          <button class="btn btn-secondary" onclick="printDocument(false)" title="Imprimer le document complet avec en-tête et modèle">
+            <i class="fa-solid fa-file-lines"></i> <span data-i18n="printFullDoc">Imprimer Tout</span>
+          </button>
+          <!-- Export Transparent Data-Only PDF -->
+          <button class="btn btn-secondary" onclick="saveAsPDF(true)" title="Générer un PDF transparent avec les données seules pour papier existant">
+            <i class="fa-solid fa-file-shield"></i> <span data-i18n="pdfDataOnly">PDF Données Seules</span>
+          </button>
+          <!-- Export Full Document PDF -->
+          <button class="btn btn-secondary" onclick="saveAsPDF(false)" title="Exporter le document complet en PDF">
+            <i class="fa-solid fa-file-pdf"></i> <span data-i18n="pdfFullDoc">PDF Complet</span>
+          </button>
+          <!-- Save Record -->
+          <button class="btn btn-success" onclick="saveCurrentLeaveRecord()" title="Enregistrer et déduire du solde">
+            <i class="fa-solid fa-floppy-disk"></i> <span data-i18n="saveRecord">Enregistrer</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: ADD NEW EMPLOYEE -->
+  <div class="modal-overlay" id="employee-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 8px;">
+          <i class="fa-solid fa-user-plus" style="color: var(--primary);"></i> <span data-i18n="addEmployeeModalTitle">Ajouter un Nouvel Employé</span>
+        </h3>
+        <button class="btn-close" onclick="closeNewEmployeeModal()"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="form-grid-2">
+          <div class="form-field">
+            <label data-i18n="nameFr">Nom & Prénom (Français)</label>
+            <input type="text" id="m-name-fr" class="input-ctrl" placeholder="ex. DAHMANI Karim">
+          </div>
+          <div class="form-field">
+            <label data-i18n="nameAr">الاسم واللقب (بالعربية)</label>
+            <input type="text" id="m-name-ar" class="input-ctrl" dir="rtl" placeholder="مثال: دحماني كريم">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <label data-i18n="gradeFr">Grade / Fonction (Français)</label>
+            <input type="text" id="m-grade-fr" class="input-ctrl" placeholder="ex. Administrateur">
+          </div>
+          <div class="form-field">
+            <label data-i18n="gradeAr">الرتبة / الوظيفة (بالعربية)</label>
+            <input type="text" id="m-grade-ar" class="input-ctrl" dir="rtl" placeholder="مثال: متصرف">
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <label data-i18n="serviceFr">Service / Direction (Français)</label>
+            <input type="text" id="m-service-fr" class="input-ctrl" placeholder="ex. Ressources Humaines">
+          </div>
+          <div class="form-field">
+            <label data-i18n="serviceAr">المصلحة / المديرية (بالعربية)</label>
+            <input type="text" id="m-service-ar" class="input-ctrl" dir="rtl" placeholder="مثال: الموارد البشرية">
+          </div>
+        </div>
+
+        <div class="form-field">
+          <label data-i18n="personalAddress">Adresse Personnelle</label>
+          <input type="text" id="m-address-fr" class="input-ctrl" placeholder="ex. Cité 1000 Logements, Bab Ezzouar">
+        </div>
+
+        <div class="form-grid-2">
+          <div class="form-field">
+            <label data-i18n="prevReliquat">Reliquat Antérieur N-1 (Jours)</label>
+            <input type="number" id="m-prev-balance" class="input-ctrl text-center" value="0" min="0">
+          </div>
+          <div class="form-field">
+            <label data-i18n="annualQuotaDays">Droit Annuel (Jours)</label>
+            <input type="number" id="m-annual-entitlement" class="input-ctrl text-center" value="30" min="0">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeNewEmployeeModal()" data-i18n="cancel">Annuler</button>
+        <button class="btn btn-primary" onclick="submitNewEmployee()">
+          <i class="fa-solid fa-check"></i> <span data-i18n="save">Enregistrer</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

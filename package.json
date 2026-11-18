@@ -1,0 +1,59 @@
+{
+  "name": "congedesk",
+  "productName": "CongéDesk",
+  "version": "1.0.0",
+  "description": "Application Electron de gestion des congés et remplissage du formulaire CNAS GRH.22",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win",
+    "build:x64": "electron-builder --win --x64",
+    "build:ia32": "electron-builder --win --ia32"
+  },
+  "keywords": [
+    "cnas",
+    "conge",
+    "electron",
+    "grh22"
+  ],
+  "author": "Mohamed",
+  "license": "MIT",
+  "build": {
+    "appId": "com.congedesk.app",
+    "productName": "CongéDesk",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "db.js",
+      "renderer/**/*",
+      "resources/**/*",
+      "assets/**/*",
+      "data/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "nsis",
+        "portable"
+      ],
+      "icon": "assets/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "CongéDesk"
+    }
+  },
+  "devDependencies": {
+    "electron": "^45.3.4",
+    "pdf-lib": "^1.17.1"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.3.1"
+  }
+}
