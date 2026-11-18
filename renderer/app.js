@@ -718,8 +718,9 @@ function recalcAndRender() {
   document.getElementById('stat-annual').textContent = `${annual} ${dict.daysUnit}`;
   document.getElementById('stat-requested').textContent = `${requested} ${dict.daysUnit}`;
 
-  document.getElementById('calc-days-left').textContent = `${daysLeft} ${dict.daysUnitRemaining}`;
-  document.getElementById('calc-days-left-sub').textContent = `${daysLeft} / ${totalAvail} ${dict.daysUnit} (${prevBal}${dict.daysUnit} N-1 + ${annual}${dict.daysUnit} annual)`;
+  document.getElementById('calc-days-left').textContent = `${daysLeft} ${dict.daysRemainingLabel}`;
+  const isArCalc = (currentAppLang === 'ar');
+  document.getElementById('calc-days-left-sub').textContent = `${daysLeft} / ${totalAvail} ${dict.daysUnit} (${prevBal} ${dict.daysUnit} N-1 + ${annual} ${dict.daysUnit} ${isArCalc ? 'سنوي' : 'annuel'})`;
 
   // Alert Box
   const alertBox = document.getElementById('calc-alert-banner');

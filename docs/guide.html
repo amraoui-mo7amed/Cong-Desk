@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>CongéDesk - Manuel d'Utilisation / دليل المستخدم</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page {
+      size: A4;
+      margin: 15mm 15mm 18mm 15mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #1e293b;
+      background: #ffffff;
+      line-height: 1.6;
+      font-size: 13px;
+    }
+
+    .page {
+      page-break-after: always;
+      position: relative;
+    }
+    .page:last-child {
+      page-break-after: auto;
+    }
+
+    /* Cover Page */
+    .cover-page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 250mm;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .cover-logo {
+      width: 140px;
+      height: 140px;
+      margin-bottom: 25px;
+      border-radius: 28px;
+      box-shadow: 0 12px 30px rgba(37, 99, 235, 0.25);
+    }
+
+    .cover-title {
+      font-size: 38px;
+      font-weight: 900;
+      color: #1e3a8a;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .cover-sub-fr {
+      font-size: 18px;
+      font-weight: 700;
+      color: #0284c7;
+      margin-bottom: 4px;
+    }
+
+    .cover-sub-ar {
+      font-family: 'Tajawal', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #059669;
+      direction: rtl;
+      margin-bottom: 25px;
+    }
+
+    .cover-badge-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 35px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .badge-blue { background: #dbeafe; color: #1e40af; }
+    .badge-emerald { background: #d1fae5; color: #065f46; }
+    .badge-amber { background: #fef3c7; color: #92400e; }
+
+    .cover-description {
+      max-width: 540px;
+      font-size: 13.5px;
+      color: #475569;
+      line-height: 1.7;
+      margin-bottom: 50px;
+    }
+
+    .cover-meta {
+      border-top: 1px solid #e2e8f0;
+      padding-top: 20px;
+      font-size: 11.5px;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    /* Section Headers */
+    .section-banner {
+      background: linear-gradient(135deg, #1e3a8a, #0284c7);
+      color: #ffffff;
+      padding: 14px 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .section-banner h2 {
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .section-banner.ar-banner {
+      background: linear-gradient(135deg, #065f46, #059669);
+      direction: rtl;
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    h3 {
+      font-size: 15px;
+      color: #1e3a8a;
+      margin: 18px 0 8px 0;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 4px;
+    }
+    .ar-text h3 {
+      color: #065f46;
+      border-bottom-color: #d1fae5;
+    }
+
+    p {
+      margin-bottom: 10px;
+      color: #334155;
+    }
+
+    /* Screenshot container */
+    .figure-box {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 10px;
+      margin: 14px 0;
+      text-align: center;
+    }
+    .figure-img {
+      width: 100%;
+      max-height: 380px;
+      object-fit: contain;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      display: block;
+      margin: 0 auto;
+    }
+    .figure-caption {
+      font-size: 11px;
+      font-weight: 600;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    /* Cards & Callouts */
+    .callout {
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-size: 12.5px;
+    }
+    .callout-info {
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      color: #1e40af;
+    }
+    .callout-success {
+      background: #f0fdf4;
+      border-left: 4px solid #10b981;
+      color: #065f46;
+    }
+    .callout-warn {
+      background: #fffbeb;
+      border-left: 4px solid #f59e0b;
+      color: #92400e;
+    }
+
+    .ar-text .callout {
+      border-left: none;
+      border-right: 4px solid #10b981;
+      direction: rtl;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .feature-card {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 12px;
+    }
+    .feature-card strong {
+      display: block;
+      color: #1e3a8a;
+      margin-bottom: 4px;
+      font-size: 12.5px;
+    }
+    .ar-text .feature-card strong {
+      color: #065f46;
+    }
+
+    /* Arabic typography styling */
+    .ar-text {
+      direction: rtl;
+      font-family: 'Tajawal', sans-serif;
+      text-align: right;
+    }
+    .ar-text p, .ar-text li {
+      font-size: 13.5px;
+      line-height: 1.8;
+    }
+    .ar-text h2, .ar-text h3 {
+      font-family: 'Tajawal', sans-serif;
+    }
+
+    ul, ol {
+      margin-left: 20px;
+      margin-bottom: 12px;
+    }
+    .ar-text ul, .ar-text ol {
+      margin-left: 0;
+      margin-right: 20px;
+    }
+    li {
+      margin-bottom: 5px;
+    }
+
+    .formula-box {
+      background: #f1f5f9;
+      border: 1px dashed #94a3b8;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: Consolas, Monaco, monospace;
+      font-weight: bold;
+      color: #0f172a;
+      text-align: center;
+      margin: 10px 0;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= COVER PAGE ================= -->
+  <div class="page cover-page">
+    <img src="../assets/logo.png" alt="CongéDesk Logo" class="cover-logo">
+    <h1 class="cover-title">CongéDesk</h1>
+    <div class="cover-sub-fr">Manuel d'Utilisation & Guide Pratique</div>
+    <div class="cover-sub-ar">دليل الاستخدام والشرح العملي للنظام</div>
+
+    <div class="cover-badge-row">
+      <span class="badge badge-blue">Formulaire CNAS GRH.22</span>
+      <span class="badge badge-emerald">Édition Bilingue FR / AR</span>
+      <span class="badge badge-amber">Release Desktop v1.0.0</span>
+    </div>
+
+    <div class="cover-description">
+      Guide complet et illustré pour la gestion automatisée des congés annuels, le calcul instantané des droits et reliquats, et l'impression conforme sur papier officiel pré-imprimé ou document complet.
+      <br><br>
+      <span style="font-family: 'Tajawal', sans-serif; font-size: 14px;">
+        دليل شامل ومصور لتسيير العطل السنوية للموظفين، واحتساب البواقي تلقائياً، والطباعة الدقيقة على الورق الرسمي المسبق الطبع أو النموذج الكامل.
+      </span>
+    </div>
+
+    <div class="cover-meta">
+      <div><strong>Auteur :</strong> Mohamed</div>
+      <div><strong>Plateforme :</strong> Windows (x64)</div>
+      <div><strong>Base de Données :</strong> SQLite Natif</div>
+    </div>
+  </div>
+
+  <!-- ================= SECTION 1: FRANÇAIS (PAGE 1) ================= -->
+  <div class="page">
+    <div class="section-banner">
+      <h2>Section 1 : Guide d'Utilisation en Français</h2>
+      <span>Partie I : Interface & Calculs</span>
+    </div>
+
+    <h3>1. Tableau de Bord & Annuaire des Employés</h3>
+    <p>
+      Dès l'ouverture, <strong>CongéDesk</strong> démarre dans un thème clair moderne et épuré. La barre de menus superflue a été supprimée au profit d'une barre supérieure intuitive avec le logo officiel, la recherche rapide et les commandes icônes (changement de langue et bascule thème clair/sombre).
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <strong>Indicateurs KPIs en Temps Réel</strong>
+        Suivi instantané du nombre total d'agents, du quota annuel légal (30 jours), du nombre de titres émis et de la somme des reliquats N-1.
+      </div>
+      <div class="feature-card">
+        <strong>Cartes Employés Dédiées</strong>
+        Remplacement des tableaux par des cartes modernes avec statut du solde, coordonnées professionnelles et jauge visuelle du reliquat restant.
+      </div>
+    </div>
+
+    <div class="figure-box">
+      <img src="images/01_main_view_fr.png" alt="Vue Principale CongéDesk" class="figure-img">
+      <div class="figure-caption">Figure 1 : Tableau de bord principal avec KPIs, recherche dynamique et cartes d'employés.</div>
+    </div>
+
+    <h3>2. Calculateur Automatique des Congés & Reliquats</h3>
+    <p>
+      En cliquant sur le bouton <strong>« Nouveau Congé »</strong> d'une carte employé, le volet latéral (Drawer) s'ouvre avec la calculatrice intelligente :
+    </p>
+
+    <div class="formula-box">
+      Total Droits = Reliquat N-1 + Droit Annuel (30 j)<br>
+      Jours Restants = Total Droits - Congé Demandé
+    </div>
+
+    <ul>
+      <li><strong>Préréglages Rapides :</strong> Boutons +7j, +15j, +21j, +30j (1 mois complet) pour une saisie en un clic.</li>
+      <li><strong>Calcul Automatique des Dates :</strong> Saisissez la date de départ et le nombre de jours, la date de reprise est automatiquement calculée au jour près.</li>
+      <li><strong>Alertes Dynamiques de Dépassement :</strong> Détection automatique du solde disponible avec alerte verte (suffisant), orange (épuisé) ou rouge (dépassement avec affichage du déficit).</li>
+    </ul>
+  </div>
+
+  <!-- ================= SECTION 1: FRANÇAIS (PAGE 2) ================= -->
+  <div class="page">
+    <div class="section-banner">
+      <h2>Section 1 : Guide d'Utilisation en Français (Suite)</h2>
+      <span>Partie II : Impression & Formulaire GRH.22</span>
+    </div>
+
+    <div class="figure-box">
+      <img src="images/02_drawer_calculator_fr.png" alt="Volet Calculateur de Congé" class="figure-img">
+      <div class="figure-caption">Figure 2 : Volet de calcul des droits avec aperçu synchrone en temps réel du formulaire officiel.</div>
+    </div>
+
+    <h3>3. Les Deux Modes d'Impression & d'Exportation</h3>
+    <p>
+      CongéDesk répond parfaitement aux besoins des services du personnel grâce à son double mode de rendu :
+    </p>
+
+    <div class="callout callout-success">
+      <strong>Option A : Imprimer (Papier Officiel Pré-imprimé) - Innovation Clé</strong><br>
+      Si votre imprimante contient déjà des formulaires papier cartonnés vierges fournis par l'administration CNAS, cliquez sur <strong>« Imprimer (Papier Officiel) »</strong> ou <strong>« PDF Données Seules »</strong>. Le logiciel rend tous les arrière-plans, cadres, logos et bordures transparents, et imprime <em>exclusivement les textes et dates</em> aux coordonnées physiques exactes des cases !
+    </div>
+
+    <div class="callout callout-info">
+      <strong>Option B : Imprimer Tout (Document Complet)</strong><br>
+      Si vous utilisez du papier blanc ordinaire A4/A5, cliquez sur <strong>« Imprimer Tout »</strong> ou <strong>« PDF Complet »</strong> pour imprimer la reproduction vectorielle haute définition intégrale du formulaire CNAS GRH.22.
+    </div>
+
+    <h3>4. Isolation Linguistique Totale</h3>
+    <p>
+      En mode Français, l'application applique un filtrage strict : seuls les noms, fonctions, services et adresses en français apparaissent, sans aucun texte parasite en arabe.
+    </p>
+  </div>
+
+  <!-- ================= SECTION 2: ARABIC (PAGE 1) ================= -->
+  <div class="page ar-text">
+    <div class="section-banner ar-banner">
+      <h2>القسم الثاني : دليل الاستخدام باللغة العربية</h2>
+      <span>الجزء الأول : الواجهة والعمليات</span>
+    </div>
+
+    <h3>1. نظرة عامة ولوحة تسيير الموظفين</h3>
+    <p>
+      تم تصميم برنامج <strong>CongéDesk</strong> لتسيير الإجازات السنوية وإصدار استمارة <strong>CNAS GRH.22 (بيان العطلة السنوية)</strong> بدقة وسرعة فائقة. يعمل البرنامج افتراضياً بالوضع المضيء العصري وبخط <strong>Tajawal</strong> العربي الأصيل، مع عزل لغوي تام (100% عربي عند اختيار اللغة العربية).
+    </p>
+
+    <div class="feature-grid">
+      <div class="feature-card">
+        <strong>مؤشرات إحصائية مباشرة</strong>
+        عرض إجمالي الموظفين، الحق السنوي القانوني (30 يوماً)، عدد السندات المصدرة، ومجموع الأيام المتبقية من السنوات السابقة (N-1).
+      </div>
+      <div class="feature-card">
+        <strong>نظام البطاقات الذكي</strong>
+        عرض كل موظف في بطاقة تفاعلية تحتوي رتبته، مصلحته، وعنوانه باللغة العربية فقط، مع شريط بياني يوضح رصيده المتبقي.
+      </div>
+    </div>
+
+    <div class="figure-box">
+      <img src="images/03_main_view_ar.png" alt="الواجهة الرئيسية بالعربية" class="figure-img">
+      <div class="figure-caption">شكل 1 : الواجهة الرئيسية للبرنامج باللغة العربية مع المؤشرات وبطاقات الموظفين وأزرار التحكم.</div>
+    </div>
+
+    <h3>2. حاسبة العطل والبواقي التلقائية</h3>
+    <p>
+      عند الضغط على زر <strong>« منح عطلة »</strong>، يفتح درج الإدخال الجانبي مع حاسبة ذكية تطبق المعادلة النظامية المعتمدة :
+    </p>
+
+    <div class="formula-box" style="direction: ltr;">
+      مجموع الحقوق = رصيد السنة السابقة (N-1) + الحق السنوي (30 يوم)<br>
+      الأيام المتبقية = مجموع الحقوق - العطلة المطلوبة
+    </div>
+
+    <ul>
+      <li><strong>أزرار الاختيار السريع :</strong> أزرار جاهزة لإضافة 7 أيام، 15 يوماً، 21 يوماً، أو شهر كامل (30 يوماً) بنقرة واحدة.</li>
+      <li><strong>الحساب التلقائي لتواريخ الخروج والاستئناف :</strong> عند تحديد تاريخ الانطلاق وعدد الأيام، يتم استنتاج تاريخ العودة والرجوع للعمل تلقائياً.</li>
+      <li><strong>تنبيهات فورية لتجاوز الرصيد :</strong> تلوين فوري للرصيد مع إشعار باللون الأخضر (رصيد كافٍ)، أو البرتقالي (رصيد مستنفد)، أو الأحمر (تنبيه التجاوز مع بيان عدد الأيام الزائدة).</li>
+    </ul>
+  </div>
+
+  <!-- ================= SECTION 2: ARABIC (PAGE 2) ================= -->
+  <div class="page ar-text">
+    <div class="section-banner ar-banner">
+      <h2>القسم الثاني : دليل الاستخدام باللغة العربية (تابع)</h2>
+      <span>الجزء الثاني : المعاينة والطباعة</span>
+    </div>
+
+    <div class="figure-box">
+      <img src="images/04_preview_modal_ar.png" alt="معاينة بيان العطلة GRH.22" class="figure-img">
+      <div class="figure-caption">شكل 2 : نافذة المعاينة المكبرة للوثيقة الرسمية GRH.22 مع محاذاة أرقام التواريخ.</div>
+    </div>
+
+    <h3>3. الطباعة الذكية على الورق الرسمي المسبق الطبع</h3>
+    <p>
+      تحتوي مكاتب الموارد البشرية لدى هيئات الضمان الاجتماعي (CNAS) على نماذج ورقية مطبوعة مسبقاً. يوفر البرنامج ميزة ثورية لهذه النماذج :
+    </p>
+
+    <div class="callout callout-success">
+      <strong>الخيار الأول : طباعة (ورق رسمي جاهز)</strong><br>
+      عند تفعيل وضع <strong>« ورق رسمي جاهز »</strong>، يقوم البرنامج بإخفاء كافة الإطارات والشعارات والخطوط، ويطبع <em>فقط النصوص والتواريخ والأرقام</em> في الإحداثيات المليمترية الدقيقة المتطابقة مع خانات الورقة الرسمية الموجودة في درج الطابعة.
+    </div>
+
+    <div class="figure-box">
+      <img src="images/05_preprinted_mode.png" alt="وضع الورق الرسمي الشفاف" class="figure-img">
+      <div class="figure-caption">شكل 3 : وضع الورق الرسمي الجاهز - خلفية شفافة وتطابق تام للبيانات مع الخانات.</div>
+    </div>
+
+    <div class="callout callout-info">
+      <strong>الخيار الثاني : طباعة الوثيقة كاملة / PDF كامل</strong><br>
+      في حالة استخدام ورق أبيض عادي A4/A5، يقوم البرنامج بطباعة النموذج الرسمي كاملاً مع شعار الصندوق الوطني للتأمينات الاجتماعية وختم الهيئة والجدول الإحصائي.
+    </div>
+
+    <h3>4. الحفظ في قاعدة بيانات SQLite المحلية</h3>
+    <p>
+      عند الضغط على <strong>« حفظ وخصم الرصيد »</strong>، يتم تسجيل سند العطلة في قاعدة بيانات <code>congedesk.sqlite</code>، مع تحديث رصيد الموظف تلقائياً ليكون جاهزاً للإصدارات القادمة.
+    </p>
+  </div>
+
+</body>
+</html>
