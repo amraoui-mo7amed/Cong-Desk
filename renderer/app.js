@@ -131,6 +131,8 @@ const i18n = {
     drawer_subtitle: "Calcul & Remplissage automatique",
     drawer_mode_full: "Modèle",
     drawer_mode_overlay: "Papier Officiel",
+    drawer_tab_p1: "Page 1 : FR",
+    drawer_tab_p2: "Page 2 : AR",
     drawer_calc_title: "Jours de Congé Restants",
     drawer_calc_badge: "Calcul Automatique",
     drawer_stat_n1: "Reliquat N-1",
@@ -274,6 +276,8 @@ const i18n = {
     drawer_subtitle: "حساب وملء تلقائي معتمد",
     drawer_mode_full: "النموذج الكامل",
     drawer_mode_overlay: "الورق المطبوع مسبقاً",
+    drawer_tab_p1: "ص 1 : فرنسية",
+    drawer_tab_p2: "ص 2 : عربية",
     drawer_calc_title: "أيام العطلة المتبقية",
     drawer_calc_badge: "حساب تلقائي",
     drawer_stat_n1: "متبقي N-1",
@@ -343,11 +347,8 @@ function applyLanguage(lang) {
     }
   });
 
-  // Update Wilaya trigger label if default
-  const wilayaLabel = document.getElementById('wilaya-selected-label');
-  if (wilayaLabel && (!selectedWilayaCode || selectedWilayaCode === '')) {
-    wilayaLabel.textContent = i18n[currentAppLang].dropdown_all_wilayas;
-  }
+  // Update Wilaya trigger label
+  updateWilayaTriggerLabel();
 
   if (cachedWilayaList && cachedWilayaList.length > 0) {
     renderWilayaDropdownItems(cachedWilayaList);
@@ -357,6 +358,7 @@ function applyLanguage(lang) {
   if (currentView === 'home') updateHomeDashboard();
   if (currentView === 'history') renderHistoryTable();
   updateSidebarToggleIcon();
+  setDrawerLanguage(currentDocLang);
 }
 
 // ================= INITIALIZATION =================
@@ -683,6 +685,20 @@ document.addEventListener('click', (e) => {
   }
 });
 
+function updateWilayaTriggerLabel() {
+  const labelEl = document.getElementById('wilaya-selected-label');
+  if (!labelEl) return;
+  const isAr = (currentAppLang === 'ar');
+  if (!selectedWilayaCode || selectedWilayaCode === '') {
+    labelEl.textContent = isAr ? 'جميع الولايات والمؤسسات' : 'Toutes les Wilayas & Établissements';
+    return;
+  }
+  const item = cachedWilayaList.find(w => w.code === selectedWilayaCode);
+  if (item) {
+    labelEl.textContent = isAr ? item.full_ar : item.full_fr;
+  }
+}
+
 function populateWilayaFilter() {
   const select = document.getElementById('wilaya-filter-select');
   if (select) {
@@ -692,14 +708,25 @@ function populateWilayaFilter() {
   // Group wilayas/agencies
   const wilayaList = [];
   employees.forEach(e => {
-    if (e.code_wilaya && e.agency) {
-      if (!wilayaList.some(w => w.code === e.code_wilaya)) {
-        wilayaList.push({ code: e.code_wilaya, label: `${e.code_wilaya} - ${e.agency}` });
-      }
-    } else if (e.agency) {
-      if (!wilayaList.some(w => w.label === e.agency)) {
-        wilayaList.push({ code: e.agency, label: e.agency });
-      }
+    const code = e.code_wilaya || '';
+    const agencyFr = e.agency || e.service_fr || '';
+    let agencyAr = '';
+    if (e.service_ar) {
+      agencyAr = e.service_ar.replace(/^وكالة كناس لولاية\s+/, '').replace(/^وكالة كناس\s+/, '').trim();
+    } else {
+      agencyAr = agencyFr;
+    }
+
+    const key = code || agencyFr;
+    if (!wilayaList.some(w => w.code === key)) {
+      wilayaList.push({
+        code: key,
+        badge: (code && code.length <= 4) ? code : 'DG',
+        label_fr: agencyFr,
+        label_ar: agencyAr,
+        full_fr: code ? `${code} - ${agencyFr}` : agencyFr,
+        full_ar: code ? `${code} - ${agencyAr}` : agencyAr
+      });
     }
   });
 
@@ -707,7 +734,9 @@ function populateWilayaFilter() {
     const na = parseInt(a.code, 10);
     const nb = parseInt(b.code, 10);
     if (!isNaN(na) && !isNaN(nb)) return na - nb;
-    return a.label.localeCompare(b.label);
+    if (!isNaN(na)) return -1;
+    if (!isNaN(nb)) return 1;
+    return a.label_fr.localeCompare(b.label_fr);
   });
 
   cachedWilayaList = wilayaList;
@@ -716,12 +745,13 @@ function populateWilayaFilter() {
     wilayaList.forEach(w => {
       const opt = document.createElement('option');
       opt.value = w.code;
-      opt.textContent = w.label;
+      opt.textContent = w.full_fr;
       select.appendChild(opt);
     });
   }
 
   renderWilayaDropdownItems(cachedWilayaList);
+  updateWilayaTriggerLabel();
 }
 
 function renderWilayaDropdownItems(items) {
@@ -732,7 +762,7 @@ function renderWilayaDropdownItems(items) {
   const allLabel = isAr ? 'جميع الولايات والمؤسسات' : 'Toutes les Wilayas & Établissements';
 
   let html = `
-    <div class="dropdown-item ${!selectedWilayaCode ? 'active' : ''}" onclick="selectWilayaDropdownItem('', '${escapeJsStr(allLabel)}')">
+    <div class="dropdown-item ${!selectedWilayaCode ? 'active' : ''}" onclick="selectWilayaDropdownItem('')">
       <div class="dropdown-item-badge"><i class="ti ti-world"></i></div>
       <span class="dropdown-item-name">${escapeHtml(allLabel)}</span>
       ${!selectedWilayaCode ? '<i class="ti ti-check dropdown-item-check"></i>' : ''}
@@ -741,11 +771,11 @@ function renderWilayaDropdownItems(items) {
 
   items.forEach(w => {
     const isActive = (selectedWilayaCode === w.code);
-    const badgeText = w.code.length <= 4 ? w.code : 'DG';
+    const displayName = isAr ? w.label_ar : w.label_fr;
     html += `
-      <div class="dropdown-item ${isActive ? 'active' : ''}" onclick="selectWilayaDropdownItem('${escapeHtml(w.code)}', '${escapeJsStr(w.label)}')">
-        <div class="dropdown-item-badge">${escapeHtml(badgeText)}</div>
-        <span class="dropdown-item-name">${escapeHtml(w.label)}</span>
+      <div class="dropdown-item ${isActive ? 'active' : ''}" onclick="selectWilayaDropdownItem('${escapeHtml(w.code)}')">
+        <div class="dropdown-item-badge">${escapeHtml(w.badge)}</div>
+        <span class="dropdown-item-name">${escapeHtml(displayName)}</span>
         ${isActive ? '<i class="ti ti-check dropdown-item-check"></i>' : ''}
       </div>
     `;
@@ -765,15 +795,18 @@ function filterWilayaDropdownList(query) {
     return;
   }
   const filtered = cachedWilayaList.filter(w => 
-    w.code.toLowerCase().includes(query) || w.label.toLowerCase().includes(query)
+    w.code.toLowerCase().includes(query) || 
+    (w.label_fr && w.label_fr.toLowerCase().includes(query)) ||
+    (w.label_ar && w.label_ar.toLowerCase().includes(query)) ||
+    (w.full_fr && w.full_fr.toLowerCase().includes(query)) ||
+    (w.full_ar && w.full_ar.toLowerCase().includes(query))
   );
   renderWilayaDropdownItems(filtered);
 }
 
-function selectWilayaDropdownItem(code, label) {
+function selectWilayaDropdownItem(code) {
   selectedWilayaCode = code;
-  const labelEl = document.getElementById('wilaya-selected-label');
-  if (labelEl) labelEl.textContent = label;
+  updateWilayaTriggerLabel();
 
   const select = document.getElementById('wilaya-filter-select');
   if (select) select.value = code;
@@ -1220,16 +1253,8 @@ function openLeaveDrawerFor(empId) {
   activeEmployee = employees.find(e => e.id === empId);
   if (!activeEmployee) return;
 
-  currentDocLang = 'fr'; // default page 1 is French
-
-  const empName = activeEmployee.name_fr || activeEmployee.name_ar;
-  const empRole = activeEmployee.grade_fr || activeEmployee.grade_ar;
-
-  document.getElementById('drawer-agent-title').textContent = `${empName} - GRH.22`;
-  document.getElementById('drawer-agent-subtitle').textContent = `${empRole} — ${activeEmployee.service_fr || activeEmployee.agency || ''}`;
-
-  populateFormWithEmployee(activeEmployee);
-  recalcAndRender();
+  const initialLang = (currentAppLang === 'ar') ? 'ar' : 'fr';
+  setDrawerLanguage(initialLang);
 
   document.getElementById('leave-drawer').classList.add('open');
 }
@@ -1258,15 +1283,18 @@ function setDrawerLanguage(lang) {
 
   const btnFr = document.getElementById('btn-tab-fr');
   const btnAr = document.getElementById('btn-tab-ar');
+  const isAppAr = (currentAppLang === 'ar');
 
   if (lang === 'ar') {
     btnFr?.classList.remove('active');
     btnAr?.classList.add('active');
-    document.getElementById('preview-page-pill').textContent = "ص 2 : العربية (بيان العطلة السنوية)";
+    const pill = document.getElementById('preview-page-pill');
+    if (pill) pill.textContent = isAppAr ? "الصفحة 2 : العربية (بيان العطلة السنوية)" : "Page 2 : Arabe (بيان العطلة السنوية)";
   } else {
     btnFr?.classList.add('active');
     btnAr?.classList.remove('active');
-    document.getElementById('preview-page-pill').textContent = "Page 1 : Français (TITRE DE CONGÉ)";
+    const pill = document.getElementById('preview-page-pill');
+    if (pill) pill.textContent = isAppAr ? "الصفحة 1 : الفرنسية (سند العطلة)" : "Page 1 : Français (TITRE DE CONGÉ)";
   }
 
   if (activeEmployee) {
@@ -1275,6 +1303,15 @@ function setDrawerLanguage(lang) {
     document.getElementById('f-grade').value = isAr ? (activeEmployee.grade_ar || activeEmployee.grade_fr) : (activeEmployee.grade_fr || activeEmployee.grade_ar);
     document.getElementById('f-service').value = isAr ? (activeEmployee.service_ar || activeEmployee.service_fr) : (activeEmployee.service_fr || activeEmployee.service_ar);
     document.getElementById('f-address').value = isAr ? (activeEmployee.address_ar || activeEmployee.address_fr) : (activeEmployee.address_fr || activeEmployee.address_ar);
+
+    const empName = isAr ? (activeEmployee.name_ar || activeEmployee.name_fr) : (activeEmployee.name_fr || activeEmployee.name_ar);
+    const empRole = isAr ? (activeEmployee.grade_ar || activeEmployee.grade_fr) : (activeEmployee.grade_fr || activeEmployee.grade_ar);
+    const empAgency = isAr ? (activeEmployee.service_ar || activeEmployee.agency) : (activeEmployee.service_fr || activeEmployee.agency);
+
+    const titleEl = document.getElementById('drawer-agent-title');
+    const subEl = document.getElementById('drawer-agent-subtitle');
+    if (titleEl) titleEl.textContent = `${empName} - GRH.22`;
+    if (subEl) subEl.textContent = `${empRole} — ${empAgency || ''}`;
   }
 
   recalcAndRender();
