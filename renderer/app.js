@@ -1066,58 +1066,63 @@ function generatePrintHTML(dataOnly = false) {
       text-align: center;
       width: 16px;
     }
+    .document-page:not(.mode-preprinted) .field-signatory {
+      display: none !important;
+    }
 
     /* French Coordinates */
     .lang-fr { font-family: 'Times New Roman', Times, serif; }
-    .lang-fr .field-agent-name { top: 30.6%; left: 39.5%; font-size: 14.5px; }
-    .lang-fr .field-grade { top: 33.7%; left: 33.5%; font-size: 13px; }
-    .lang-fr .field-service { top: 36.8%; left: 25.5%; font-size: 13px; }
-    .lang-fr .field-address-1 { top: 39.9%; left: 25.5%; font-size: 12.5px; }
-    .lang-fr .field-address-2 { top: 43.1%; left: 13.5%; font-size: 12.5px; }
-    .lang-fr .field-leave-days { top: 46.2%; left: 39.0%; width: 7%; text-align: center; font-size: 14.5px; font-weight: 800; }
-    .lang-fr .group-dep { top: 49.4%; width: 100%; left: 0; }
-    .lang-fr .group-ret { top: 52.5%; width: 100%; left: 0; }
-    .lang-fr .cell-d1 { left: 30.1%; font-size: 13px; }
-    .lang-fr .cell-d2 { left: 33.5%; font-size: 13px; }
-    .lang-fr .cell-m1 { left: 36.9%; font-size: 13px; }
-    .lang-fr .cell-m2 { left: 40.3%; font-size: 13px; }
-    .lang-fr .cell-y1 { left: 43.8%; font-size: 13px; }
-    .lang-fr .cell-y2 { left: 47.2%; font-size: 13px; }
-    .lang-fr .field-leave-address { top: 55.6%; left: 36.0%; font-size: 12.5px; }
-    .lang-fr .field-location { top: 63.6%; left: 52.0%; font-size: 13px; }
-    .lang-fr .field-date { top: 63.6%; left: 71.5%; font-size: 13px; }
-    .lang-fr .field-signatory { top: 67.2%; left: 65.5%; font-size: 13px; font-style: italic; }
-    .lang-fr .rights-values .field-item { left: 43.5%; width: 9%; text-align: center; font-size: 13.5px; }
-    .lang-fr .right-val-prev { top: 76.9%; }
-    .lang-fr .right-val-cur  { top: 80.0%; }
-    .lang-fr .right-val-tot  { top: 83.1%; }
-    .lang-fr .right-val-granted { top: 86.2%; }
-    .lang-fr .right-val-new { top: 91.7%; font-size: 14.5px; font-weight: 800; }
+    .lang-fr .field-agent-name { top: 29.8%; left: 39.0%; font-size: 14px; font-weight: 700; }
+    .lang-fr .field-grade { top: 33.1%; left: 33.0%; font-size: 13px; font-weight: 700; }
+    .lang-fr .field-service { top: 36.4%; left: 25.0%; font-size: 13px; font-weight: 700; }
+    .lang-fr .field-address-1 { top: 39.7%; left: 25.0%; font-size: 12.5px; font-weight: 700; }
+    .lang-fr .field-address-2 { top: 43.0%; left: 13.0%; font-size: 12.5px; font-weight: 700; }
+    .lang-fr .field-leave-days { top: 46.8%; left: 37.4%; width: 8.2%; text-align: center; font-size: 14.5px; font-weight: 800; }
+    .lang-fr .group-dep { top: 50.1%; width: 100%; left: 0; }
+    .lang-fr .group-ret { top: 53.5%; width: 100%; left: 0; }
+    .lang-fr .cell-d1 { left: 28.8%; width: 3.4%; text-align: center; font-size: 14px; }
+    .lang-fr .cell-d2 { left: 32.2%; width: 3.3%; text-align: center; font-size: 14px; }
+    .lang-fr .cell-m1 { left: 35.5%; width: 3.4%; text-align: center; font-size: 14px; }
+    .lang-fr .cell-m2 { left: 38.9%; width: 3.5%; text-align: center; font-size: 14px; }
+    .lang-fr .cell-y1 { left: 42.4%; width: 3.4%; text-align: center; font-size: 14px; }
+    .lang-fr .cell-y2 { left: 45.8%; width: 3.4%; text-align: center; font-size: 14px; }
+    .lang-fr .field-leave-address { top: 57.0%; left: 36.0%; font-size: 12.5px; font-weight: 700; }
+    .lang-fr .field-location { top: 65.8%; left: 48.0%; font-size: 13px; font-weight: 700; }
+    .lang-fr .field-date { top: 65.8%; left: 67.5%; font-size: 13px; font-weight: 700; }
+    .lang-fr .field-signatory { top: 70.0%; left: 63.5%; font-size: 13px; font-style: italic; }
+    .lang-fr .rights-values .field-item { left: 39.0%; width: 13.3%; text-align: center; font-size: 14px; font-weight: 700; }
+    .lang-fr .right-val-prev { top: 77.8%; }
+    .lang-fr .right-val-cur  { top: 80.6%; }
+    .lang-fr .right-val-tot  { top: 83.4%; }
+    .lang-fr .right-val-granted { top: 86.1%; }
+    .lang-fr .right-val-new { top: 91.5%; font-size: 15px; font-weight: 800; }
 
     /* Arabic Coordinates */
     .lang-ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
-    .lang-ar .field-agent-name { top: 30.6%; right: 30.5%; font-size: 15.5px; }
-    .lang-ar .field-grade { top: 33.7%; right: 32.5%; font-size: 14px; }
-    .lang-ar .field-service { top: 36.8%; right: 25.5%; font-size: 14px; }
-    .lang-ar .field-address-1 { top: 39.9%; right: 25.5%; font-size: 13.5px; }
-    .lang-ar .field-address-2 { top: 43.1%; right: 14.0%; font-size: 13.5px; }
-    .lang-ar .field-leave-days { top: 46.2%; right: 38.5%; width: 7.5%; text-align: center; font-size: 15px; font-weight: 800; }
-    .lang-ar .group-dep { top: 49.4%; width: 100%; right: 0; left: auto; }
-    .lang-ar .group-ret { top: 52.5%; width: 100%; right: 0; left: auto; }
-    .lang-ar .cell-d1 { left: 53.5%; font-size: 13px; }
-    .lang-ar .cell-d2 { left: 56.9%; font-size: 13px; }
-    .lang-ar .cell-m1 { left: 60.3%; font-size: 13px; }
-    .lang-ar .cell-m2 { left: 63.7%; font-size: 13px; }
-    .lang-ar .cell-y1 { left: 67.1%; font-size: 13px; }
-    .lang-ar .cell-y2 { left: 70.5%; font-size: 13px; }
-    .lang-ar .field-leave-address { top: 55.6%; right: 34.0%; font-size: 13.5px; }
-    .lang-ar .field-location { top: 63.6%; right: 48.0%; font-size: 14px; }
-    .lang-ar .field-date { top: 63.6%; right: 69.5%; font-size: 14px; }
-    .lang-ar .field-signatory { top: 67.2%; right: 65.0%; font-size: 14px; }
-    .lang-ar .rights-values .field-item { right: 42.5%; width: 9%; text-align: center; font-size: 14.5px; }
-    .lang-ar .right-val-prev { top: 76.9%; }
-    .lang-ar .right-val-cur  { top: 80.0%; }
+    .lang-ar .field-agent-name { top: 29.6%; right: 31.0%; font-size: 15px; font-weight: 700; }
+    .lang-ar .field-grade { top: 33.0%; right: 32.5%; font-size: 14px; font-weight: 700; }
+    .lang-ar .field-service { top: 36.3%; right: 26.0%; font-size: 14px; font-weight: 700; }
+    .lang-ar .field-address-1 { top: 39.6%; right: 26.0%; font-size: 13.5px; font-weight: 700; }
+    .lang-ar .field-address-2 { top: 42.8%; right: 14.0%; font-size: 13.5px; font-weight: 700; }
+    .lang-ar .field-leave-days { top: 46.5%; right: 37.0%; width: 9.0%; text-align: center; font-size: 15px; font-weight: 800; }
+    .lang-ar .group-dep { top: 50.0%; width: 100%; right: 0; left: auto; }
+    .lang-ar .group-ret { top: 53.4%; width: 100%; right: 0; left: auto; }
+    .lang-ar .cell-d1 { left: 66.0%; width: 3.2%; text-align: center; font-size: 14px; }
+    .lang-ar .cell-d2 { left: 69.2%; width: 3.4%; text-align: center; font-size: 14px; }
+    .lang-ar .cell-m1 { left: 59.0%; width: 3.5%; text-align: center; font-size: 14px; }
+    .lang-ar .cell-m2 { left: 62.5%; width: 3.5%; text-align: center; font-size: 14px; }
+    .lang-ar .cell-y1 { left: 52.5%; width: 3.2%; text-align: center; font-size: 14px; }
+    .lang-ar .cell-y2 { left: 55.7%; width: 3.3%; text-align: center; font-size: 14px; }
+    .lang-ar .field-leave-address { top: 56.4%; right: 34.0%; font-size: 13.5px; font-weight: 700; }
+    .lang-ar .field-location { top: 65.6%; right: 47.0%; font-size: 14px; font-weight: 700; }
+    .lang-ar .field-date { top: 65.6%; right: 68.0%; font-size: 14px; font-weight: 700; }
+    .lang-ar .field-signatory { top: 69.8%; right: 64.0%; font-size: 14px; }
+    .lang-ar .rights-values .field-item { left: 48.7%; width: 15.1%; text-align: center; font-size: 15px; font-weight: 700; }
+    .lang-ar .right-val-prev { top: 77.5%; }
+    .lang-ar .right-val-cur  { top: 80.3%; }
     .lang-ar .right-val-tot  { top: 83.1%; }
+    .lang-ar .right-val-granted { top: 85.9%; }
+    .lang-ar .right-val-new { top: 91.2%; font-size: 16px; font-weight: 800; }
     .lang-ar .right-val-granted { top: 86.2%; }
     .lang-ar .right-val-new { top: 91.7%; font-size: 15.5px; font-weight: 800; }
   </style>
