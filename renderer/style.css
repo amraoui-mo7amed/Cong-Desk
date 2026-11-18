@@ -1813,20 +1813,21 @@ body {
   display: none !important;
 }
 
-/* In complete mode, mask dotted lines under filled text with clean white background */
-.document-page:not(.mode-preprinted) .field-item {
+/* In complete mode, mask dotted lines under filled text with clean white background (except days box & date cells which have no dots) */
+.document-page:not(.mode-preprinted) .field-item:not(.field-leave-days) {
   background: #ffffff;
   padding: 0 3px;
   border-radius: 2px;
 }
 
-/* Cell digits in date boxes */
-.document-page:not(.mode-preprinted) .date-group .cell {
-  background: #ffffff;
+/* The days box and date cells have NO dotted lines. Keep them transparent so printed brackets, cell separator ticks, and 'يوما/jours' remain 100% visible and sharp */
+.document-page .field-leave-days,
+.document-page .date-group .cell {
+  background: transparent !important;
+  padding: 0 !important;
 }
 
 /* In full template mode, the template already has 'Le Directeur,' / 'المدير' pre-printed. */
-/* Only display the signatory text in pre-printed mode onto blank physical paper */
 .document-page:not(.mode-preprinted) .field-signatory {
   display: none !important;
 }
@@ -1949,7 +1950,7 @@ body {
 }
 
 .document-page.lang-ar .field-leave-days {
-  top: 46.2%; right: 37.0%; width: 9.0%; text-align: center; font-size: 15px; font-weight: 800;
+  top: 46.2%; right: 34.0%; width: 9.5%; text-align: center; font-size: 15px; font-weight: 800;
 }
 
 .document-page.lang-ar .group-dep {

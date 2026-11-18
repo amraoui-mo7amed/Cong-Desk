@@ -959,13 +959,15 @@ function generatePrintHTML(dataOnly = false) {
     .field-item:empty {
       display: none !important;
     }
-    .document-page:not(.mode-preprinted) .field-item {
+    .document-page:not(.mode-preprinted) .field-item:not(.field-leave-days) {
       background: #ffffff;
       padding: 0 3px;
       border-radius: 2px;
     }
-    .document-page:not(.mode-preprinted) .date-group .cell {
-      background: #ffffff;
+    .document-page .field-leave-days,
+    .document-page .date-group .cell {
+      background: transparent !important;
+      padding: 0 !important;
     }
     .date-group {
       position: absolute;
@@ -1019,7 +1021,7 @@ function generatePrintHTML(dataOnly = false) {
     .lang-ar .field-service { top: 36.3%; right: 25.5%; font-size: 14px; font-weight: 700; }
     .lang-ar .field-address-1 { top: 39.6%; right: 25.5%; font-size: 13.5px; font-weight: 700; }
     .lang-ar .field-address-2 { top: 42.8%; right: 14.0%; font-size: 13.5px; font-weight: 700; }
-    .lang-ar .field-leave-days { top: 46.2%; right: 37.0%; width: 9.0%; text-align: center; font-size: 15px; font-weight: 800; }
+    .lang-ar .field-leave-days { top: 46.2%; right: 34.0%; width: 9.5%; text-align: center; font-size: 15px; font-weight: 800; }
     .lang-ar .group-dep { top: 50.4%; width: 100%; right: 0; left: auto; }
     .lang-ar .group-ret { top: 53.8%; width: 100%; right: 0; left: auto; }
     .lang-ar .cell-d1 { left: 66.0%; width: 3.2%; text-align: center; font-size: 13.5px; }
