@@ -28,6 +28,7 @@
       "main.js",
       "preload.js",
       "db.js",
+      "data/directors_seed.json",
       "renderer/**/*",
       "resources/**/*",
       "assets/**/*",
