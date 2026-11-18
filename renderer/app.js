@@ -45,7 +45,119 @@ const i18n = {
     search_placeholder: "Rechercher par nom, wilaya, agence...",
     dropdown_all_wilayas: "Toutes les Wilayas & Établissements",
     dropdown_search_placeholder: "Filtrer une wilaya...",
-    dir_section_title: "Annuaire des Directeurs d'Agences de Wilayas & Établissements CNAS"
+    dir_section_title: "Annuaire des Directeurs d'Agences de Wilayas & Établissements CNAS",
+
+    // History Page
+    history_title: "Historique des Titres de Congé Émis",
+    history_sub: "Registres des titres GRH.22 délivrés aux directeurs avec soldes déduits",
+    btn_export_csv: "Exporter CSV",
+    btn_clear_reg: "Vider le Registre",
+    th_date: "Date d'Émission",
+    th_agent: "Directeur / Agent",
+    th_agency: "Agence / Wilaya",
+    th_period: "Période de Congé",
+    th_days: "Jours",
+    th_balance: "Nouveau Solde",
+    th_actions: "Actions",
+    history_empty: "Aucun titre de congé enregistré dans l'historique pour le moment.",
+
+    // Settings Page
+    settings_title: "Paramètres & Configuration de l'Application",
+    settings_sub: "Personnalisation des paramètres d'émission, base de données et informations CNAS",
+    stab_general: "Général & Établissement",
+    stab_data: "Base de Données CNAS",
+    stab_about: "À Propos",
+    set_sec_emitter: "Informations de la Structure Émettrice",
+    set_lbl_org: "Nom de l'Organisme / Établissement",
+    set_lbl_struct: "Direction ou Structure Centrale",
+    set_lbl_city: "Ville par Défaut (Fait à ...)",
+    set_lbl_sig_title: "Qualité du Signataire",
+    set_lbl_sig_name: "Nom du Signataire",
+    set_lbl_def_days: "Droit Annuel Légal par Défaut (Jours)",
+    set_btn_save: "Enregistrer les Paramètres",
+    set_sec_data: "Gestion des Données des Directeurs & Registres",
+    set_data_desc: "Les directeurs sont synchronisés directement depuis le fichier officiel <code style=\"color: var(--primary); font-weight: 700;\">data.xlsx</code> de la CNAS.",
+    set_reset_title: "Réinitialiser les Directeurs (data.xlsx)",
+    set_reset_desc: "Recharge la liste officielle complète des 64 Directeurs d'Agences de Wilayas et Établissements CNAS.",
+    set_btn_reset: "Réinitialiser (64 Directeurs)",
+    set_clear_title: "Vider le Registre des Congés",
+    set_clear_desc: "Supprime l'historique des titres émis sans effacer la liste des directeurs.",
+    set_btn_clear: "Vider l'Historique",
+    about_version: "Version 2.0.0 (Édition Officielle CNAS)",
+    about_desc: "Solution intégrée de gestion des congés annuels et d'édition conforme des Titres de Congé officiels <strong>GRH.22</strong> pour la Caisse Nationale des Assurances Sociales des Travailleurs Salariés (CNAS - République Algérienne Démocratique et Populaire).",
+    about_org_name: "Caisse Nationale des Assurances Sociales des Travailleurs Salariés",
+    about_org_ar: "الصندوق الوطني للتأمينات الاجتماعية للعمال الأجراء",
+    about_dg: "Direction Générale — Gestion des Ressources Humaines",
+
+    // Director Details Modal
+    modal_det_service_fr: "Structure / Agence (FR)",
+    modal_det_service_ar: "الوكالة / المصلحة (AR)",
+    modal_det_grade_fr: "Grade / Fonction (FR)",
+    modal_det_grade_ar: "الرتبة / الوظيفة (AR)",
+    modal_det_address: "Adresse Siège / Professionnelle",
+    modal_det_n1: "Reliquat N-1",
+    modal_det_annual: "Droit Annuel",
+    modal_det_total: "Total Disponible",
+    modal_det_history_title: "Congés Référencés",
+    modal_det_btn_close: "Fermer",
+    modal_det_btn_new_leave: "Nouveau Congé",
+
+    // Delete Confirmation Modal
+    modal_del_title: "Confirmer la suppression",
+    modal_del_msg: "Êtes-vous sûr de vouloir supprimer ce directeur ?",
+    modal_del_warn: "Cette action est irréversible et supprimera également les fiches associées.",
+    modal_del_cancel: "Annuler",
+    modal_del_confirm: "Supprimer Définitivement",
+
+    // New/Edit Director Modal
+    modal_emp_title_add: "Ajouter un Nouveau Directeur",
+    modal_emp_title_edit: "Modifier les Données du Directeur",
+    modal_emp_lbl_code: "Code Wilaya",
+    modal_emp_lbl_agency: "Agence / Wilaya",
+    modal_emp_lbl_name_fr: "Nom & Prénom (Français)",
+    modal_emp_lbl_name_ar: "الاسم واللقب (بالعربية)",
+    modal_emp_lbl_grade_fr: "Grade / Fonction (Français)",
+    modal_emp_lbl_grade_ar: "الرتبة / الوظيفة (بالعربية)",
+    modal_emp_lbl_service_fr: "Service / Structure (Français)",
+    modal_emp_lbl_service_ar: "المصلحة / المديرية (بالعربية)",
+    modal_emp_lbl_address: "Adresse du Siège / Professionnelle",
+    modal_emp_lbl_n1: "Reliquat Antérieur N-1 (Jours)",
+    modal_emp_lbl_annual: "Droit Annuel Légal (Jours)",
+    modal_emp_btn_cancel: "Annuler",
+    modal_emp_btn_save: "Enregistrer",
+
+    // Leave Drawer
+    drawer_title: "Titre de Congé GRH.22",
+    drawer_subtitle: "Calcul & Remplissage automatique",
+    drawer_mode_full: "Modèle",
+    drawer_mode_overlay: "Papier Officiel",
+    drawer_calc_title: "Jours de Congé Restants",
+    drawer_calc_badge: "Calcul Automatique",
+    drawer_stat_n1: "Reliquat N-1",
+    drawer_stat_annual: "Droit Annuel",
+    drawer_stat_requested: "Demandé",
+    drawer_sec_period: "Période & Durée du Congé",
+    drawer_lbl_granted: "Jours Accordés",
+    drawer_lbl_dep_date: "Date de Départ",
+    drawer_lbl_ret_date: "Date de Reprise Calculée",
+    drawer_lbl_leave_addr: "Adresse Durant le Congé",
+    drawer_sec_agent: "Informations du Directeur",
+    drawer_lbl_name: "Nom & Prénom",
+    drawer_lbl_grade: "Grade / Fonction",
+    drawer_lbl_service: "Structure / Agence",
+    drawer_lbl_address: "Adresse Siège / Personnelle",
+    drawer_sec_rights: "Détail des Droits & Reliquats",
+    drawer_lbl_tot_avail: "Total Disponible",
+    drawer_sec_sign: "Émission & Signatures",
+    drawer_lbl_city: "Fait à",
+    drawer_lbl_date: "Le (Date)",
+    drawer_lbl_signatory: "Qualité du Signataire",
+    drawer_btn_back: "Retour à l'Annuaire",
+    drawer_btn_print_official: "Imprimer (Papier Officiel)",
+    drawer_btn_print_all: "Imprimer Tout",
+    drawer_btn_pdf_data: "PDF Données Seules",
+    drawer_btn_pdf_full: "PDF Complet",
+    drawer_btn_save: "Enregistrer"
   },
   ar: {
     nav_home: "الرئيسية",
@@ -76,7 +188,119 @@ const i18n = {
     search_placeholder: "بحث بالاسم، الولاية، أو الوكالة...",
     dropdown_all_wilayas: "جميع الولايات والمؤسسات",
     dropdown_search_placeholder: "تصفية حسب الولاية...",
-    dir_section_title: "دليل مدراء وكالات الولايات والمؤسسات المتخصصة كناس"
+    dir_section_title: "دليل مدراء وكالات الولايات والمؤسسات المتخصصة كناس",
+
+    // History Page
+    history_title: "سجل سندات العطل الصادرة",
+    history_sub: "سجل سندات GRH.22 المسلمة للمدراء مع خصم الأيام من الرصيد",
+    btn_export_csv: "تصدير إلى CSV",
+    btn_clear_reg: "إفراغ السجل",
+    th_date: "تاريخ الإصدار",
+    th_agent: "المدير / العون",
+    th_agency: "الوكالة / الولاية",
+    th_period: "فترة العطلة",
+    th_days: "الأيام",
+    th_balance: "الرصيد المتبقي",
+    th_actions: "الإجراءات",
+    history_empty: "لا توجد سندات عطل مسجلة في التاريخ حتى الآن.",
+
+    // Settings Page
+    settings_title: "إعدادات وتخصيص التطبيق",
+    settings_sub: "تخصيص معلومات الهيئة المصدرة، قاعدة البيانات وبيانات كناس الرسمية",
+    stab_general: "عام والهيئة المصدرة",
+    stab_data: "قاعدة بيانات كناس",
+    stab_about: "حول التطبيق",
+    set_sec_emitter: "معلومات الهيكل / الإدارة المصدرة",
+    set_lbl_org: "اسم الهيئة / المؤسسة",
+    set_lbl_struct: "المديرية أو الهيكل المركزي",
+    set_lbl_city: "المدينة الافتراضية (حرر بـ)",
+    set_lbl_sig_title: "صفة الممضي",
+    set_lbl_sig_name: "اسم ولقب الممضي",
+    set_lbl_def_days: "الحق السنوي القانوني الافتراضي (أيام)",
+    set_btn_save: "حفظ الإعدادات",
+    set_sec_data: "إدارة بيانات المدراء وسجلات العطل",
+    set_data_desc: "تتم مزامنة بيانات المدراء مباشرة من ملف كناس الرسمي <code style=\"color: var(--primary); font-weight: 700;\">data.xlsx</code>.",
+    set_reset_title: "إعادة تعيين المدراء (data.xlsx)",
+    set_reset_desc: "إعادة تحميل القائمة الرسمية الكاملة لـ 64 مديراً لوكالات الولايات والمؤسسات التابعة لكناس.",
+    set_btn_reset: "إعادة تعيين (64 مديراً)",
+    set_clear_title: "إفراغ سجل العطل",
+    set_clear_desc: "حذف تاريخ السندات الصادرة دون المساس بقائمة المدراء أو أرصدتهم الأصلية.",
+    set_btn_clear: "إفراغ التاريخ",
+    about_version: "الإصدار 2.0.0 (النسخة الرسمية المعتمدة لكناس)",
+    about_desc: "منظومة إدارية متكاملة لتسيير الإجازات السنوية وإصدار سند العطلة الرسمي <strong>GRH.22</strong> للصندوق الوطني للتأمينات الاجتماعية للعمال الأجراء (الجمهورية الجزائرية الديمقراطية الشعبية).",
+    about_org_name: "الصندوق الوطني للتأمينات الاجتماعية للعمال الأجراء",
+    about_org_ar: "الصندوق الوطني للتأمينات الاجتماعية للعمال الأجراء",
+    about_dg: "المديرية العامة — تسيير الموارد البشرية",
+
+    // Director Details Modal
+    modal_det_service_fr: "الهيكل / الوكالة (بالفرنسية)",
+    modal_det_service_ar: "الوكالة / المصلحة (بالعربية)",
+    modal_det_grade_fr: "الرتبة / الوظيفة (بالفرنسية)",
+    modal_det_grade_ar: "الرتبة / الوظيفة (بالعربية)",
+    modal_det_address: "عنوان المقر / المهني",
+    modal_det_n1: "الرصيد المتبقي N-1",
+    modal_det_annual: "الحق السنوي",
+    modal_det_total: "المجموع المتاح",
+    modal_det_history_title: "العطل المسجلة للمدير",
+    modal_det_btn_close: "إغلاق",
+    modal_det_btn_new_leave: "عطلة جديدة",
+
+    // Delete Confirmation Modal
+    modal_del_title: "تأكيد الحذف",
+    modal_del_msg: "هل أنت متأكد من رغبتك في حذف هذا المدير ؟",
+    modal_del_warn: "هذا الإجراء نهائي ولا يمكن التراجع عنه وسيحذف كافة السجلات المرتبطة.",
+    modal_del_cancel: "إلغاء",
+    modal_del_confirm: "حذف نهائي",
+
+    // New/Edit Director Modal
+    modal_emp_title_add: "إضافة مدير جديد",
+    modal_emp_title_edit: "تعديل بيانات المدير",
+    modal_emp_lbl_code: "رمز الولاية",
+    modal_emp_lbl_agency: "الوكالة / الولاية",
+    modal_emp_lbl_name_fr: "الاسم واللقب (بالفرنسية)",
+    modal_emp_lbl_name_ar: "الاسم واللقب (بالعربية)",
+    modal_emp_lbl_grade_fr: "الرتبة / الوظيفة (بالفرنسية)",
+    modal_emp_lbl_grade_ar: "الرتبة / الوظيفة (بالعربية)",
+    modal_emp_lbl_service_fr: "المصلحة / الهيكل (بالفرنسية)",
+    modal_emp_lbl_service_ar: "المصلحة / المديرية (بالعربية)",
+    modal_emp_lbl_address: "عنوان المقر / العنوان المهني",
+    modal_emp_lbl_n1: "الرصيد المتبقي السابق N-1 (أيام)",
+    modal_emp_lbl_annual: "الحق السنوي القانوني (أيام)",
+    modal_emp_btn_cancel: "إلغاء",
+    modal_emp_btn_save: "حفظ البيانات",
+
+    // Leave Drawer
+    drawer_title: "سند العطلة GRH.22",
+    drawer_subtitle: "حساب وملء تلقائي معتمد",
+    drawer_mode_full: "النموذج الكامل",
+    drawer_mode_overlay: "الورق المطبوع مسبقاً",
+    drawer_calc_title: "أيام العطلة المتبقية",
+    drawer_calc_badge: "حساب تلقائي",
+    drawer_stat_n1: "متبقي N-1",
+    drawer_stat_annual: "الحق السنوي",
+    drawer_stat_requested: "المطلوب",
+    drawer_sec_period: "فترة ومدة العطلة",
+    drawer_lbl_granted: "الأيام الممنوحة",
+    drawer_lbl_dep_date: "تاريخ الذهاب",
+    drawer_lbl_ret_date: "تاريخ الاستئناف المحسوب",
+    drawer_lbl_leave_addr: "العنوان خلال العطلة",
+    drawer_sec_agent: "معلومات المدير",
+    drawer_lbl_name: "الاسم واللقب",
+    drawer_lbl_grade: "الرتبة / الوظيفة",
+    drawer_lbl_service: "الهيكل / الوكالة",
+    drawer_lbl_address: "عنوان المقر / الشخصي",
+    drawer_sec_rights: "تفاصيل الحقوق والأرصدة",
+    drawer_lbl_tot_avail: "المجموع المتاح",
+    drawer_sec_sign: "الإصدار والتوقيع",
+    drawer_lbl_city: "حرر بـ",
+    drawer_lbl_date: "في (التاريخ)",
+    drawer_lbl_signatory: "صفة الممضي",
+    drawer_btn_back: "العودة إلى الدليل",
+    drawer_btn_print_official: "طباعة (الورق الرسمي)",
+    drawer_btn_print_all: "طباعة الكل",
+    drawer_btn_pdf_data: "PDF بيانات فقط",
+    drawer_btn_pdf_full: "PDF كامل",
+    drawer_btn_save: "حفظ وخصم الرصيد"
   }
 };
 
@@ -88,6 +312,7 @@ function applyLanguage(lang) {
   const isAr = (currentAppLang === 'ar');
   document.documentElement.setAttribute('lang', currentAppLang);
   document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
+  document.title = isAr ? 'CongéDesk — تسيير العطل وسندات كناس GRH.22' : 'CongéDesk — Gestion des Congés CNAS GRH.22';
 
   const fabLang = document.getElementById('fab-lang-btn');
   if (fabLang) {
@@ -131,6 +356,7 @@ function applyLanguage(lang) {
   filterAndRenderDirectors();
   if (currentView === 'home') updateHomeDashboard();
   if (currentView === 'history') renderHistoryTable();
+  updateSidebarToggleIcon();
 }
 
 // ================= INITIALIZATION =================
@@ -153,9 +379,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   const isSidebarCollapsed = localStorage.getItem('congedesk_sidebar_collapsed') === 'true';
   if (isSidebarCollapsed) {
     document.getElementById('app-sidebar')?.classList.add('collapsed');
-    const icon = document.getElementById('sidebar-toggle-icon');
-    if (icon) icon.className = 'ti ti-layout-sidebar-left-expand';
   }
+  updateSidebarToggleIcon();
 
   // 4. Set default dates
   const today = new Date();
@@ -277,6 +502,23 @@ function toggleAppLanguage() {
 }
 
 // ================= SIDEBAR COLLAPSE TOGGLE =================
+function updateSidebarToggleIcon() {
+  const sidebar = document.getElementById('app-sidebar');
+  const icon = document.getElementById('sidebar-toggle-icon');
+  if (!sidebar || !icon) return;
+  const isCollapsed = sidebar.classList.contains('collapsed');
+  const isAr = (currentAppLang === 'ar');
+  if (isAr) {
+    icon.className = isCollapsed 
+      ? 'ti ti-layout-sidebar-right-expand' 
+      : 'ti ti-layout-sidebar-right-collapse';
+  } else {
+    icon.className = isCollapsed 
+      ? 'ti ti-layout-sidebar-left-expand' 
+      : 'ti ti-layout-sidebar-left-collapse';
+  }
+}
+
 function toggleSidebar() {
   const sidebar = document.getElementById('app-sidebar');
   if (!sidebar) return;
@@ -285,12 +527,7 @@ function toggleSidebar() {
   const isCollapsed = sidebar.classList.contains('collapsed');
   localStorage.setItem('congedesk_sidebar_collapsed', isCollapsed);
 
-  const icon = document.getElementById('sidebar-toggle-icon');
-  if (icon) {
-    icon.className = isCollapsed 
-      ? 'ti ti-layout-sidebar-left-expand' 
-      : 'ti ti-layout-sidebar-left-collapse';
-  }
+  updateSidebarToggleIcon();
 }
 
 // ================= SETTINGS TABS =================
@@ -738,9 +975,12 @@ function startVacationFromDetails() {
 // ================= MODAL: DELETE CONFIRMATION =================
 function promptDeleteDirector(id, name, agency) {
   directorToDeleteId = id;
+  const isAr = (currentAppLang === 'ar');
   const msgEl = document.getElementById('delete-confirm-message');
   if (msgEl) {
-    msgEl.innerHTML = `Êtes-vous sûr de vouloir supprimer définitivement le directeur <strong>${escapeHtml(name)}</strong> ${agency ? `(${escapeHtml(agency)})` : ''} de la base de données ?`;
+    msgEl.innerHTML = isAr
+      ? `هل أنت متأكد من رغبتك في حذف المدير <strong>${escapeHtml(name)}</strong> ${agency ? `(${escapeHtml(agency)})` : ''} نهائياً من قاعدة البيانات ؟`
+      : `Êtes-vous sûr de vouloir supprimer définitivement le directeur <strong>${escapeHtml(name)}</strong> ${agency ? `(${escapeHtml(agency)})` : ''} de la base de données ?`;
   }
   document.getElementById('delete-confirm-modal').style.display = 'flex';
 }
@@ -891,17 +1131,18 @@ function renderHistoryTable() {
 
   if (emptyState) emptyState.style.display = 'none';
 
+  const isAr = (currentAppLang === 'ar');
   tbody.innerHTML = leaveHistory.map(rec => `
     <tr>
       <td>${escapeHtml(rec.date || rec.timestamp?.split('T')[0] || '—')}</td>
       <td><strong>${escapeHtml(rec.agent_name || '—')}</strong></td>
       <td>${escapeHtml(rec.service || '—')}</td>
-      <td>Du <strong>${escapeHtml(rec.dep_date || '—')}</strong> au <strong>${escapeHtml(rec.ret_date || '—')}</strong></td>
-      <td><span style="font-weight: 800; color: var(--primary);">${rec.leave_days || 0} j</span></td>
-      <td>${rec.new_balance ?? '—'} j</td>
+      <td>${isAr ? 'من' : 'Du'} <strong>${escapeHtml(rec.dep_date || '—')}</strong> ${isAr ? 'إلى' : 'au'} <strong>${escapeHtml(rec.ret_date || '—')}</strong></td>
+      <td><span style="font-weight: 800; color: var(--primary);">${rec.leave_days || 0} ${isAr ? 'ي' : 'j'}</span></td>
+      <td>${rec.new_balance ?? '—'} ${isAr ? 'ي' : 'j'}</td>
       <td>
-        <button class="btn btn-sm btn-secondary" onclick="viewHistoryDoc('${rec.id}')" title="Ré-éditer">
-          <i class="ti ti-file-text"></i> Titre
+        <button class="btn btn-sm btn-secondary" onclick="viewHistoryDoc('${rec.id}')" title="${isAr ? 'معاينة وإعادة طباعة' : 'Ré-éditer'}">
+          <i class="ti ti-file-text"></i> ${isAr ? 'السند' : 'Titre'}
         </button>
       </td>
     </tr>
@@ -1115,13 +1356,16 @@ function recalcAndRender() {
   document.getElementById('f-total-entitlement').value = totalAvail;
 
   const daysLeft = totalAvail - requested;
+  const isAr = (currentAppLang === 'ar');
 
   // Update calculator hero card in drawer
-  document.getElementById('calc-days-left').textContent = `${daysLeft} jours`;
-  document.getElementById('calc-days-left-sub').textContent = `restants sur ${totalAvail} jours de droit total`;
-  document.getElementById('stat-n1').textContent = `${prevBal} j`;
-  document.getElementById('stat-annual').textContent = `${annual} j`;
-  document.getElementById('stat-requested').textContent = `${requested} j`;
+  document.getElementById('calc-days-left').textContent = isAr ? `${daysLeft} يوماً` : `${daysLeft} jours`;
+  document.getElementById('calc-days-left-sub').textContent = isAr 
+    ? `متبقية من إجمالي ${totalAvail} يوماً من الحقوق المتاحة` 
+    : `restants sur ${totalAvail} jours de droit total`;
+  document.getElementById('stat-n1').textContent = isAr ? `${prevBal} ي` : `${prevBal} j`;
+  document.getElementById('stat-annual').textContent = isAr ? `${annual} ي` : `${annual} j`;
+  document.getElementById('stat-requested').textContent = isAr ? `${requested} ي` : `${requested} j`;
 
   const alertBanner = document.getElementById('calc-alert-banner');
   const alertIcon = document.getElementById('calc-alert-icon');
@@ -1130,15 +1374,21 @@ function recalcAndRender() {
   if (daysLeft > 0) {
     alertBanner.className = 'calc-alert ok';
     alertIcon.className = 'ti ti-circle-check';
-    alertText.textContent = `Solde suffisant. Le directeur conservera ${daysLeft} jours en réserve après ce congé.`;
+    alertText.textContent = isAr 
+      ? `رصيد كافٍ. سيحتفظ المدير بـ ${daysLeft} يوماً كاحتياطي بعد هذه العطلة.`
+      : `Solde suffisant. Le directeur conservera ${daysLeft} jours en réserve après ce congé.`;
   } else if (daysLeft === 0) {
     alertBanner.className = 'calc-alert ok';
     alertIcon.className = 'ti ti-circle-check';
-    alertText.textContent = `Solde entièrement utilisé. Le directeur utilise la totalité de ses droits (0 jour restant).`;
+    alertText.textContent = isAr
+      ? `رصيد مستهلك بالكامل. استنفد المدير كامل حقوقه السنوية (0 يوم متبقٍ).`
+      : `Solde entièrement utilisé. Le directeur utilise la totalité de ses droits (0 jour restant).`;
   } else {
     alertBanner.className = 'calc-alert danger';
     alertIcon.className = 'ti ti-alert-triangle';
-    alertText.textContent = `Attention dépassement ! Le congé demandé (${requested}j) dépasse les droits disponibles (${totalAvail}j) de ${Math.abs(daysLeft)} jour(s).`;
+    alertText.textContent = isAr
+      ? `تنبيه تجاوز الرصيد ! العطلة المطلوبة (${requested} يوماً) تتجاوز الحقوق المتاحة (${totalAvail} يوماً) بـ ${Math.abs(daysLeft)} يوم.`
+      : `Attention dépassement ! Le congé demandé (${requested}j) dépasse les droits disponibles (${totalAvail}j) de ${Math.abs(daysLeft)} jour(s).`;
   }
 
   renderDocumentSheet();
@@ -1413,15 +1663,15 @@ function generatePrintHTML(dataOnly = false) {
     .lang-ar .field-service { top: 36.3%; right: 25.5%; font-size: 14px; font-weight: 700; }
     .lang-ar .field-address-1 { top: 39.6%; right: 25.5%; font-size: 13.5px; font-weight: 700; }
     .lang-ar .field-address-2 { top: 42.8%; right: 14.0%; font-size: 13.5px; font-weight: 700; }
-    .lang-ar .field-leave-days { top: 46.2%; right: 34.0%; width: 9.5%; text-align: center; font-size: 15px; font-weight: 800; }
+    .lang-ar .field-leave-days { top: 46.2%; right: 28.0%; width: 7.5%; text-align: center; font-size: 15px; font-weight: 800; }
     .lang-ar .group-dep { top: 50.4%; width: 100%; right: 0; left: auto; }
     .lang-ar .group-ret { top: 53.8%; width: 100%; right: 0; left: auto; }
-    .lang-ar .cell-d1 { left: 66.0%; width: 3.2%; text-align: center; font-size: 13.5px; }
-    .lang-ar .cell-d2 { left: 69.2%; width: 3.4%; text-align: center; font-size: 13.5px; }
+    .lang-ar .cell-d1 { left: 52.5%; width: 3.2%; text-align: center; font-size: 13.5px; }
+    .lang-ar .cell-d2 { left: 55.7%; width: 3.3%; text-align: center; font-size: 13.5px; }
     .lang-ar .cell-m1 { left: 59.0%; width: 3.5%; text-align: center; font-size: 13.5px; }
     .lang-ar .cell-m2 { left: 62.5%; width: 3.5%; text-align: center; font-size: 13.5px; }
-    .lang-ar .cell-y1 { left: 52.5%; width: 3.2%; text-align: center; font-size: 13.5px; }
-    .lang-ar .cell-y2 { left: 55.7%; width: 3.3%; text-align: center; font-size: 13.5px; }
+    .lang-ar .cell-y1 { left: 66.0%; width: 3.2%; text-align: center; font-size: 13.5px; }
+    .lang-ar .cell-y2 { left: 69.2%; width: 3.4%; text-align: center; font-size: 13.5px; }
     .lang-ar .field-leave-address { top: 56.4%; right: 33.5%; font-size: 13.5px; font-weight: 700; }
     .lang-ar .field-location { top: 65.6%; right: 46.0%; font-size: 14px; font-weight: 700; }
     .lang-ar .field-date { top: 65.6%; right: 67.0%; font-size: 14px; font-weight: 700; }

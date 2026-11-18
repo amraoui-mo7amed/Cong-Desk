@@ -267,16 +267,16 @@
           <div class="page-title-group">
             <i class="ti ti-history" style="color: var(--primary); font-size: 24px;"></i>
             <div>
-              <h2>Historique des Titres de Congé Émis</h2>
-              <p class="page-sub">Registres des titres GRH.22 délivrés aux directeurs avec soldes déduits</p>
+              <h2 data-i18n="history_title">Historique des Titres de Congé Émis</h2>
+              <p class="page-sub" data-i18n="history_sub">Registres des titres GRH.22 délivrés aux directeurs avec soldes déduits</p>
             </div>
           </div>
           <div class="page-actions-group">
             <button class="btn btn-secondary" onclick="exportHistoryCSV()">
-              <i class="ti ti-file-spreadsheet"></i> Exporter CSV
+              <i class="ti ti-file-spreadsheet"></i> <span data-i18n="btn_export_csv">Exporter CSV</span>
             </button>
             <button class="btn btn-danger-soft" onclick="confirmClearHistory()">
-              <i class="ti ti-trash"></i> Vider le Registre
+              <i class="ti ti-trash"></i> <span data-i18n="btn_clear_reg">Vider le Registre</span>
             </button>
           </div>
         </div>
@@ -286,13 +286,13 @@
           <table class="history-table">
             <thead>
               <tr>
-                <th>Date d'Émission</th>
-                <th>Directeur / Agent</th>
-                <th>Agence / Wilaya</th>
-                <th>Période de Congé</th>
-                <th>Jours</th>
-                <th>Nouveau Solde</th>
-                <th>Actions</th>
+                <th data-i18n="th_date">Date d'Émission</th>
+                <th data-i18n="th_agent">Directeur / Agent</th>
+                <th data-i18n="th_agency">Agence / Wilaya</th>
+                <th data-i18n="th_period">Période de Congé</th>
+                <th data-i18n="th_days">Jours</th>
+                <th data-i18n="th_balance">Nouveau Solde</th>
+                <th data-i18n="th_actions">Actions</th>
               </tr>
             </thead>
             <tbody id="history-records-body">
@@ -301,7 +301,7 @@
           </table>
           <div class="empty-state-box" id="history-empty-state" style="display: none;">
             <i class="ti ti-calendar-off" style="font-size: 42px; color: var(--text-dim);"></i>
-            <p>Aucun titre de congé enregistré dans l'historique pour le moment.</p>
+            <p data-i18n="history_empty">Aucun titre de congé enregistré dans l'historique pour le moment.</p>
           </div>
         </div>
       </section>
@@ -315,8 +315,8 @@
           <div class="page-title-group">
             <i class="ti ti-settings" style="color: var(--primary); font-size: 24px;"></i>
             <div>
-              <h2>Paramètres & Configuration de l'Application</h2>
-              <p class="page-sub">Personnalisation des paramètres d'émission, base de données et informations CNAS</p>
+              <h2 data-i18n="settings_title">Paramètres & Configuration de l'Application</h2>
+              <p class="page-sub" data-i18n="settings_sub">Personnalisation des paramètres d'émission, base de données et informations CNAS</p>
             </div>
           </div>
         </div>
@@ -324,57 +324,57 @@
         <!-- Settings Tabs Navigation -->
         <div class="settings-tabs-bar">
           <button class="settings-tab-btn active" id="stab-btn-general" onclick="switchSettingsTab('general')">
-            <i class="ti ti-adjustments"></i> Général & Établissement
+            <i class="ti ti-adjustments"></i> <span data-i18n="stab_general">Général & Établissement</span>
           </button>
           <button class="settings-tab-btn" id="stab-btn-data" onclick="switchSettingsTab('data')">
-            <i class="ti ti-database"></i> Base de Données CNAS
+            <i class="ti ti-database"></i> <span data-i18n="stab_data">Base de Données CNAS</span>
           </button>
           <button class="settings-tab-btn" id="stab-btn-about" onclick="switchSettingsTab('about')">
-            <i class="ti ti-info-circle"></i> À Propos
+            <i class="ti ti-info-circle"></i> <span data-i18n="stab_about">À Propos</span>
           </button>
         </div>
 
         <!-- SETTINGS TAB 1: GENERAL -->
         <div class="settings-tab-panel active" id="stab-panel-general">
           <div class="settings-card">
-            <h3 class="settings-card-title"><i class="ti ti-building"></i> Informations de la Structure Émettrice</h3>
+            <h3 class="settings-card-title"><i class="ti ti-building"></i> <span data-i18n="set_sec_emitter">Informations de la Structure Émettrice</span></h3>
             
             <div class="form-grid-2">
               <div class="form-field">
-                <label>Nom de l'Organisme / Établissement</label>
+                <label data-i18n="set_lbl_org">Nom de l'Organisme / Établissement</label>
                 <input type="text" id="set-company-name" class="input-ctrl" value="Caisse Nationale des Assurances Sociales (CNAS)">
               </div>
               <div class="form-field">
-                <label>Direction ou Structure Centrale</label>
+                <label data-i18n="set_lbl_struct">Direction ou Structure Centrale</label>
                 <input type="text" id="set-service-name" class="input-ctrl" value="Direction Générale - Ressources Humaines">
               </div>
             </div>
 
             <div class="form-grid-2">
               <div class="form-field">
-                <label>Ville par Défaut (Fait à ...)</label>
+                <label data-i18n="set_lbl_city">Ville par Défaut (Fait à ...)</label>
                 <input type="text" id="set-default-city" class="input-ctrl" value="Alger">
               </div>
               <div class="form-field">
-                <label>Qualité du Signataire</label>
+                <label data-i18n="set_lbl_sig_title">Qualité du Signataire</label>
                 <input type="text" id="set-signatory-title" class="input-ctrl" value="Le Directeur Général,">
               </div>
             </div>
 
             <div class="form-grid-2">
               <div class="form-field">
-                <label>Nom du Signataire</label>
+                <label data-i18n="set_lbl_sig_name">Nom du Signataire</label>
                 <input type="text" id="set-signatory-name" class="input-ctrl" value="A. BENALI">
               </div>
               <div class="form-field">
-                <label>Droit Annuel Légal par Défaut (Jours)</label>
+                <label data-i18n="set_lbl_def_days">Droit Annuel Légal par Défaut (Jours)</label>
                 <input type="number" id="set-default-days" class="input-ctrl" value="30">
               </div>
             </div>
 
             <div style="margin-top: 20px; display: flex; justify-content: flex-end;">
               <button class="btn btn-settings-primary" onclick="saveAppSettings()">
-                <i class="ti ti-check"></i> Enregistrer les Paramètres
+                <i class="ti ti-check"></i> <span data-i18n="set_btn_save">Enregistrer les Paramètres</span>
               </button>
             </div>
           </div>
@@ -383,28 +383,28 @@
         <!-- SETTINGS TAB 2: DATA MANAGEMENT -->
         <div class="settings-tab-panel" id="stab-panel-data" style="display: none;">
           <div class="settings-card">
-            <h3 class="settings-card-title"><i class="ti ti-database"></i> Gestion des Données des Directeurs & Registres</h3>
-            <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 22px;">
+            <h3 class="settings-card-title"><i class="ti ti-database"></i> <span data-i18n="set_sec_data">Gestion des Données des Directeurs & Registres</span></h3>
+            <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 22px;" data-i18n-html="set_data_desc">
               Les directeurs sont synchronisés directement depuis le fichier officiel <code style="color: var(--primary); font-weight: 700;">data.xlsx</code> de la CNAS.
             </p>
 
             <div class="settings-action-row">
               <div>
-                <strong style="display: block; font-size: 14px; color: var(--text-main);">Réinitialiser les Directeurs (data.xlsx)</strong>
-                <span style="font-size: 12px; color: var(--text-dim);">Recharge la liste officielle complète des 64 Directeurs d'Agences de Wilayas et Établissements CNAS.</span>
+                <strong style="display: block; font-size: 14px; color: var(--text-main);" data-i18n="set_reset_title">Réinitialiser les Directeurs (data.xlsx)</strong>
+                <span style="font-size: 12px; color: var(--text-dim);" data-i18n="set_reset_desc">Recharge la liste officielle complète des 64 Directeurs d'Agences de Wilayas et Établissements CNAS.</span>
               </div>
               <button class="btn btn-settings-secondary" onclick="resetToCNASDirectors()">
-                <i class="ti ti-refresh"></i> Réinitialiser (64 Directeurs)
+                <i class="ti ti-refresh"></i> <span data-i18n="set_btn_reset">Réinitialiser (64 Directeurs)</span>
               </button>
             </div>
 
             <div class="settings-action-row" style="margin-top: 16px;">
               <div>
-                <strong style="display: block; font-size: 14px; color: var(--text-main);">Vider le Registre des Congés</strong>
-                <span style="font-size: 12px; color: var(--text-dim);">Supprime l'historique des titres émis sans effacer la liste des directeurs.</span>
+                <strong style="display: block; font-size: 14px; color: var(--text-main);" data-i18n="set_clear_title">Vider le Registre des Congés</strong>
+                <span style="font-size: 12px; color: var(--text-dim);" data-i18n="set_clear_desc">Supprime l'historique des titres émis sans effacer la liste des directeurs.</span>
               </div>
               <button class="btn btn-settings-danger" onclick="confirmClearHistory()">
-                <i class="ti ti-trash"></i> Vider l'Historique
+                <i class="ti ti-trash"></i> <span data-i18n="set_btn_clear">Vider l'Historique</span>
               </button>
             </div>
           </div>
@@ -419,8 +419,8 @@
               <img src="../assets/logo.png" alt="CongéDesk" class="about-app-logo">
               <div class="about-title-block">
                 <h3 class="about-app-title">CongéDesk</h3>
-                <span class="about-version-badge">Version 2.0.0 (Édition Officielle CNAS)</span>
-                <p class="about-app-desc">
+                <span class="about-version-badge" data-i18n="about_version">Version 2.0.0 (Édition Officielle CNAS)</span>
+                <p class="about-app-desc" data-i18n-html="about_desc">
                   Solution intégrée de gestion des congés annuels et d'édition conforme des Titres de Congé officiels <strong>GRH.22</strong> pour la Caisse Nationale des Assurances Sociales des Travailleurs Salariés (CNAS - République Algérienne Démocratique et Populaire).
                 </p>
               </div>
@@ -429,11 +429,11 @@
             <div class="about-cnas-emblem-box">
               <img src="../assets/logo.png" alt="Logo Officiel CNAS" class="about-cnas-logo">
               <div class="about-cnas-meta">
-                <strong style="font-size: 14px; color: var(--text-main);">Caisse Nationale des Assurances Sociales des Travailleurs Salariés</strong>
-                <span style="font-size: 12.5px; color: var(--text-dim); display: block; font-family: 'Tajawal', sans-serif; direction: rtl; margin-top: 2px;">
+                <strong style="font-size: 14px; color: var(--text-main);" data-i18n="about_org_name">Caisse Nationale des Assurances Sociales des Travailleurs Salariés</strong>
+                <span style="font-size: 12.5px; color: var(--text-dim); display: block; font-family: 'Tajawal', sans-serif; direction: rtl; margin-top: 2px;" data-i18n="about_org_ar">
                   الصندوق الوطني للتأمينات الاجتماعية للعمال الأجراء
                 </span>
-                <span style="font-size: 11.5px; color: var(--text-dim); margin-top: 4px; display: block;">Direction Générale — Gestion des Ressources Humaines</span>
+                <span style="font-size: 11.5px; color: var(--text-dim); margin-top: 4px; display: block;" data-i18n="about_dg">Direction Générale — Gestion des Ressources Humaines</span>
               </div>
             </div>
           </div>
@@ -476,23 +476,23 @@
       <div class="modal-body">
         <div class="details-grid">
           <div class="details-item">
-            <span class="d-label">Structure / Agence (FR)</span>
+            <span class="d-label" data-i18n="modal_det_service_fr">Structure / Agence (FR)</span>
             <span class="d-value" id="det-service-fr">—</span>
           </div>
           <div class="details-item">
-            <span class="d-label">الوكالة / المصلحة (AR)</span>
+            <span class="d-label" data-i18n="modal_det_service_ar">الوكالة / المصلحة (AR)</span>
             <span class="d-value rtl-text" id="det-service-ar">—</span>
           </div>
           <div class="details-item">
-            <span class="d-label">Grade / Fonction (FR)</span>
+            <span class="d-label" data-i18n="modal_det_grade_fr">Grade / Fonction (FR)</span>
             <span class="d-value" id="det-grade-fr">—</span>
           </div>
           <div class="details-item">
-            <span class="d-label">الرتبة / الوظيفة (AR)</span>
+            <span class="d-label" data-i18n="modal_det_grade_ar">الرتبة / الوظيفة (AR)</span>
             <span class="d-value rtl-text" id="det-grade-ar">—</span>
           </div>
           <div class="details-item details-span-2">
-            <span class="d-label">Adresse Siège / Professionnelle</span>
+            <span class="d-label" data-i18n="modal_det_address">Adresse Siège / Professionnelle</span>
             <span class="d-value" id="det-address-fr">—</span>
           </div>
         </div>
@@ -500,15 +500,15 @@
         <!-- Solde Summary Cards in Modal -->
         <div class="details-balance-row">
           <div class="d-bal-box">
-            <span class="d-bal-lbl">Reliquat N-1</span>
+            <span class="d-bal-lbl" data-i18n="modal_det_n1">Reliquat N-1</span>
             <span class="d-bal-num" id="det-prev-balance">0 j</span>
           </div>
           <div class="d-bal-box">
-            <span class="d-bal-lbl">Droit Annuel</span>
+            <span class="d-bal-lbl" data-i18n="modal_det_annual">Droit Annuel</span>
             <span class="d-bal-num" id="det-annual-quota">30 j</span>
           </div>
           <div class="d-bal-box highlight">
-            <span class="d-bal-lbl">Total Disponible</span>
+            <span class="d-bal-lbl" data-i18n="modal_det_total">Total Disponible</span>
             <span class="d-bal-num" id="det-total-balance">30 j</span>
           </div>
         </div>
@@ -516,7 +516,7 @@
         <!-- Historical Leaves for this Director -->
         <div style="margin-top: 18px;">
           <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; color: var(--text-main);">
-            <i class="ti ti-calendar-stats" style="color: var(--primary);"></i> Congés Référencés
+            <i class="ti ti-calendar-stats" style="color: var(--primary);"></i> <span data-i18n="modal_det_history_title">Congés Référencés</span>
           </h4>
           <div id="det-leaves-list" class="det-leaves-container">
             <!-- Dynamically populated or empty -->
@@ -525,9 +525,9 @@
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" onclick="closeDirectorDetailsModal()">Fermer</button>
+        <button class="btn btn-secondary" onclick="closeDirectorDetailsModal()" data-i18n="modal_det_btn_close">Fermer</button>
         <button class="btn btn-primary" id="det-btn-start-vacation" onclick="startVacationFromDetails()">
-          <i class="ti ti-file-certificate"></i> Nouveau Congé
+          <i class="ti ti-file-certificate"></i> <span data-i18n="modal_det_btn_new_leave">Nouveau Congé</span>
         </button>
       </div>
     </div>
@@ -545,19 +545,19 @@
       </div>
 
       <div class="modal-body text-center" style="padding-top: 10px;">
-        <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 8px; color: var(--text-main);">Confirmer la suppression</h3>
-        <p style="color: var(--text-dim); font-size: 13px; line-height: 1.5;" id="delete-confirm-message">
+        <h3 style="font-size: 16px; font-weight: 800; margin-bottom: 8px; color: var(--text-main);" data-i18n="modal_del_title">Confirmer la suppression</h3>
+        <p style="color: var(--text-dim); font-size: 13px; line-height: 1.5;" id="delete-confirm-message" data-i18n="modal_del_msg">
           Êtes-vous sûr de vouloir supprimer ce directeur ?
         </p>
-        <span style="display: block; font-size: 11.5px; color: var(--danger); margin-top: 8px; font-weight: 600;">
+        <span style="display: block; font-size: 11.5px; color: var(--danger); margin-top: 8px; font-weight: 600;" data-i18n="modal_del_warn">
           Cette action est irréversible et supprimera également les fiches associées.
         </span>
       </div>
 
       <div class="modal-footer" style="justify-content: center; gap: 12px; border-top: none; padding-top: 6px;">
-        <button class="btn btn-secondary" onclick="closeDeleteConfirmModal()">Annuler</button>
+        <button class="btn btn-secondary" onclick="closeDeleteConfirmModal()" data-i18n="modal_del_cancel">Annuler</button>
         <button class="btn btn-danger" id="btn-confirm-delete-execute" onclick="executeConfirmedDelete()">
-          <i class="ti ti-trash"></i> Supprimer Définitivement
+          <i class="ti ti-trash"></i> <span data-i18n="modal_del_confirm">Supprimer Définitivement</span>
         </button>
       </div>
     </div>
@@ -570,7 +570,7 @@
     <div class="modal-card">
       <div class="modal-header">
         <h3 style="display: flex; align-items: center; gap: 8px;" id="modal-director-title">
-          <i class="ti ti-user-plus" style="color: var(--primary);"></i> <span>Ajouter un Nouveau Directeur</span>
+          <i class="ti ti-user-plus" style="color: var(--primary);"></i> <span data-i18n="modal_emp_title_add">Ajouter un Nouveau Directeur</span>
         </h3>
         <button class="btn-close" onclick="closeNewEmployeeModal()"><i class="ti ti-x"></i></button>
       </div>
@@ -580,69 +580,69 @@
 
         <div class="form-grid-2">
           <div class="form-field">
-            <label>Code Wilaya</label>
+            <label data-i18n="modal_emp_lbl_code">Code Wilaya</label>
             <input type="text" id="m-code-wilaya" class="input-ctrl" placeholder="ex. 16">
           </div>
           <div class="form-field">
-            <label>Agence / Wilaya</label>
+            <label data-i18n="modal_emp_lbl_agency">Agence / Wilaya</label>
             <input type="text" id="m-agency" class="input-ctrl" placeholder="ex. Alger">
           </div>
         </div>
 
         <div class="form-grid-2">
           <div class="form-field">
-            <label>Nom & Prénom (Français)</label>
+            <label data-i18n="modal_emp_lbl_name_fr">Nom & Prénom (Français)</label>
             <input type="text" id="m-name-fr" class="input-ctrl" placeholder="ex. DJALOUT Abdelmoumene">
           </div>
           <div class="form-field">
-            <label>الاسم واللقب (بالعربية)</label>
+            <label data-i18n="modal_emp_lbl_name_ar">الاسم واللقب (بالعربية)</label>
             <input type="text" id="m-name-ar" class="input-ctrl rtl-text" dir="rtl" placeholder="مثال: جالوط عبد المؤمن">
           </div>
         </div>
 
         <div class="form-grid-2">
           <div class="form-field">
-            <label>Grade / Fonction (Français)</label>
+            <label data-i18n="modal_emp_lbl_grade_fr">Grade / Fonction (Français)</label>
             <input type="text" id="m-grade-fr" class="input-ctrl" value="Directeur d'Agence de Wilaya">
           </div>
           <div class="form-field">
-            <label>الرتبة / الوظيفة (بالعربية)</label>
+            <label data-i18n="modal_emp_lbl_grade_ar">الرتبة / الوظيفة (بالعربية)</label>
             <input type="text" id="m-grade-ar" class="input-ctrl rtl-text" dir="rtl" value="مدير وكالة كناس الولائية">
           </div>
         </div>
 
         <div class="form-grid-2">
           <div class="form-field">
-            <label>Service / Structure (Français)</label>
+            <label data-i18n="modal_emp_lbl_service_fr">Service / Structure (Français)</label>
             <input type="text" id="m-service-fr" class="input-ctrl" placeholder="ex. Agence CNAS de Alger">
           </div>
           <div class="form-field">
-            <label>المصلحة / المديرية (بالعربية)</label>
+            <label data-i18n="modal_emp_lbl_service_ar">المصلحة / المديرية (بالعربية)</label>
             <input type="text" id="m-service-ar" class="input-ctrl rtl-text" dir="rtl" placeholder="مثال: وكالة كناس لولاية الجزائر">
           </div>
         </div>
 
         <div class="form-field">
-          <label>Adresse du Siège / Professionnelle</label>
+          <label data-i18n="modal_emp_lbl_address">Adresse du Siège / Professionnelle</label>
           <input type="text" id="m-address-fr" class="input-ctrl" placeholder="ex. Siège Direction Agence CNAS, Alger">
         </div>
 
         <div class="form-grid-2">
           <div class="form-field">
-            <label>Reliquat Antérieur N-1 (Jours)</label>
+            <label data-i18n="modal_emp_lbl_n1">Reliquat Antérieur N-1 (Jours)</label>
             <input type="number" id="m-prev-balance" class="input-ctrl text-center" value="0" min="0">
           </div>
           <div class="form-field">
-            <label>Droit Annuel Légal (Jours)</label>
+            <label data-i18n="modal_emp_lbl_annual">Droit Annuel Légal (Jours)</label>
             <input type="number" id="m-annual-entitlement" class="input-ctrl text-center" value="30" min="0">
           </div>
         </div>
       </div>
 
       <div class="modal-footer">
-        <button class="btn btn-secondary" id="btn-cancel-new-director" onclick="closeNewEmployeeModal()">Annuler</button>
+        <button class="btn btn-secondary" id="btn-cancel-new-director" onclick="closeNewEmployeeModal()" data-i18n="modal_emp_btn_cancel">Annuler</button>
         <button class="btn btn-primary" id="btn-save-new-director" onclick="submitNewEmployee()">
-          <i class="ti ti-check"></i> <span id="btn-save-new-director-text">Enregistrer</span>
+          <i class="ti ti-check"></i> <span id="btn-save-new-director-text" data-i18n="modal_emp_btn_save">Enregistrer</span>
         </button>
       </div>
     </div>
@@ -659,18 +659,18 @@
         <div class="drawer-title-group">
           <i class="ti ti-file-certificate" style="color: var(--primary); font-size: 20px;"></i>
           <div>
-            <h2 style="font-size: 15px; font-weight: 700;" id="drawer-agent-title">Titre de Congé GRH.22</h2>
-            <span style="font-size: 11px; color: var(--text-dim);" id="drawer-agent-subtitle">Calcul & Remplissage automatique</span>
+            <h2 style="font-size: 15px; font-weight: 700;" id="drawer-agent-title" data-i18n="drawer_title">Titre de Congé GRH.22</h2>
+            <span style="font-size: 11px; color: var(--text-dim);" id="drawer-agent-subtitle" data-i18n="drawer_subtitle">Calcul & Remplissage automatique</span>
           </div>
         </div>
 
         <!-- Mode Toggle in Drawer -->
         <div class="drawer-tabs">
           <button class="drawer-tab-btn active" id="drawer-mode-full" onclick="setDocumentPrintMode(false)">
-            <i class="ti ti-file-invoice"></i> <span>Modèle</span>
+            <i class="ti ti-file-invoice"></i> <span data-i18n="drawer_mode_full">Modèle</span>
           </button>
           <button class="drawer-tab-btn" id="drawer-mode-overlay" onclick="setDocumentPrintMode(true)">
-            <i class="ti ti-layers-subtract"></i> <span>Papier Officiel</span>
+            <i class="ti ti-layers-subtract"></i> <span data-i18n="drawer_mode_overlay">Papier Officiel</span>
           </button>
         </div>
 
@@ -698,8 +698,8 @@
           <!-- Real-Time Vacation Days Left Hero Card -->
           <div class="drawer-calculator-card">
             <div class="calc-headline">
-              <span class="calc-title"><i class="ti ti-calculator"></i> <span>Jours de Congé Restants</span></span>
-              <span class="d-stat-label" style="color: #38bdf8;">Calcul Automatique</span>
+              <span class="calc-title"><i class="ti ti-calculator"></i> <span data-i18n="drawer_calc_title">Jours de Congé Restants</span></span>
+              <span class="d-stat-label" style="color: #38bdf8;" data-i18n="drawer_calc_badge">Calcul Automatique</span>
             </div>
 
             <div class="calc-result-number" id="calc-days-left">14 jours</div>
@@ -707,15 +707,15 @@
 
             <div class="drawer-stats-row">
               <div class="d-stat-item">
-                <span class="d-stat-label">Reliquat N-1</span>
+                <span class="d-stat-label" data-i18n="drawer_stat_n1">Reliquat N-1</span>
                 <span class="d-stat-val" id="stat-n1">0 j</span>
               </div>
               <div class="d-stat-item">
-                <span class="d-stat-label">Droit Annuel</span>
+                <span class="d-stat-label" data-i18n="drawer_stat_annual">Droit Annuel</span>
                 <span class="d-stat-val" id="stat-annual">30 j</span>
               </div>
               <div class="d-stat-item">
-                <span class="d-stat-label">Demandé</span>
+                <span class="d-stat-label" data-i18n="drawer_stat_requested">Demandé</span>
                 <span class="d-stat-val" id="stat-requested" style="color: #38bdf8;">30 j</span>
               </div>
             </div>
@@ -729,15 +729,15 @@
 
           <!-- SECTION: LEAVE PERIOD & DATES -->
           <div class="form-section">
-            <div class="sec-title"><i class="ti ti-calendar-time"></i> <span>Période & Durée du Congé</span></div>
+            <div class="sec-title"><i class="ti ti-calendar-time"></i> <span data-i18n="drawer_sec_period">Période & Durée du Congé</span></div>
             
             <div class="form-grid-2">
               <div class="form-field">
-                <label>Jours Accordés</label>
+                <label data-i18n="drawer_lbl_granted">Jours Accordés</label>
                 <input type="number" class="input-ctrl text-center font-bold" id="f-leave-days" value="30" min="1" oninput="onLeaveDaysInput()">
               </div>
               <div class="form-field">
-                <label>Date de Départ</label>
+                <label data-i18n="drawer_lbl_dep_date">Date de Départ</label>
                 <input type="date" class="input-ctrl" id="f-date-depart" onchange="onDateDepartInput()">
               </div>
             </div>
@@ -752,11 +752,11 @@
 
             <div class="form-grid-2" style="margin-top: 4px;">
               <div class="form-field">
-                <label>Date de Reprise Calculée</label>
+                <label data-i18n="drawer_lbl_ret_date">Date de Reprise Calculée</label>
                 <input type="date" class="input-ctrl" id="f-date-retour" onchange="onDateRetourInput()">
               </div>
               <div class="form-field">
-                <label>Adresse Durant le Congé</label>
+                <label data-i18n="drawer_lbl_leave_addr">Adresse Durant le Congé</label>
                 <input type="text" class="input-ctrl" id="f-leave-address" placeholder="ex. Résidence Familiale, Béjaïa">
               </div>
             </div>
@@ -764,45 +764,45 @@
 
           <!-- SECTION: AGENT DETAILS -->
           <div class="form-section">
-            <div class="sec-title"><i class="ti ti-user-star"></i> <span>Informations du Directeur</span></div>
+            <div class="sec-title"><i class="ti ti-user-star"></i> <span data-i18n="drawer_sec_agent">Informations du Directeur</span></div>
 
             <div class="form-field">
-              <label>Nom & Prénom</label>
+              <label data-i18n="drawer_lbl_name">Nom & Prénom</label>
               <input type="text" class="input-ctrl" id="f-agent-name" placeholder="Nom et Prénom">
             </div>
 
             <div class="form-grid-2">
               <div class="form-field">
-                <label>Grade / Fonction</label>
+                <label data-i18n="drawer_lbl_grade">Grade / Fonction</label>
                 <input type="text" class="input-ctrl" id="f-grade" placeholder="Grade">
               </div>
               <div class="form-field">
-                <label>Structure / Agence</label>
+                <label data-i18n="drawer_lbl_service">Structure / Agence</label>
                 <input type="text" class="input-ctrl" id="f-service" placeholder="Service">
               </div>
             </div>
 
             <div class="form-field">
-              <label>Adresse Siège / Personnelle</label>
+              <label data-i18n="drawer_lbl_address">Adresse Siège / Personnelle</label>
               <input type="text" class="input-ctrl" id="f-address" placeholder="Adresse Siège">
             </div>
           </div>
 
           <!-- SECTION: BALANCES OVERRIDE -->
           <div class="form-section">
-            <div class="sec-title"><i class="ti ti-scale"></i> <span>Détail des Droits & Reliquats</span></div>
+            <div class="sec-title"><i class="ti ti-scale"></i> <span data-i18n="drawer_sec_rights">Détail des Droits & Reliquats</span></div>
 
             <div class="form-grid-3">
               <div class="form-field">
-                <label>Reliquat N-1</label>
+                <label data-i18n="drawer_stat_n1">Reliquat N-1</label>
                 <input type="number" class="input-ctrl text-center" id="f-prev-balance" value="0" min="0" oninput="recalcAndRender()">
               </div>
               <div class="form-field">
-                <label>Droit Annuel</label>
+                <label data-i18n="drawer_stat_annual">Droit Annuel</label>
                 <input type="number" class="input-ctrl text-center" id="f-annual-entitlement" value="30" min="0" oninput="recalcAndRender()">
               </div>
               <div class="form-field">
-                <label>Total Disponible</label>
+                <label data-i18n="drawer_lbl_tot_avail">Total Disponible</label>
                 <input type="number" class="input-ctrl text-center font-bold" id="f-total-entitlement" value="30" readonly style="background: rgba(255,255,255,0.03);">
               </div>
             </div>
@@ -810,21 +810,21 @@
 
           <!-- SECTION: ISSUING & LOCATION -->
           <div class="form-section">
-            <div class="sec-title"><i class="ti ti-writing"></i> <span>Émission & Signatures</span></div>
+            <div class="sec-title"><i class="ti ti-writing"></i> <span data-i18n="drawer_sec_sign">Émission & Signatures</span></div>
 
             <div class="form-grid-2">
               <div class="form-field">
-                <label>Fait à</label>
+                <label data-i18n="drawer_lbl_city">Fait à</label>
                 <input type="text" class="input-ctrl" id="f-location" value="Alger">
               </div>
               <div class="form-field">
-                <label>Le (Date)</label>
+                <label data-i18n="drawer_lbl_date">Le (Date)</label>
                 <input type="date" class="input-ctrl" id="f-issue-date">
               </div>
             </div>
 
             <div class="form-field">
-              <label>Qualité du Signataire</label>
+              <label data-i18n="drawer_lbl_signatory">Qualité du Signataire</label>
               <input type="text" class="input-ctrl" id="f-signatory" value="Le Directeur Général,">
             </div>
           </div>
@@ -860,29 +860,29 @@
       <!-- Drawer Footer Action Bar -->
       <div class="drawer-footer">
         <button class="btn btn-secondary" onclick="closeLeaveDrawer()">
-          <i class="ti ti-arrow-left"></i> <span>Retour à l'Annuaire</span>
+          <i class="ti ti-arrow-left"></i> <span data-i18n="drawer_btn_back">Retour à l'Annuaire</span>
         </button>
 
         <div style="display: flex; gap: 8px;">
           <!-- Print on Official Pre-printed Paper (Data only) -->
           <button class="btn btn-primary" onclick="printDocument(true)" title="Imprimer les données seules sur papier officiel pré-imprimé présent dans l'imprimante">
-            <i class="ti ti-printer"></i> <span>Imprimer (Papier Officiel)</span>
+            <i class="ti ti-printer"></i> <span data-i18n="drawer_btn_print_official">Imprimer (Papier Officiel)</span>
           </button>
           <!-- Print Complete Document (Full template + data) -->
           <button class="btn btn-secondary" onclick="printDocument(false)" title="Imprimer le document complet avec en-tête et modèle">
-            <i class="ti ti-file-text"></i> <span>Imprimer Tout</span>
+            <i class="ti ti-file-text"></i> <span data-i18n="drawer_btn_print_all">Imprimer Tout</span>
           </button>
           <!-- Export Transparent Data-Only PDF -->
           <button class="btn btn-secondary" onclick="saveAsPDF(true)" title="Générer un PDF transparent avec les données seules pour papier existant">
-            <i class="ti ti-file-text"></i> <span>PDF Données Seules</span>
+            <i class="ti ti-file-text"></i> <span data-i18n="drawer_btn_pdf_data">PDF Données Seules</span>
           </button>
           <!-- Export Full Document PDF -->
           <button class="btn btn-secondary" onclick="saveAsPDF(false)" title="Exporter le document complet en PDF">
-            <i class="ti ti-file-type-pdf"></i> <span>PDF Complet</span>
+            <i class="ti ti-file-type-pdf"></i> <span data-i18n="drawer_btn_pdf_full">PDF Complet</span>
           </button>
           <!-- Save Record -->
           <button class="btn btn-success" onclick="saveCurrentLeaveRecord()" title="Enregistrer et déduire du solde">
-            <i class="ti ti-device-floppy"></i> <span>Enregistrer</span>
+            <i class="ti ti-device-floppy"></i> <span data-i18n="drawer_btn_save">Enregistrer</span>
           </button>
         </div>
       </div>
