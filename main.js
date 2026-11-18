@@ -57,6 +57,14 @@ ipcMain.handle('get-employees', async () => {
     return [];
   }
 });
+ipcMain.handle('get-directors', async () => {
+  try {
+    return db.getEmployees();
+  } catch (err) {
+    console.error('Error reading directors from SQLite:', err);
+    return [];
+  }
+});
 
 ipcMain.handle('save-employee', async (event, employee) => {
   try {
@@ -67,12 +75,29 @@ ipcMain.handle('save-employee', async (event, employee) => {
     return { success: false, error: err.message };
   }
 });
+ipcMain.handle('save-director', async (event, director) => {
+  try {
+    const saved = db.saveEmployee(director);
+    return { success: true, employee: saved };
+  } catch (err) {
+    console.error('Error saving director to SQLite:', err);
+    return { success: false, error: err.message };
+  }
+});
 
 ipcMain.handle('delete-employee', async (event, id) => {
   try {
     return db.deleteEmployee(id);
   } catch (err) {
     console.error('Error deleting employee from SQLite:', err);
+    return { success: false, error: err.message };
+  }
+});
+ipcMain.handle('delete-director', async (event, id) => {
+  try {
+    return db.deleteEmployee(id);
+  } catch (err) {
+    console.error('Error deleting director from SQLite:', err);
     return { success: false, error: err.message };
   }
 });

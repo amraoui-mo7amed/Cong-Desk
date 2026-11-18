@@ -21,7 +21,6 @@ if (!fs.existsSync(DATA_DIR)) {
 }
 
 const DB_PATH = path.join(DATA_DIR, 'congedesk.sqlite');
-
 const db = new DatabaseSync(DB_PATH);
 
 // Initialize Tables
@@ -29,6 +28,8 @@ function initDatabase() {
   db.exec(`
     CREATE TABLE IF NOT EXISTS employees (
       id TEXT PRIMARY KEY,
+      code_wilaya TEXT,
+      agency TEXT,
       name_fr TEXT NOT NULL,
       name_ar TEXT NOT NULL,
       grade_fr TEXT,
@@ -37,6 +38,7 @@ function initDatabase() {
       service_ar TEXT,
       address_fr TEXT,
       address_ar TEXT,
+      observations TEXT,
       prev_balance REAL DEFAULT 0,
       annual_entitlement REAL DEFAULT 30,
       created_at TEXT DEFAULT (datetime('now'))
@@ -63,13 +65,36 @@ function initDatabase() {
       timestamp TEXT DEFAULT (datetime('now'))
     );
   `);
+
+  // Ensure new columns exist if upgraded from older version
+  const cols = db.prepare("PRAGMA table_info(employees)").all().map(c => c.name);
+  if (!cols.includes('code_wilaya')) {
+    db.exec("ALTER TABLE employees ADD COLUMN code_wilaya TEXT;");
+  }
+  if (!cols.includes('agency')) {
+    db.exec("ALTER TABLE employees ADD COLUMN agency TEXT;");
+  }
+  if (!cols.includes('observations')) {
+    db.exec("ALTER TABLE employees ADD COLUMN observations TEXT;");
+  }
+
+  // Auto-populate with CNAS directors from data.xlsx if empty or holding old dummy test data
+  const countRow = db.prepare("SELECT COUNT(*) as c FROM employees").get();
+  if (countRow.c < 50) {
+    seedDirectorsData(true);
+  }
 }
 
 // Queries
 function getEmployees() {
-  const stmt = db.prepare('SELECT * FROM employees ORDER BY name_fr ASC');
+  // Order by numerical Wilaya code, then name
+  const stmt = db.prepare(`
+    SELECT * FROM employees 
+    ORDER BY 
+      CASE WHEN code_wilaya IS NOT NULL AND code_wilaya != '' THEN CAST(code_wilaya AS INTEGER) ELSE 999 END ASC,
+      name_fr ASC
+  `);
   const rows = stmt.all();
-  // Return plain objects
   return rows.map(r => ({ ...r }));
 }
 
@@ -80,10 +105,14 @@ function getEmployee(id) {
 }
 
 function saveEmployee(emp) {
-  const existing = getEmployee(emp.id);
+  const id = emp.id || ('dir_' + Date.now());
+  const existing = getEmployee(id);
+  
   if (existing) {
     const stmt = db.prepare(`
       UPDATE employees SET
+        code_wilaya = ?,
+        agency = ?,
         name_fr = ?,
         name_ar = ?,
         grade_fr = ?,
@@ -92,46 +121,53 @@ function saveEmployee(emp) {
         service_ar = ?,
         address_fr = ?,
         address_ar = ?,
+        observations = ?,
         prev_balance = ?,
         annual_entitlement = ?
       WHERE id = ?
     `);
     stmt.run(
-      emp.name_fr,
-      emp.name_ar,
-      emp.grade_fr,
-      emp.grade_ar,
-      emp.service_fr,
-      emp.service_ar,
-      emp.address_fr,
-      emp.address_ar,
-      emp.prev_balance,
-      emp.annual_entitlement,
-      emp.id
+      emp.code_wilaya || '',
+      emp.agency || '',
+      emp.name_fr || '',
+      emp.name_ar || '',
+      emp.grade_fr || '',
+      emp.grade_ar || '',
+      emp.service_fr || '',
+      emp.service_ar || '',
+      emp.address_fr || '',
+      emp.address_ar || '',
+      emp.observations || '',
+      Number(emp.prev_balance || 0),
+      Number(emp.annual_entitlement || 30),
+      id
     );
   } else {
     const stmt = db.prepare(`
       INSERT INTO employees (
-        id, name_fr, name_ar, grade_fr, grade_ar,
-        service_fr, service_ar, address_fr, address_ar,
+        id, code_wilaya, agency, name_fr, name_ar, grade_fr, grade_ar,
+        service_fr, service_ar, address_fr, address_ar, observations,
         prev_balance, annual_entitlement
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `);
     stmt.run(
-      emp.id,
-      emp.name_fr,
-      emp.name_ar,
-      emp.grade_fr,
-      emp.grade_ar,
-      emp.service_fr,
-      emp.service_ar,
-      emp.address_fr,
-      emp.address_ar,
-      emp.prev_balance,
-      emp.annual_entitlement
+      id,
+      emp.code_wilaya || '',
+      emp.agency || '',
+      emp.name_fr || '',
+      emp.name_ar || '',
+      emp.grade_fr || '',
+      emp.grade_ar || '',
+      emp.service_fr || '',
+      emp.service_ar || '',
+      emp.address_fr || '',
+      emp.address_ar || '',
+      emp.observations || '',
+      Number(emp.prev_balance || 0),
+      Number(emp.annual_entitlement || 30)
     );
   }
-  return getEmployee(emp.id);
+  return getEmployee(id);
 }
 
 function deleteEmployee(id) {
@@ -166,222 +202,94 @@ function saveLeaveRecord(record) {
     record.agent_name || '',
     record.grade || '',
     record.service || '',
-    record.leave_days || 0,
+    Number(record.leave_days || 0),
     record.dep_date || '',
     record.ret_date || '',
     record.leave_address || '',
     record.location || '',
     record.date || '',
     record.director || '',
-    record.prev_balance || 0,
-    record.cur_entitlement || 0,
-    record.tot_entitlement || 0,
-    record.leave_granted || 0,
-    record.new_balance || 0,
+    Number(record.prev_balance || 0),
+    Number(record.cur_entitlement || 0),
+    Number(record.tot_entitlement || 0),
+    Number(record.leave_granted || 0),
+    Number(record.new_balance || 0),
     timestamp
   );
 
   // Update employee remaining balance in SQLite
   if (record.employeeId) {
     const updateEmp = db.prepare('UPDATE employees SET prev_balance = ? WHERE id = ?');
-    updateEmp.run(record.new_balance, record.employeeId);
+    updateEmp.run(Number(record.new_balance || 0), record.employeeId);
   }
 
   return { success: true, id };
 }
 
-// Seed realistic Algerian CNAS random employee & leave data
-function seedSampleData(clearFirst = false) {
+// Seed CNAS Directors directly from data.xlsx seed file
+function seedDirectorsData(clearFirst = false) {
   if (clearFirst) {
     db.exec('DELETE FROM leave_records; DELETE FROM employees;');
   }
 
-  const sampleEmployees = [
-    {
-      id: 'emp_01',
-      name_fr: 'BENALI Ahmed',
-      name_ar: 'بن علي أحمد',
-      grade_fr: "Attaché Principal d'Administration",
-      grade_ar: 'ملحق رئيسي للإدارة',
-      service_fr: 'Sous-Direction des Ressources Humaines',
-      service_ar: 'المديرية الفرعية للموارد البشرية',
-      address_fr: '12 Rue Didouche Mourad, Alger-Centre',
-      address_ar: '12 شارع ديدوش مراد، الجزائر الوسطى',
-      prev_balance: 14,
-      annual_entitlement: 30
-    },
-    {
-      id: 'emp_02',
-      name_fr: 'MEZIANE Samira',
-      name_ar: 'مزيان سميرة',
-      grade_fr: 'Ingénieur Principal en Informatique',
-      grade_ar: 'مهندس رئيسي في الإعلام الآلي',
-      service_fr: 'Direction des Systèmes d\'Information',
-      service_ar: 'مديرية أنظمة الإعلام الآلي',
-      address_fr: '25 Boulevard Colonel Amirouche, Bab El Oued, Alger',
-      address_ar: '25 شارع العقيد عميروش، باب الواد، الجزائر',
-      prev_balance: 8,
-      annual_entitlement: 30
-    },
-    {
-      id: 'emp_03',
-      name_fr: 'KACI Mohamed',
-      name_ar: 'قاسي محمد',
-      grade_fr: 'Chef de Service Recouvrement',
-      grade_ar: 'رئيس مصلحة التحصيل',
-      service_fr: 'Direction du Recouvrement et du Contentieux',
-      service_ar: 'مديرية التحصيل والمنازعات',
-      address_fr: '08 Cité 5 Juillet, Bab Ezzouar, Alger',
-      address_ar: '08 حي 5 جويلية، باب الزوار، الجزائر',
-      prev_balance: 22,
-      annual_entitlement: 30
-    },
-    {
-      id: 'emp_04',
-      name_fr: 'BOUZID Amina',
-      name_ar: 'بوزيد أمينة',
-      grade_fr: 'Médecin Contrôleur Principal',
-      grade_ar: 'طبيب مراقب رئيسي',
-      service_fr: 'Département du Contrôle Médical',
-      service_ar: 'قسم المراقبة الطبية',
-      address_fr: '14 Rue Hassiba Ben Bouali, Sidi M\'Hamed, Alger',
-      address_ar: '14 شارع حسيبة بن بوعلي، سيدي امحمد، الجزائر',
-      prev_balance: 5,
-      annual_entitlement: 30
-    },
-    {
-      id: 'emp_05',
-      name_fr: 'HADJ-ALI Karim',
-      name_ar: 'حاج علي كريم',
-      grade_fr: 'Comptable Agréé Principal',
-      grade_ar: 'محاسب معتمد رئيسي',
-      service_fr: 'Sous-Direction des Finances et de la Comptabilité',
-      service_ar: 'المديرية الفرعية للمالية والمحاسبة',
-      address_fr: '03 Rue Larbi Ben M\'hidi, Oran',
-      address_ar: '03 شارع العربي بن مهيدي، وهران',
-      prev_balance: 19,
-      annual_entitlement: 30
-    },
-    {
-      id: 'emp_06',
-      name_fr: 'MANSOURI Fatima',
-      name_ar: 'منصوري فاطمة',
-      grade_fr: 'Administrateur Conseiller',
-      grade_ar: 'متصرف مستشار',
-      service_fr: 'Secrétariat Général',
-      service_ar: 'الأمانة العامة',
-      address_fr: '17 Avenue de l\'Indépendance, Rouiba, Alger',
-      address_ar: '17 شارع الاستقلال، الرويبة، الجزائر',
-      prev_balance: 0,
-      annual_entitlement: 30
-    },
-    {
-      id: 'emp_07',
-      name_fr: 'DAHMANI Youcef',
-      name_ar: 'دحماني يوسف',
-      grade_fr: 'Technicien Supérieur Réseaux & Télécoms',
-      grade_ar: 'تقني سامي في الشبكات والمواصلات السلكية واللاسلكية',
-      service_fr: 'Centre d\'Exploitation Informatique',
-      service_ar: 'مركز الاستغلال المعلوماتي',
-      address_fr: '52 Rue Tripoli, Hussein Dey, Alger',
-      address_ar: '52 شارع طرابلس، حسين داي، الجزائر',
-      prev_balance: 11,
-      annual_entitlement: 30
-    },
-    {
-      id: 'emp_08',
-      name_fr: 'CHERRADI Souad',
-      name_ar: 'شرادي سعاد',
-      grade_fr: 'Chargée des Relations Publiques & Accueil',
-      grade_ar: 'مكلفة بالعلاقات العامة والاستقبال',
-      service_fr: 'Cellule Communication & Écoute Sociale',
-      service_ar: 'خلية الإعلام والتواصل الاجتماعي',
-      address_fr: '09 Boulevard Zighout Youcef, Alger',
-      address_ar: '09 شارع زيغود يوسف، الجزائر',
-      prev_balance: 15,
-      annual_entitlement: 30
-    }
-  ];
+  const seedPath = path.join(__dirname, 'data', 'directors_seed.json');
+  if (!fs.existsSync(seedPath)) {
+    console.error('Seed file not found:', seedPath);
+    return { success: false, error: 'Seed file missing' };
+  }
 
-  sampleEmployees.forEach(emp => saveEmployee(emp));
+  const directors = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+  const insertStmt = db.prepare(`
+    INSERT OR REPLACE INTO employees (
+      id, code_wilaya, agency, name_fr, name_ar, grade_fr, grade_ar,
+      service_fr, service_ar, address_fr, address_ar, observations,
+      prev_balance, annual_entitlement
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `);
 
-  // Seed sample leave history
-  const sampleLeaves = [
-    {
-      employeeId: 'emp_01',
-      agent_name: 'BENALI Ahmed',
-      grade: "Attaché Principal d'Administration",
-      service: 'Sous-Direction des Ressources Humaines',
-      leave_days: 16,
-      dep_date: '01/07/2026',
-      ret_date: '17/07/2026',
-      leave_address: '05 Boulevard des Martyrs, Tipaza',
-      location: 'Alger',
-      date: '25/06/2026',
-      director: 'Le Directeur d\'Agence',
-      prev_balance: 30,
-      cur_entitlement: 30,
-      tot_entitlement: 60,
-      leave_granted: 16,
-      new_balance: 14,
-      timestamp: '2026-06-25T10:30:00Z'
-    },
-    {
-      employeeId: 'emp_02',
-      agent_name: 'MEZIANE Samira',
-      grade: 'Ingénieur Principal en Informatique',
-      service: 'Direction des Systèmes d\'Information',
-      leave_days: 22,
-      dep_date: '10/08/2026',
-      ret_date: '01/09/2026',
-      leave_address: 'Cité Plage, Ain El Turck, Oran',
-      location: 'Alger',
-      date: '02/08/2026',
-      director: 'Le Directeur d\'Agence',
-      prev_balance: 0,
-      cur_entitlement: 30,
-      tot_entitlement: 30,
-      leave_granted: 22,
-      new_balance: 8,
-      timestamp: '2026-08-02T14:15:00Z'
-    },
-    {
-      employeeId: 'emp_03',
-      agent_name: 'KACI Mohamed',
-      grade: 'Chef de Service Recouvrement',
-      service: 'Direction du Recouvrement et du Contentieux',
-      leave_days: 8,
-      dep_date: '15/09/2026',
-      ret_date: '23/09/2026',
-      leave_address: 'Résidence Sahel, Zéralda, Alger',
-      location: 'Alger',
-      date: '10/09/2026',
-      director: 'Le Directeur d\'Agence',
-      prev_balance: 0,
-      cur_entitlement: 30,
-      tot_entitlement: 30,
-      leave_granted: 8,
-      new_balance: 22,
-      timestamp: '2026-09-10T09:00:00Z'
-    }
-  ];
+  for (const d of directors) {
+    insertStmt.run(
+      d.id,
+      d.code_wilaya || '',
+      d.agency || '',
+      d.name_fr || '',
+      d.name_ar || '',
+      d.grade_fr || '',
+      d.grade_ar || '',
+      d.service_fr || '',
+      d.service_ar || '',
+      d.address_fr || '',
+      d.address_ar || '',
+      d.observations || '',
+      Number(d.prev_balance || 0),
+      Number(d.annual_entitlement || 30)
+    );
+  }
 
-  sampleLeaves.forEach(rec => saveLeaveRecord(rec));
-
-  return { success: true, employeesCount: sampleEmployees.length, leavesCount: sampleLeaves.length };
+  return { success: true, count: directors.length };
 }
 
-// Auto-initialize on module load
+// Keep backward compatibility
+function seedSampleData(clearFirst = false) {
+  return seedDirectorsData(clearFirst);
+}
+
+// Auto-initialize on load
 initDatabase();
 
 module.exports = {
   db,
-  DB_PATH,
+  initDatabase,
   getEmployees,
   getEmployee,
   saveEmployee,
   deleteEmployee,
+  getDirectors: getEmployees,
+  getDirector: getEmployee,
+  saveDirector: saveEmployee,
+  deleteDirector: deleteEmployee,
   getLeaveHistory,
   saveLeaveRecord,
+  seedDirectorsData,
   seedSampleData
 };

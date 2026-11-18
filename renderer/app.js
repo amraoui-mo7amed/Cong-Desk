@@ -1,202 +1,52 @@
-// CongéDesk - Application Logic
-// Features: Bilingual (FR/AR), Dark/Light Themes, Employee Cards Grid, Dedicated Preview Modal, GRH.22 Generator
+// CongéDesk - Application Logic (CNAS GRH.22 Official Edition)
+// Features: Bilingual (FR/AR), Dark/Light Themes, Collapsible Sidebar, Minimal Director Cards, Tabler Icons, Dedicated Settings & About, Leave Calculator & GRH.22 Generator
 
 let currentAppLang = 'fr'; // 'fr' or 'ar'
 let currentDocLang = 'fr'; // 'fr' or 'ar'
 let currentTheme = 'light'; // 'light' (default) or 'dark'
 let currentZoom = 1.0;
-let modalZoom = 0.85;
 let isPreviewDataOnly = false; // Toggle between full document and transparent pre-printed overlay mode
+let currentView = 'directors'; // 'directors', 'history', 'settings'
+let currentSettingsTab = 'general'; // 'general', 'data', 'about'
 
-let employees = [];
+let employees = []; // Holds directors
 let activeEmployee = null;
 let leaveHistory = [];
-
-// ================= I18N DICTIONARY =================
-const i18n = {
-  fr: {
-    appSubtitle: "Système de Gestion des Congés CNAS GRH.22",
-    searchPlaceholder: "Rechercher employé, grade, service...",
-    langBtnLabel: "العربية",
-    addEmployee: "Ajouter Employé",
-    randomData: "Données Aléatoires",
-    kpiTotal: "Total Employés",
-    kpiQuota: "Droit Annuel Légal",
-    kpiQuotaVal: "30 Jours",
-    kpiIssued: "Titres Émis",
-    kpiReserve: "Total Reliquats N-1",
-    directoryTitle: "Annuaire des Employés & Soldes de Congé",
-    cardsViewLabel: "Affichage Cartes",
-    vacationDaysLeft: "Jours de Congé Restants",
-    autoCalcBadge: "Calcul Automatique",
-    n1Reliquat: "Reliquat N-1",
-    annualQuota: "Droit Annuel",
-    requestedDays: "Demandé",
-    totalAvail: "Total Disponible",
-    secPeriod: "Période & Durée du Congé",
-    lblLeaveDays: "Jours Accordés",
-    lblDateDepart: "Date de Départ",
-    lblDateRetour: "Date de Reprise Calculée",
-    lblLeaveAddress: "Adresse Durant le Congé",
-    secAgent: "Informations de l'Agent",
-    lblName: "Nom & Prénom",
-    lblGrade: "Grade / Fonction",
-    lblService: "Service / Structure",
-    lblAddress: "Adresse Personnelle",
-    secBalances: "Détail des Droits & Reliquats",
-    secIssuing: "Émission & Signatures",
-    lblCity: "Fait à",
-    lblDate: "Le (Date)",
-    lblSignatory: "Qualité du Signataire",
-    backBtn: "Retour à l'Annuaire",
-    directPdf: "Remplir PDF Officiel",
-    exportPdf: "Exporter PDF",
-    saveRecord: "Enregistrer & Déduire",
-    printDoc: "Imprimer Document",
-    fullPreview: "Grand Aperçu",
-    modifyParameters: "Ajuster Paramètres",
-    previewModalTitle: "Aperçu Titre de Congé GRH.22",
-    previewModalSub: "Aperçu officiel avant impression et archivage",
-    cardPreviewBtn: "Aperçu GRH.22",
-    cardLeaveBtn: "Nouveau Congé",
-    activeOk: "Solde Disponible",
-    activeWarn: "Solde Épuisé",
-    daysUnit: "j",
-    daysRemainingLabel: "Jours Restants",
-    noEmployeesFound: "Aucun employé correspondant trouvé",
-    addEmployeeModalTitle: "Ajouter un Nouvel Employé",
-    nameFr: "Nom & Prénom (Français)",
-    nameAr: "الاسم واللقب (بالعربية)",
-    gradeFr: "Grade / Fonction (Français)",
-    gradeAr: "الرتبة / الوظيفة (بالعربية)",
-    serviceFr: "Service / Direction (Français)",
-    serviceAr: "المصلحة / المديرية (بالعربية)",
-    personalAddress: "Adresse Personnelle",
-    prevReliquat: "Reliquat Antérieur N-1 (Jours)",
-    annualQuotaDays: "Droit Annuel (Jours)",
-    cancel: "Annuler",
-    save: "Enregistrer",
-    pageFrLabel: "Page 1 : Français (TITRE DE CONGÉ)",
-    pageArLabel: "الصفحة 2 : العربية (بيان العطلة السنوية)",
-    modeFullDoc: "Modèle Complet",
-    modePrePrinted: "Papier Pré-imprimé",
-    printPrePrinted: "Imprimer (Papier Officiel)",
-    printFullDoc: "Imprimer Tout",
-    pdfDataOnly: "PDF Données Seules",
-    pdfFullDoc: "PDF Complet",
-    confirmDelete: "Êtes-vous sûr de vouloir supprimer l'employé",
-    sufficientBalanceText: (days) => `Solde suffisant. L'employé conservera ${days} jours en réserve après ce congé.`,
-    depletedBalanceText: "Solde entièrement utilisé. L'employé utilise la totalité de ses droits (0 jour restant).",
-    overLimitText: (deficit, req, avail) => `Attention dépassement ! Le congé demandé (${req}j) dépasse les droits disponibles (${avail}j) de ${deficit} jour(s).`
-  },
-  ar: {
-    appSubtitle: "نظام تسيير العطل السنوية كـ.ن.ت.ج - استمارة GRH.22",
-    searchPlaceholder: "بحث عن موظف، رتبة، مصلحة...",
-    langBtnLabel: "Français",
-    addEmployee: "إضافة موظف",
-    randomData: "بيانات عشوائية",
-    kpiTotal: "إجمالي الموظفين",
-    kpiQuota: "الحق السنوي القانوني",
-    kpiQuotaVal: "30 يوماً",
-    kpiIssued: "سندات العطل الصادرة",
-    kpiReserve: "إجمالي البواقي السابقة",
-    directoryTitle: "دليل الموظفين وأرصدة العطل",
-    cardsViewLabel: "عرض البطاقات",
-    vacationDaysLeft: "أيام العطلة المتبقية",
-    autoCalcBadge: "حساب تلقائي",
-    n1Reliquat: "الباقي N-1",
-    annualQuota: "الحق السنوي",
-    requestedDays: "المطلوب",
-    totalAvail: "المجموع المتاح",
-    secPeriod: "فترة ومدة العطلة",
-    lblLeaveDays: "الأيام الممنوحة",
-    lblDateDepart: "تاريخ الانطلاق",
-    lblDateRetour: "تاريخ الاستئناف المحسوب",
-    lblLeaveAddress: "العنوان أثناء العطلة",
-    secAgent: "معلومات الموظف",
-    lblName: "الاسم واللقب",
-    lblGrade: "الرتبة / الوظيفة",
-    lblService: "المصلحة / الهيكل",
-    lblAddress: "العنوان الشخصي",
-    secBalances: "تفاصيل الحقوق والبواقي",
-    secIssuing: "الإصدار والتوقيعات",
-    lblCity: "حرر بـ",
-    lblDate: "بتاريخ",
-    lblSignatory: "صفة الموقع",
-    backBtn: "رجوع إلى الدليل",
-    directPdf: "ملء الاستمارة الرسمية",
-    exportPdf: "تصدير PDF",
-    saveRecord: "حفظ وخصم الرصيد",
-    printDoc: "طباعة الوثيقة",
-    fullPreview: "معاينة مكبرة",
-    modifyParameters: "تعديل المعطيات",
-    previewModalTitle: "معاينة بيان العطلة السنوية GRH.22",
-    previewModalSub: "المعاينة الرسمية قبل الطباعة والأرشفة",
-    cardPreviewBtn: "معاينة الوثيقة",
-    cardLeaveBtn: "منح عطلة",
-    activeOk: "رصيد متاح",
-    activeWarn: "رصيد مستنفد",
-    daysUnit: "يوم",
-    daysRemainingLabel: "يوماً متبقياً",
-    noEmployeesFound: "لم يتم العثور على أي موظف مطابق",
-    addEmployeeModalTitle: "إضافة موظف جديد",
-    nameFr: "Nom & Prénom (Français)",
-    nameAr: "الاسم واللقب (بالعربية)",
-    gradeFr: "Grade / Fonction (Français)",
-    gradeAr: "الرتبة / الوظيفة (بالعربية)",
-    serviceFr: "Service / Direction (Français)",
-    serviceAr: "المصلحة / المديرية (بالعربية)",
-    personalAddress: "العنوان الشخصي",
-    prevReliquat: "الباقي من السنة السابقة (أيام)",
-    annualQuotaDays: "الحق السنوي (أيام)",
-    cancel: "إلغاء",
-    save: "حفظ الموظف",
-    pageFrLabel: "Page 1 : Français (TITRE DE CONGÉ)",
-    pageArLabel: "الصفحة 2 : العربية (بيان العطلة السنوية)",
-    modeFullDoc: "النموذج الكامل",
-    modePrePrinted: "ورق رسمي جاهز",
-    printPrePrinted: "طباعة (ورق رسمي جاهز)",
-    printFullDoc: "طباعة الوثيقة كاملة",
-    pdfDataOnly: "PDF بيانات فقط",
-    pdfFullDoc: "PDF كامل",
-    confirmDelete: "هل أنت متأكد من حذف الموظف",
-    sufficientBalanceText: (days) => `الرصيد كافٍ. سيحتفظ الموظف بـ ${days} يوماً في الاحتياط بعد هذه العطلة.`,
-    depletedBalanceText: "تم استهلاك الرصيد بالكامل (0 يوم متبقي).",
-    overLimitText: (deficit, req, avail) => `تنبيه تجاوز الرصيد! العطلة المطلوبة (${req} يوم) تتجاوز الرصيد المتاح (${avail} يوم) بـ ${deficit} يوم.`
-  }
-};
+let directorToDeleteId = null;
 
 // ================= INITIALIZATION =================
 window.addEventListener('DOMContentLoaded', async () => {
-  // Default to light theme unless explicitly saved
+  // 1. Theme initialization
   const savedTheme = localStorage.getItem('congedesk_theme');
   currentTheme = (savedTheme === 'dark') ? 'dark' : 'light';
   applyTheme(currentTheme);
 
-  // Load saved language if any
-  const savedLang = localStorage.getItem('congedesk_lang');
-  if (savedLang === 'ar' || savedLang === 'fr') {
-    currentAppLang = savedLang;
+  // 2. Sidebar collapsed state
+  const isSidebarCollapsed = localStorage.getItem('congedesk_sidebar_collapsed') === 'true';
+  if (isSidebarCollapsed) {
+    document.getElementById('app-sidebar')?.classList.add('collapsed');
+    const icon = document.getElementById('sidebar-toggle-icon');
+    if (icon) icon.className = 'ti ti-layout-sidebar-left-expand';
   }
-  applyAppLanguage(currentAppLang);
 
-  // Set default issue date (today)
+  // 3. Set default dates
   const today = new Date();
-  document.getElementById('f-issue-date').value = today.toISOString().split('T')[0];
+  const issueDateEl = document.getElementById('f-issue-date');
+  if (issueDateEl) issueDateEl.value = today.toISOString().split('T')[0];
 
-  // Set default departure date (next Monday)
   const nextMonday = new Date();
   nextMonday.setDate(today.getDate() + ((1 + 7 - today.getDay()) % 7 || 7));
-  document.getElementById('f-date-depart').value = nextMonday.toISOString().split('T')[0];
+  const depDateEl = document.getElementById('f-date-depart');
+  if (depDateEl) depDateEl.value = nextMonday.toISOString().split('T')[0];
 
-  // Calculate default return date with 30 days
   onDateDepartInput();
 
-  // Load employees and leave history
+  // 4. Load directors and leave history from SQLite
   await loadEmployees();
   await loadHistory();
+  loadAppSettings();
 
-  // Real-time input listeners inside drawer
+  // 5. Drawer real-time inputs
   const inputs = document.querySelectorAll('.input-ctrl');
   inputs.forEach(inp => {
     inp.addEventListener('input', () => {
@@ -204,6 +54,114 @@ window.addEventListener('DOMContentLoaded', async () => {
     });
   });
 });
+
+// ================= VIEW SWITCHER (PAGES) =================
+function switchAppView(view) {
+  currentView = view;
+
+  // Update navigation items
+  document.querySelectorAll('.sidebar-nav .nav-item, .sidebar-footer .nav-item').forEach(item => {
+    item.classList.remove('active');
+  });
+
+  const activeNav = document.getElementById(`nav-${view}`);
+  if (activeNav) activeNav.classList.add('active');
+
+  // Toggle pages
+  const pages = ['directors', 'history', 'settings'];
+  pages.forEach(p => {
+    const pageEl = document.getElementById(`page-${p}`);
+    if (pageEl) {
+      if (p === view) {
+        pageEl.style.display = 'flex';
+        pageEl.classList.add('active');
+      } else {
+        pageEl.style.display = 'none';
+        pageEl.classList.remove('active');
+      }
+    }
+  });
+
+  if (view === 'history') {
+    renderHistoryTable();
+  }
+}
+
+// ================= SIDEBAR COLLAPSE TOGGLE =================
+function toggleSidebar() {
+  const sidebar = document.getElementById('app-sidebar');
+  if (!sidebar) return;
+
+  sidebar.classList.toggle('collapsed');
+  const isCollapsed = sidebar.classList.contains('collapsed');
+  localStorage.setItem('congedesk_sidebar_collapsed', isCollapsed);
+
+  const icon = document.getElementById('sidebar-toggle-icon');
+  if (icon) {
+    icon.className = isCollapsed 
+      ? 'ti ti-layout-sidebar-left-expand' 
+      : 'ti ti-layout-sidebar-left-collapse';
+  }
+}
+
+// ================= SETTINGS TABS =================
+function switchSettingsTab(tab) {
+  currentSettingsTab = tab;
+
+  document.querySelectorAll('.settings-tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.settings-tab-panel').forEach(panel => {
+    panel.style.display = 'none';
+    panel.classList.remove('active');
+  });
+
+  const activeBtn = document.getElementById(`stab-btn-${tab}`);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const activePanel = document.getElementById(`stab-panel-${tab}`);
+  if (activePanel) {
+    activePanel.style.display = 'block';
+    activePanel.classList.add('active');
+  }
+}
+
+function loadAppSettings() {
+  const cfgStr = localStorage.getItem('congedesk_config');
+  if (!cfgStr) return;
+  try {
+    const cfg = JSON.parse(cfgStr);
+    if (cfg.company_name) document.getElementById('set-company-name').value = cfg.company_name;
+    if (cfg.service) document.getElementById('set-service-name').value = cfg.service;
+    if (cfg.city) {
+      document.getElementById('set-default-city').value = cfg.city;
+      document.getElementById('f-location').value = cfg.city;
+    }
+    if (cfg.signatory_title) {
+      document.getElementById('set-signatory-title').value = cfg.signatory_title;
+      document.getElementById('f-signatory').value = cfg.signatory_title;
+    }
+    if (cfg.signatory_name) document.getElementById('set-signatory-name').value = cfg.signatory_name;
+    if (cfg.default_days) document.getElementById('set-default-days').value = cfg.default_days;
+  } catch (e) {
+    console.error('Error loading settings:', e);
+  }
+}
+
+function saveAppSettings() {
+  const cfg = {
+    company_name: document.getElementById('set-company-name').value.trim(),
+    service: document.getElementById('set-service-name').value.trim(),
+    city: document.getElementById('set-default-city').value.trim(),
+    signatory_title: document.getElementById('set-signatory-title').value.trim(),
+    signatory_name: document.getElementById('set-signatory-name').value.trim(),
+    default_days: Number(document.getElementById('set-default-days').value) || 30
+  };
+
+  localStorage.setItem('congedesk_config', JSON.stringify(cfg));
+  document.getElementById('f-location').value = cfg.city || 'Alger';
+  document.getElementById('f-signatory').value = cfg.signatory_title || 'Le Directeur Général,';
+
+  alert('Paramètres généraux enregistrés avec succès !');
+}
 
 // ================= THEME TOGGLE =================
 function toggleAppTheme() {
@@ -214,91 +172,13 @@ function toggleAppTheme() {
 
 function applyTheme(theme) {
   document.documentElement.setAttribute('data-theme', theme);
-  const icon = document.getElementById('theme-btn-icon');
-  if (icon) {
-    if (theme === 'light') {
-      icon.className = 'fa-solid fa-moon';
-      icon.title = (currentAppLang === 'ar') ? "الوضع المظلم" : "Mode Sombre";
-    } else {
-      icon.className = 'fa-solid fa-sun';
-      icon.title = (currentAppLang === 'ar') ? "الوضع المضيء" : "Mode Clair";
-    }
+  const fabIcon = document.getElementById('fab-theme-icon');
+  if (fabIcon) {
+    fabIcon.className = (theme === 'dark') ? 'ti ti-sun' : 'ti ti-moon';
   }
 }
 
-// ================= LANGUAGE TOGGLE =================
-function toggleAppLanguage() {
-  currentAppLang = (currentAppLang === 'fr') ? 'ar' : 'fr';
-  currentDocLang = currentAppLang;
-  localStorage.setItem('congedesk_lang', currentAppLang);
-  applyAppLanguage(currentAppLang);
-  renderEmployeeCards(employees);
-  if (activeEmployee) {
-    setDrawerLanguage(currentAppLang);
-    setPreviewModalLanguage(currentAppLang);
-  }
-}
-
-function applyAppLanguage(lang) {
-  const dict = i18n[lang];
-  const isAr = (lang === 'ar');
-
-  document.documentElement.setAttribute('lang', lang);
-  document.documentElement.setAttribute('dir', isAr ? 'rtl' : 'ltr');
-
-  // Update button label if element exists
-  const langBtnLabel = document.getElementById('lang-btn-label');
-  if (langBtnLabel) {
-    langBtnLabel.textContent = dict.langBtnLabel;
-  }
-  const langToggleBtn = document.getElementById('lang-toggle-btn');
-  if (langToggleBtn) {
-    langToggleBtn.title = isAr ? "Passer au Français" : "التبديل إلى العربية";
-  }
-
-  // Update static elements with data-i18n
-  document.querySelectorAll('[data-i18n]').forEach(el => {
-    const key = el.getAttribute('data-i18n');
-    if (dict[key]) {
-      el.textContent = dict[key];
-    }
-  });
-
-  // Update search input placeholder
-  const searchInput = document.getElementById('search-employee-input');
-  if (searchInput) {
-    searchInput.placeholder = dict.searchPlaceholder;
-  }
-
-  // Update tab labels strictly in the active language
-  const modalTabFr = document.getElementById('modal-tab-fr');
-  const modalTabAr = document.getElementById('modal-tab-ar');
-  const btnTabFr = document.getElementById('btn-tab-fr');
-  const btnTabAr = document.getElementById('btn-tab-ar');
-
-  if (isAr) {
-    if (modalTabFr) modalTabFr.innerHTML = '<i class="fa-solid fa-file-lines"></i> الصفحة 1 : الفرنسية';
-    if (modalTabAr) modalTabAr.innerHTML = '<i class="fa-solid fa-file-lines"></i> الصفحة 2 : العربية';
-    if (btnTabFr) btnTabFr.innerHTML = '<i class="fa-solid fa-file-lines"></i> الصفحة 1 : الفرنسية';
-    if (btnTabAr) btnTabAr.innerHTML = '<i class="fa-solid fa-file-lines"></i> الصفحة 2 : العربية';
-  } else {
-    if (modalTabFr) modalTabFr.innerHTML = '<i class="fa-solid fa-file-lines"></i> Page 1 : Français';
-    if (modalTabAr) modalTabAr.innerHTML = '<i class="fa-solid fa-file-lines"></i> Page 2 : Arabe';
-    if (btnTabFr) btnTabFr.innerHTML = '<i class="fa-solid fa-file-lines"></i> Page 1 : Français';
-    if (btnTabAr) btnTabAr.innerHTML = '<i class="fa-solid fa-file-lines"></i> Page 2 : Arabe';
-  }
-
-  // Update theme button title
-  const themeBtn = document.getElementById('theme-toggle-btn');
-  if (themeBtn) {
-    themeBtn.title = isAr ? "تغيير المظهر (داكن / فاتح)" : "Basculer Thème (Sombre / Clair)";
-  }
-
-  // Re-render Top KPI Cards
-  updateKPICards();
-}
-
-// ================= EMPLOYEE DATA =================
+// ================= DIRECTORS DATA & WILAYA FILTER =================
 async function loadEmployees() {
   if (window.electronAPI && window.electronAPI.getEmployees) {
     employees = await window.electronAPI.getEmployees();
@@ -306,6 +186,7 @@ async function loadEmployees() {
     employees = [];
   }
 
+  populateWilayaFilter();
   updateKPICards();
   renderEmployeeCards(employees);
 }
@@ -313,32 +194,123 @@ async function loadEmployees() {
 async function loadHistory() {
   if (window.electronAPI && window.electronAPI.getLeaveHistory) {
     leaveHistory = await window.electronAPI.getLeaveHistory();
-    document.getElementById('kpi-issued-titles').textContent = leaveHistory.length;
+    const issuedEl = document.getElementById('kpi-issued-titles');
+    if (issuedEl) issuedEl.textContent = leaveHistory.length;
   }
 }
 
 function updateKPICards() {
-  const dict = i18n[currentAppLang];
-  document.getElementById('kpi-total-employees').textContent = employees.length;
-  document.getElementById('employee-count-badge').textContent = `${employees.length} ${currentAppLang === 'ar' ? 'موظف' : 'Employés'}`;
+  const totalCount = employees.length;
+  const countEl = document.getElementById('kpi-total-employees');
+  if (countEl) countEl.textContent = totalCount;
+
+  const badgeText = document.getElementById('directors-count-text');
+  if (badgeText) badgeText.textContent = `${totalCount} Directeurs`;
 
   const totalReserve = employees.reduce((acc, e) => acc + (parseFloat(e.prev_balance) || 0), 0);
-  document.getElementById('kpi-total-reserve').textContent = `${totalReserve} ${dict.daysUnit}`;
+  const reserveEl = document.getElementById('kpi-total-reserve');
+  if (reserveEl) reserveEl.textContent = `${totalReserve} j`;
 }
 
-// ================= EMPLOYEE CARDS RENDERING (CARDS INSTEAD OF TABLES) =================
+function populateWilayaFilter() {
+  const select = document.getElementById('wilaya-filter-select');
+  if (!select) return;
+
+  const currentVal = select.value;
+  select.innerHTML = '<option value="">Toutes les Wilayas & Établissements</option>';
+
+  // Group wilayas/agencies
+  const wilayaList = [];
+  employees.forEach(e => {
+    if (e.code_wilaya && e.agency) {
+      if (!wilayaList.some(w => w.code === e.code_wilaya)) {
+        wilayaList.push({ code: e.code_wilaya, label: `${e.code_wilaya} - ${e.agency}` });
+      }
+    } else if (e.agency) {
+      if (!wilayaList.some(w => w.label === e.agency)) {
+        wilayaList.push({ code: e.agency, label: e.agency });
+      }
+    }
+  });
+
+  wilayaList.sort((a, b) => {
+    const na = parseInt(a.code, 10);
+    const nb = parseInt(b.code, 10);
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return a.label.localeCompare(b.label);
+  });
+
+  wilayaList.forEach(w => {
+    const opt = document.createElement('option');
+    opt.value = w.code;
+    opt.textContent = w.label;
+    select.appendChild(opt);
+  });
+
+  if (currentVal) select.value = currentVal;
+}
+
+function onWilayaFilterChange() {
+  filterAndRenderDirectors();
+}
+
+function onSearchInput() {
+  const clearBtn = document.getElementById('search-clear-btn');
+  const query = document.getElementById('search-employee-input').value.trim();
+  if (clearBtn) {
+    clearBtn.style.display = query ? 'block' : 'none';
+  }
+  filterAndRenderDirectors();
+}
+
+function clearSearchInput() {
+  const input = document.getElementById('search-employee-input');
+  if (input) input.value = '';
+  const clearBtn = document.getElementById('search-clear-btn');
+  if (clearBtn) clearBtn.style.display = 'none';
+  filterAndRenderDirectors();
+}
+
+function filterAndRenderDirectors() {
+  const query = (document.getElementById('search-employee-input')?.value || '').toLowerCase().trim();
+  const selectedWilaya = document.getElementById('wilaya-filter-select')?.value || '';
+
+  const filtered = employees.filter(e => {
+    // Match wilaya code
+    if (selectedWilaya) {
+      const matchWilaya = (e.code_wilaya === selectedWilaya) || (e.agency === selectedWilaya);
+      if (!matchWilaya) return false;
+    }
+
+    if (!query) return true;
+
+    return (e.name_fr && e.name_fr.toLowerCase().includes(query)) ||
+           (e.name_ar && e.name_ar.toLowerCase().includes(query)) ||
+           (e.agency && e.agency.toLowerCase().includes(query)) ||
+           (e.code_wilaya && e.code_wilaya.includes(query)) ||
+           (e.service_fr && e.service_fr.toLowerCase().includes(query)) ||
+           (e.grade_fr && e.grade_fr.toLowerCase().includes(query));
+  });
+
+  renderEmployeeCards(filtered);
+}
+
+// ================= MINIMAL DIRECTOR CARDS RENDERING =================
 function renderEmployeeCards(list) {
   const container = document.getElementById('employee-cards-container');
+  if (!container) return;
   container.innerHTML = '';
-  const dict = i18n[currentAppLang];
-  const isAr = (currentAppLang === 'ar');
+
+  const badgeText = document.getElementById('directors-count-text');
+  if (badgeText) badgeText.textContent = `${list.length} Directeur${list.length > 1 ? 's' : ''}`;
 
   if (list.length === 0) {
     container.innerHTML = `
-      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-dim); background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: var(--radius-xl);">
-        <i class="fa-solid fa-user-slash" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--text-dim);"></i>
-        <span style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 16px;">${dict.noEmployeesFound}</span>
-        <button class="btn btn-secondary" onclick="seedRandomDataUI()"><i class="fa-solid fa-dice"></i> <span>${dict.randomData}</span></button>
+      <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-dim); background: var(--glass-card); border: 1px dashed var(--glass-border-subtle); border-radius: var(--radius-xl);">
+        <i class="ti ti-user-x" style="font-size: 38px; margin-bottom: 12px; display: block; color: var(--text-dim);"></i>
+        <span style="font-size: 15px; font-weight: 700; display: block; margin-bottom: 8px;">Aucun directeur trouvé</span>
+        <p style="font-size: 13px; color: var(--text-dim); margin-bottom: 16px;">Vérifiez vos termes de recherche ou réinitialisez le filtre de wilaya.</p>
+        <button class="btn btn-secondary" onclick="resetToCNASDirectors()"><i class="ti ti-refresh"></i> Recharger la liste CNAS</button>
       </div>
     `;
     return;
@@ -346,87 +318,53 @@ function renderEmployeeCards(list) {
 
   list.forEach(emp => {
     const card = document.createElement('div');
-    card.className = 'emp-card';
+    card.className = 'director-card';
 
-    const isAr = (currentAppLang === 'ar');
-    const empName = isAr ? (emp.name_ar || emp.name_fr) : (emp.name_fr || emp.name_ar);
-    const empGrade = isAr ? (emp.grade_ar || emp.grade_fr) : (emp.grade_fr || emp.grade_ar);
-    const empService = isAr ? (emp.service_ar || emp.service_fr) : (emp.service_fr || emp.service_ar);
-    const empAddress = isAr ? (emp.address_ar || emp.address_fr) : (emp.address_fr || emp.address_ar);
-
-    const initials = isAr 
-      ? (emp.name_ar ? emp.name_ar.trim()[0] : 'ع')
-      : (emp.name_fr ? emp.name_fr.split(' ').map(n => n[0]).slice(0, 2).join('') : 'AG');
-
+    const wilayaDisplay = emp.code_wilaya ? emp.code_wilaya : 'DG';
     const prevBal = parseFloat(emp.prev_balance) || 0;
     const annual = parseFloat(emp.annual_entitlement) || 30;
     const totalAvail = prevBal + annual;
-    
-    // Percentage remaining of total available
-    const pct = totalAvail > 0 ? Math.min(Math.round((prevBal / totalAvail) * 100), 100) : 0;
-    const isBalanceHealthy = prevBal > 5;
-    const hasBalance = prevBal > 0;
 
     card.innerHTML = `
-      <!-- Card Top: Identity (Pure Language Isolated) -->
-      <div class="emp-card-header">
-        <div class="emp-identity">
-          <div class="emp-avatar-wrapper">
-            <div class="emp-avatar">${initials}</div>
-            <span class="emp-avatar-status ${hasBalance ? 'online' : 'busy'}"></span>
-          </div>
-          <div class="emp-name-block">
-            <span class="emp-name-fr">${empName}</span>
-            <span class="emp-dept-pill"><i class="fa-solid fa-building"></i> ${empService}</span>
-          </div>
+      <!-- Card Header: Wilaya, Name, Agency, Action Icons -->
+      <div class="director-card-header">
+        <div class="director-avatar-box">
+          <span class="wilaya-num">${wilayaDisplay}</span>
+        </div>
+        <div class="director-info">
+          <h3 class="director-name" title="${escapeHtml(emp.name_fr)}">${escapeHtml(emp.name_fr)}</h3>
+          <span class="director-agency" title="${escapeHtml(emp.service_fr || emp.agency || '')}">
+            ${escapeHtml(emp.service_fr || emp.agency || 'Direction')}
+          </span>
+        </div>
+        <div class="director-card-actions">
+          <button class="btn-card-icon" onclick="openDirectorDetailsModal('${emp.id}')" title="Détails du Directeur">
+            <i class="ti ti-eye"></i>
+          </button>
+          <button class="btn-card-icon" onclick="openEditDirectorModal('${emp.id}')" title="Modifier">
+            <i class="ti ti-edit"></i>
+          </button>
+          <button class="btn-card-icon btn-card-delete" onclick="promptDeleteDirector('${emp.id}', '${escapeJsStr(emp.name_fr)}', '${escapeJsStr(emp.agency || '')}')" title="Supprimer">
+            <i class="ti ti-trash"></i>
+          </button>
         </div>
       </div>
 
-      <!-- Card Meta Badges Grid -->
-      <div class="emp-meta-chips">
-        <div class="emp-chip">
-          <i class="fa-solid fa-briefcase"></i>
-          <span class="chip-label">${empGrade}</span>
+      <!-- Card Body: Vacation Days & Grade -->
+      <div class="director-card-body">
+        <div class="director-stat-pill">
+          <span class="stat-num">${totalAvail}</span>
+          <span class="stat-text">jours disponibles</span>
         </div>
-        ${empAddress ? `
-        <div class="emp-chip">
-          <i class="fa-solid fa-location-dot"></i>
-          <span class="chip-label" title="${empAddress}">${empAddress}</span>
-        </div>` : ''}
+        <span class="director-grade-tag" title="${escapeHtml(emp.grade_fr || "Directeur d'Agence")}">
+          ${escapeHtml(emp.grade_fr || "Directeur d'Agence")}
+        </span>
       </div>
 
-      <!-- Vacation Balance Liquid Meter Card -->
-      <div class="emp-balance-card">
-        <div class="balance-top-row">
-          <div class="balance-hero-num ${prevBal > 5 ? '' : (prevBal > 0 ? 'warn' : 'danger')}">
-            <div class="balance-icon-ring"><i class="fa-solid fa-umbrella-beach"></i></div>
-            <div class="balance-val-group">
-              <span class="balance-val">${prevBal}</span>
-              <span class="balance-unit">${dict.daysRemainingLabel}</span>
-            </div>
-          </div>
-
-          <div class="balance-stats-mini">
-            <span class="balance-stat-pill" title="${dict.n1Reliquat}">N-1: <strong>${prevBal}${dict.daysUnit}</strong></span>
-            <span class="balance-stat-pill" title="${dict.annualQuota}">Droit: <strong>${annual}${dict.daysUnit}</strong></span>
-          </div>
-        </div>
-
-        <div class="balance-progress-track">
-          <div class="balance-progress-fill" style="width: ${Math.max(pct, 10)}%; background: ${isBalanceHealthy ? 'linear-gradient(90deg, #10b981, #059669)' : (hasBalance ? 'linear-gradient(90deg, #f59e0b, #d97706)' : 'linear-gradient(90deg, #ef4444, #dc2626)')};"></div>
-        </div>
-      </div>
-
-      <!-- Card Footer Actions: Create/Manage Leave & Delete -->
-      <div class="emp-card-actions">
-        <!-- Main Action: Open Leave Workspace (Form + Live Sheet Preview) -->
-        <button class="btn btn-sm btn-card-leave" onclick="openLeaveDrawerFor('${emp.id}')" title="${dict.cardLeaveBtn}">
-          <i class="fa-solid fa-file-signature"></i> <span>${dict.cardLeaveBtn}</span>
-        </button>
-
-        <!-- Delete Employee Button -->
-        <button class="btn-icon danger" onclick="deleteEmployee('${emp.id}')" title="Supprimer">
-          <i class="fa-solid fa-trash-can"></i>
+      <!-- Card Footer: Text Only Button for Adding Vacation -->
+      <div class="director-card-footer">
+        <button class="btn-vacation-text" onclick="openLeaveDrawerFor('${emp.id}')">
+          Nouveau Congé
         </button>
       </div>
     `;
@@ -435,74 +373,285 @@ function renderEmployeeCards(list) {
   });
 }
 
-// Search Filter Input (Pure language matching)
-function onSearchInput() {
-  const query = document.getElementById('search-employee-input').value.toLowerCase().trim();
-  const isAr = (currentAppLang === 'ar');
-  const filtered = employees.filter(e => {
-    if (isAr) {
-      return (e.name_ar && e.name_ar.toLowerCase().includes(query)) ||
-             (e.grade_ar && e.grade_ar.toLowerCase().includes(query)) ||
-             (e.service_ar && e.service_ar.toLowerCase().includes(query));
-    } else {
-      return (e.name_fr && e.name_fr.toLowerCase().includes(query)) ||
-             (e.grade_fr && e.grade_fr.toLowerCase().includes(query)) ||
-             (e.service_fr && e.service_fr.toLowerCase().includes(query));
-    }
-  });
-  renderEmployeeCards(filtered);
+// ================= MODAL: DIRECTOR DETAILS =================
+function openDirectorDetailsModal(dirId) {
+  const dir = employees.find(e => e.id === dirId);
+  if (!dir) return;
+
+  activeEmployee = dir;
+
+  document.getElementById('det-wilaya-badge').textContent = dir.code_wilaya || 'CNAS';
+  document.getElementById('det-name-fr').textContent = dir.name_fr || '—';
+  document.getElementById('det-name-ar').textContent = dir.name_ar || '—';
+
+  document.getElementById('det-service-fr').textContent = dir.service_fr || dir.agency || '—';
+  document.getElementById('det-service-ar').textContent = dir.service_ar || '—';
+
+  document.getElementById('det-grade-fr').textContent = dir.grade_fr || 'Directeur';
+  document.getElementById('det-grade-ar').textContent = dir.grade_ar || 'مدير';
+
+  document.getElementById('det-address-fr').textContent = dir.address_fr || '—';
+
+  const prev = parseFloat(dir.prev_balance) || 0;
+  const annual = parseFloat(dir.annual_entitlement) || 30;
+  document.getElementById('det-prev-balance').textContent = `${prev} j`;
+  document.getElementById('det-annual-quota').textContent = `${annual} j`;
+  document.getElementById('det-total-balance').textContent = `${prev + annual} j`;
+
+  // Render recent leaves for this director
+  const leavesList = document.getElementById('det-leaves-list');
+  const dirLeaves = leaveHistory.filter(r => r.employee_id === dirId || r.agent_name === dir.name_fr);
+
+  if (dirLeaves.length === 0) {
+    leavesList.innerHTML = `<span style="font-size: 12px; color: var(--text-dim); display: block; padding: 8px;">Aucun congé enregistré pour ce directeur.</span>`;
+  } else {
+    leavesList.innerHTML = dirLeaves.map(l => `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 8px; border-bottom: 1px solid var(--glass-border-subtle); font-size: 12px;">
+        <span><strong>${l.leave_days} jours</strong> (${l.dep_date || '—'} au ${l.ret_date || '—'})</span>
+        <span style="color: var(--text-dim); font-size: 11px;">Émis le ${l.date || l.timestamp?.split('T')[0] || ''}</span>
+      </div>
+    `).join('');
+  }
+
+  document.getElementById('director-details-modal').style.display = 'flex';
 }
 
-// Delete Employee
-async function deleteEmployee(empId) {
-  const emp = employees.find(e => e.id === empId);
-  if (!emp) return;
+function closeDirectorDetailsModal() {
+  document.getElementById('director-details-modal').style.display = 'none';
+}
 
-  const dict = i18n[currentAppLang];
-  const empName = currentAppLang === 'ar' ? (emp.name_ar || emp.name_fr) : (emp.name_fr || emp.name_ar);
-
-  if (confirm(`${dict.confirmDelete} "${empName}"?`)) {
-    if (window.electronAPI && window.electronAPI.deleteEmployee) {
-      await window.electronAPI.deleteEmployee(empId);
-    }
-    employees = employees.filter(e => e.id !== empId);
-    updateKPICards();
-    renderEmployeeCards(employees);
+function startVacationFromDetails() {
+  if (activeEmployee) {
+    closeDirectorDetailsModal();
+    openLeaveDrawerFor(activeEmployee.id);
   }
 }
 
-// Generate random realistic data
-async function seedRandomDataUI() {
-  const isAr = (currentAppLang === 'ar');
-  const confirmMsg = isAr 
-    ? 'هل تريد توليد بيانات عشوائية للموظفين وسجلات العطل للتجربة؟'
-    : 'Voulez-vous générer des données aléatoires d\'employés et d\'historique de congés pour les tests ?';
-  
-  if (!confirm(confirmMsg)) return;
+// ================= MODAL: DELETE CONFIRMATION =================
+function promptDeleteDirector(id, name, agency) {
+  directorToDeleteId = id;
+  const msgEl = document.getElementById('delete-confirm-message');
+  if (msgEl) {
+    msgEl.innerHTML = `Êtes-vous sûr de vouloir supprimer définitivement le directeur <strong>${escapeHtml(name)}</strong> ${agency ? `(${escapeHtml(agency)})` : ''} de la base de données ?`;
+  }
+  document.getElementById('delete-confirm-modal').style.display = 'flex';
+}
 
-  if (window.electronAPI && window.electronAPI.seedSampleData) {
-    const res = await window.electronAPI.seedSampleData();
+function closeDeleteConfirmModal() {
+  directorToDeleteId = null;
+  document.getElementById('delete-confirm-modal').style.display = 'none';
+}
+
+async function executeConfirmedDelete() {
+  if (!directorToDeleteId) return;
+
+  if (window.electronAPI && window.electronAPI.deleteEmployee) {
+    await window.electronAPI.deleteEmployee(directorToDeleteId);
+  }
+
+  employees = employees.filter(e => e.id !== directorToDeleteId);
+  closeDeleteConfirmModal();
+  updateKPICards();
+  filterAndRenderDirectors();
+}
+
+// ================= MODAL: ADD / EDIT DIRECTOR =================
+function openNewEmployeeModal() {
+  document.getElementById('modal-director-title').innerHTML = `
+    <i class="ti ti-user-plus" style="color: var(--primary);"></i> <span>Ajouter un Nouveau Directeur</span>
+  `;
+  document.getElementById('m-director-id').value = '';
+  document.getElementById('m-code-wilaya').value = '';
+  document.getElementById('m-agency').value = '';
+  document.getElementById('m-name-fr').value = '';
+  document.getElementById('m-name-ar').value = '';
+  document.getElementById('m-grade-fr').value = "Directeur d'Agence de Wilaya";
+  document.getElementById('m-grade-ar').value = "مدير وكالة كناس الولائية";
+  document.getElementById('m-service-fr').value = '';
+  document.getElementById('m-service-ar').value = '';
+  document.getElementById('m-address-fr').value = '';
+  document.getElementById('m-prev-balance').value = '0';
+  document.getElementById('m-annual-entitlement').value = '30';
+
+  document.getElementById('employee-modal').style.display = 'flex';
+}
+
+function openEditDirectorModal(dirId) {
+  const dir = employees.find(e => e.id === dirId);
+  if (!dir) return;
+
+  document.getElementById('modal-director-title').innerHTML = `
+    <i class="ti ti-edit" style="color: var(--primary);"></i> <span>Modifier le Directeur</span>
+  `;
+  document.getElementById('m-director-id').value = dir.id;
+  document.getElementById('m-code-wilaya').value = dir.code_wilaya || '';
+  document.getElementById('m-agency').value = dir.agency || '';
+  document.getElementById('m-name-fr').value = dir.name_fr || '';
+  document.getElementById('m-name-ar').value = dir.name_ar || '';
+  document.getElementById('m-grade-fr').value = dir.grade_fr || "Directeur d'Agence de Wilaya";
+  document.getElementById('m-grade-ar').value = dir.grade_ar || "مدير وكالة كناس الولائية";
+  document.getElementById('m-service-fr').value = dir.service_fr || '';
+  document.getElementById('m-service-ar').value = dir.service_ar || '';
+  document.getElementById('m-address-fr').value = dir.address_fr || '';
+  document.getElementById('m-prev-balance').value = dir.prev_balance ?? 0;
+  document.getElementById('m-annual-entitlement').value = dir.annual_entitlement ?? 30;
+
+  document.getElementById('employee-modal').style.display = 'flex';
+}
+
+function closeNewEmployeeModal() {
+  document.getElementById('employee-modal').style.display = 'none';
+}
+
+async function submitNewEmployee() {
+  const id = document.getElementById('m-director-id').value.trim() || ('dir_' + Date.now());
+  const nameFr = document.getElementById('m-name-fr').value.trim();
+  const nameAr = document.getElementById('m-name-ar').value.trim();
+
+  if (!nameFr && !nameAr) {
+    alert("Veuillez renseigner au moins le nom du directeur en français ou en arabe.");
+    return;
+  }
+
+  const codeWilaya = document.getElementById('m-code-wilaya').value.trim();
+  const agency = document.getElementById('m-agency').value.trim();
+
+  const directorData = {
+    id,
+    code_wilaya: codeWilaya,
+    agency: agency,
+    name_fr: nameFr || nameAr,
+    name_ar: nameAr || nameFr,
+    grade_fr: document.getElementById('m-grade-fr').value.trim() || "Directeur d'Agence",
+    grade_ar: document.getElementById('m-grade-ar').value.trim() || "مدير وكالة",
+    service_fr: document.getElementById('m-service-fr').value.trim() || (agency ? `Agence CNAS de ${agency}` : 'Direction'),
+    service_ar: document.getElementById('m-service-ar').value.trim() || (agency ? `وكالة كناس ${agency}` : 'المديرية'),
+    address_fr: document.getElementById('m-address-fr').value.trim() || '',
+    address_ar: document.getElementById('m-address-fr').value.trim() || '',
+    prev_balance: parseFloat(document.getElementById('m-prev-balance').value) || 0,
+    annual_entitlement: parseFloat(document.getElementById('m-annual-entitlement').value) || 30
+  };
+
+  if (window.electronAPI && window.electronAPI.saveEmployee) {
+    await window.electronAPI.saveEmployee(directorData);
+  }
+
+  closeNewEmployeeModal();
+  await loadEmployees();
+}
+
+// ================= RESET DIRECTORS FROM DATA.XLSX =================
+async function resetToCNASDirectors() {
+  if (!confirm("Voulez-vous recharger la liste officielle des 64 Directeurs d'Agences et Établissements CNAS depuis data.xlsx ?")) {
+    return;
+  }
+
+  if (window.electronAPI && window.electronAPI.seedDirectorsData) {
+    const res = await window.electronAPI.seedDirectorsData();
     if (res && res.success) {
       await loadEmployees();
-      alert(isAr ? `تم توليد ${res.employeesCount} موظف و ${res.leavesCount} سجل عطلة بنجاح!` : `${res.employeesCount} employés et ${res.leavesCount} titres de congé ont été générés avec succès !`);
+      alert("Liste officielle des 64 directeurs CNAS synchronisée avec succès !");
     } else {
-      alert("Erreur: " + (res?.error || "Inconnue"));
+      alert("Erreur lors de la synchronisation: " + (res?.error || "Inconnue"));
     }
   }
 }
 
-// ================= DEDICATED PREVIEW FALLBACK =================
-function openPreviewModalFor(empId) {
-  // Directly open the unified workspace (Form + Live Sheet Preview)
-  openLeaveDrawerFor(empId);
+// ================= HISTORY HUB =================
+function renderHistoryTable() {
+  const tbody = document.getElementById('history-records-body');
+  const emptyState = document.getElementById('history-empty-state');
+  if (!tbody) return;
+
+  if (leaveHistory.length === 0) {
+    tbody.innerHTML = '';
+    if (emptyState) emptyState.style.display = 'flex';
+    return;
+  }
+
+  if (emptyState) emptyState.style.display = 'none';
+
+  tbody.innerHTML = leaveHistory.map(rec => `
+    <tr>
+      <td>${escapeHtml(rec.date || rec.timestamp?.split('T')[0] || '—')}</td>
+      <td><strong>${escapeHtml(rec.agent_name || '—')}</strong></td>
+      <td>${escapeHtml(rec.service || '—')}</td>
+      <td>Du <strong>${escapeHtml(rec.dep_date || '—')}</strong> au <strong>${escapeHtml(rec.ret_date || '—')}</strong></td>
+      <td><span style="font-weight: 800; color: var(--primary);">${rec.leave_days || 0} j</span></td>
+      <td>${rec.new_balance ?? '—'} j</td>
+      <td>
+        <button class="btn btn-sm btn-secondary" onclick="viewHistoryDoc('${rec.id}')" title="Ré-éditer">
+          <i class="ti ti-file-text"></i> Titre
+        </button>
+      </td>
+    </tr>
+  `).join('');
 }
 
-function closePreviewModal() {
-  closeLeaveDrawer();
+function viewHistoryDoc(recId) {
+  const rec = leaveHistory.find(r => r.id === recId);
+  if (!rec) return;
+
+  // Find director or create temporary active director
+  const dir = employees.find(e => e.id === rec.employee_id) || {
+    id: rec.employee_id || 'temp',
+    name_fr: rec.agent_name,
+    name_ar: rec.agent_name,
+    grade_fr: rec.grade,
+    grade_ar: rec.grade,
+    service_fr: rec.service,
+    service_ar: rec.service,
+    address_fr: rec.leave_address,
+    prev_balance: rec.prev_balance,
+    annual_entitlement: rec.cur_entitlement
+  };
+
+  openLeaveDrawerFor(dir.id);
+
+  // Overwrite form fields with saved record data
+  if (rec.leave_days) document.getElementById('f-leave-days').value = rec.leave_days;
+  if (rec.dep_date) document.getElementById('f-date-depart').value = rec.dep_date;
+  if (rec.ret_date) document.getElementById('f-date-retour').value = rec.ret_date;
+  if (rec.leave_address) document.getElementById('f-leave-address').value = rec.leave_address;
+  if (rec.location) document.getElementById('f-location').value = rec.location;
+
+  recalcAndRender();
 }
 
-function setPreviewModalLanguage(lang) {
-  setDrawerLanguage(lang);
+async function confirmClearHistory() {
+  if (!confirm("Attention : Voulez-vous vraiment effacer tout le registre des congés émis ?")) return;
+
+  if (window.electronAPI && window.electronAPI.clearAllData) {
+    await window.electronAPI.clearAllData();
+    // Re-seed directors so they don't get lost
+    if (window.electronAPI.seedDirectorsData) {
+      await window.electronAPI.seedDirectorsData();
+    }
+    await loadEmployees();
+    await loadHistory();
+    renderHistoryTable();
+    alert("Registre des congés vidé avec succès.");
+  }
+}
+
+function exportHistoryCSV() {
+  if (leaveHistory.length === 0) {
+    alert("Aucun titre dans l'historique à exporter.");
+    return;
+  }
+
+  let csv = "ID,Date Emission,Directeur,Structure,Grade,Jours Conge,Date Depart,Date Retour,Adresse Conge,Nouveau Solde\n";
+  leaveHistory.forEach(r => {
+    csv += `"${r.id}","${r.date || ''}","${r.agent_name || ''}","${r.service || ''}","${r.grade || ''}",${r.leave_days || 0},"${r.dep_date || ''}","${r.ret_date || ''}","${r.leave_address || ''}",${r.new_balance || 0}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `CNAS_Historique_Conges_Directeurs_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ================= SLIDE-OVER DRAWER & LEAVE CALCULATOR =================
@@ -510,73 +659,123 @@ function openLeaveDrawerFor(empId) {
   activeEmployee = employees.find(e => e.id === empId);
   if (!activeEmployee) return;
 
-  currentDocLang = currentAppLang;
+  currentDocLang = 'fr'; // default page 1 is French
 
-  // Set titles
-  const isAr = (currentDocLang === 'ar');
-  const empName = isAr ? (activeEmployee.name_ar || activeEmployee.name_fr) : (activeEmployee.name_fr || activeEmployee.name_ar);
-  const empRole = isAr ? (activeEmployee.grade_ar || activeEmployee.grade_fr) : (activeEmployee.grade_fr || activeEmployee.grade_ar);
+  const empName = activeEmployee.name_fr || activeEmployee.name_ar;
+  const empRole = activeEmployee.grade_fr || activeEmployee.grade_ar;
 
   document.getElementById('drawer-agent-title').textContent = `${empName} - GRH.22`;
-  document.getElementById('drawer-agent-subtitle').textContent = empRole;
+  document.getElementById('drawer-agent-subtitle').textContent = `${empRole} — ${activeEmployee.service_fr || activeEmployee.agency || ''}`;
 
-  // Populate drawer fields
-  populateDrawerFields(activeEmployee, currentDocLang);
-
-  // Sync drawer tabs
-  document.getElementById('btn-tab-fr').classList.toggle('active', currentDocLang === 'fr');
-  document.getElementById('btn-tab-ar').classList.toggle('active', currentDocLang === 'ar');
-
-  // Open Drawer
+  populateFormWithEmployee(activeEmployee);
   recalcAndRender();
+
   document.getElementById('leave-drawer').classList.add('open');
-}
-
-function populateDrawerFields(emp, lang) {
-  const isAr = (lang === 'ar');
-  if (isAr) {
-    document.getElementById('f-agent-name').value = emp.name_ar || emp.name_fr;
-    document.getElementById('f-grade').value = emp.grade_ar || emp.grade_fr;
-    document.getElementById('f-service').value = emp.service_ar || emp.service_fr;
-    document.getElementById('f-address').value = emp.address_ar || emp.address_fr;
-    document.getElementById('f-signatory').value = "المدير،";
-    document.getElementById('f-location').value = "الجزائر";
-  } else {
-    document.getElementById('f-agent-name').value = emp.name_fr;
-    document.getElementById('f-grade').value = emp.grade_fr;
-    document.getElementById('f-service').value = emp.service_fr;
-    document.getElementById('f-address').value = emp.address_fr;
-    document.getElementById('f-signatory').value = "Le Directeur,";
-    document.getElementById('f-location').value = "Alger";
-  }
-
-  document.getElementById('f-prev-balance').value = emp.prev_balance ?? 0;
-  document.getElementById('f-annual-entitlement').value = emp.annual_entitlement ?? 30;
 }
 
 function closeLeaveDrawer() {
   document.getElementById('leave-drawer').classList.remove('open');
 }
 
+function populateFormWithEmployee(emp) {
+  const isAr = (currentDocLang === 'ar');
+  document.getElementById('f-agent-name').value = isAr ? (emp.name_ar || emp.name_fr) : (emp.name_fr || emp.name_ar);
+  document.getElementById('f-grade').value = isAr ? (emp.grade_ar || emp.grade_fr) : (emp.grade_fr || emp.grade_ar);
+  document.getElementById('f-service').value = isAr ? (emp.service_ar || emp.service_fr) : (emp.service_fr || emp.service_ar);
+  document.getElementById('f-address').value = isAr ? (emp.address_ar || emp.address_fr) : (emp.address_fr || emp.address_ar);
+
+  document.getElementById('f-prev-balance').value = emp.prev_balance ?? 0;
+  document.getElementById('f-annual-entitlement').value = emp.annual_entitlement ?? 30;
+
+  if (!document.getElementById('f-leave-days').value) {
+    document.getElementById('f-leave-days').value = '30';
+  }
+}
+
 function setDrawerLanguage(lang) {
   currentDocLang = lang;
-  document.getElementById('btn-tab-fr').classList.toggle('active', lang === 'fr');
-  document.getElementById('btn-tab-ar').classList.toggle('active', lang === 'ar');
 
-  const pill = document.getElementById('preview-page-pill');
-  if (pill) {
-    pill.textContent = (lang === 'ar') ? i18n.ar.pageArLabel : i18n.fr.pageFrLabel;
+  const btnFr = document.getElementById('btn-tab-fr');
+  const btnAr = document.getElementById('btn-tab-ar');
+
+  if (lang === 'ar') {
+    btnFr?.classList.remove('active');
+    btnAr?.classList.add('active');
+    document.getElementById('preview-page-pill').textContent = "ص 2 : العربية (بيان العطلة السنوية)";
+  } else {
+    btnFr?.classList.add('active');
+    btnAr?.classList.remove('active');
+    document.getElementById('preview-page-pill').textContent = "Page 1 : Français (TITRE DE CONGÉ)";
   }
 
   if (activeEmployee) {
     const isAr = (lang === 'ar');
-    const empName = isAr ? (activeEmployee.name_ar || activeEmployee.name_fr) : (activeEmployee.name_fr || activeEmployee.name_ar);
-    const empRole = isAr ? (activeEmployee.grade_ar || activeEmployee.grade_fr) : (activeEmployee.grade_fr || activeEmployee.grade_ar);
-    const titleEl = document.getElementById('drawer-agent-title');
-    const subEl = document.getElementById('drawer-agent-subtitle');
-    if (titleEl) titleEl.textContent = `${empName} - GRH.22`;
-    if (subEl) subEl.textContent = empRole;
-    populateDrawerFields(activeEmployee, lang);
+    document.getElementById('f-agent-name').value = isAr ? (activeEmployee.name_ar || activeEmployee.name_fr) : (activeEmployee.name_fr || activeEmployee.name_ar);
+    document.getElementById('f-grade').value = isAr ? (activeEmployee.grade_ar || activeEmployee.grade_fr) : (activeEmployee.grade_fr || activeEmployee.grade_ar);
+    document.getElementById('f-service').value = isAr ? (activeEmployee.service_ar || activeEmployee.service_fr) : (activeEmployee.service_fr || activeEmployee.service_ar);
+    document.getElementById('f-address').value = isAr ? (activeEmployee.address_ar || activeEmployee.address_fr) : (activeEmployee.address_fr || activeEmployee.address_ar);
+  }
+
+  recalcAndRender();
+}
+
+function setDocumentPrintMode(isOverlay) {
+  isPreviewDataOnly = isOverlay;
+
+  const btnFull = document.getElementById('drawer-mode-full');
+  const btnOverlay = document.getElementById('drawer-mode-overlay');
+
+  if (isOverlay) {
+    btnFull?.classList.remove('active');
+    btnOverlay?.classList.add('active');
+  } else {
+    btnFull?.classList.add('active');
+    btnOverlay?.classList.remove('active');
+  }
+
+  renderDocumentSheet();
+}
+
+function onLeaveDaysInput() {
+  const days = parseInt(document.getElementById('f-leave-days').value, 10) || 0;
+  const depStr = document.getElementById('f-date-depart').value;
+
+  if (depStr && days > 0) {
+    const depDate = new Date(depStr);
+    const retDate = new Date(depDate);
+    retDate.setDate(retDate.getDate() + days);
+    document.getElementById('f-date-retour').value = retDate.toISOString().split('T')[0];
+  }
+
+  recalcAndRender();
+}
+
+function onDateDepartInput() {
+  const depStr = document.getElementById('f-date-depart').value;
+  const days = parseInt(document.getElementById('f-leave-days').value, 10) || 30;
+
+  if (depStr) {
+    const depDate = new Date(depStr);
+    const retDate = new Date(depDate);
+    retDate.setDate(retDate.getDate() + days);
+    document.getElementById('f-date-retour').value = retDate.toISOString().split('T')[0];
+  }
+
+  recalcAndRender();
+}
+
+function onDateRetourInput() {
+  const depStr = document.getElementById('f-date-depart').value;
+  const retStr = document.getElementById('f-date-retour').value;
+
+  if (depStr && retStr) {
+    const d1 = new Date(depStr);
+    const d2 = new Date(retStr);
+    const diffTime = d2.getTime() - d1.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 3600 * 24));
+    if (diffDays > 0) {
+      document.getElementById('f-leave-days').value = diffDays;
+    }
   }
 
   recalcAndRender();
@@ -584,14 +783,12 @@ function setDrawerLanguage(lang) {
 
 function applyPreset(days) {
   document.getElementById('f-leave-days').value = days;
-  onDateDepartInput();
+  onLeaveDaysInput();
 }
 
-// Recalculate Vacation Balance and re-render document
 function recalcAndRender() {
-  const dict = i18n[currentAppLang];
   const prevBal = parseFloat(document.getElementById('f-prev-balance').value) || 0;
-  const annual = parseFloat(document.getElementById('f-annual-entitlement').value) || 0;
+  const annual = parseFloat(document.getElementById('f-annual-entitlement').value) || 30;
   const requested = parseFloat(document.getElementById('f-leave-days').value) || 0;
 
   const totalAvail = prevBal + annual;
@@ -599,78 +796,34 @@ function recalcAndRender() {
 
   const daysLeft = totalAvail - requested;
 
-  // Update Drawer Hero Card Stats
-  document.getElementById('stat-n1').textContent = `${prevBal} ${dict.daysUnit}`;
-  document.getElementById('stat-annual').textContent = `${annual} ${dict.daysUnit}`;
-  document.getElementById('stat-requested').textContent = `${requested} ${dict.daysUnit}`;
+  // Update calculator hero card in drawer
+  document.getElementById('calc-days-left').textContent = `${daysLeft} jours`;
+  document.getElementById('calc-days-left-sub').textContent = `restants sur ${totalAvail} jours de droit total`;
+  document.getElementById('stat-n1').textContent = `${prevBal} j`;
+  document.getElementById('stat-annual').textContent = `${annual} j`;
+  document.getElementById('stat-requested').textContent = `${requested} j`;
 
-  document.getElementById('calc-days-left').textContent = `${daysLeft} ${dict.daysRemainingLabel}`;
-  const isArCalc = (currentAppLang === 'ar');
-  document.getElementById('calc-days-left-sub').textContent = `${daysLeft} / ${totalAvail} ${dict.daysUnit} (${prevBal} ${dict.daysUnit} N-1 + ${annual} ${dict.daysUnit} ${isArCalc ? 'سنوي' : 'annuel'})`;
-
-  // Alert Box
-  const alertBox = document.getElementById('calc-alert-banner');
+  const alertBanner = document.getElementById('calc-alert-banner');
   const alertIcon = document.getElementById('calc-alert-icon');
   const alertText = document.getElementById('calc-alert-text');
-  const numElem = document.getElementById('calc-days-left');
 
-  alertBox.className = 'calc-alert';
-  if (daysLeft > 5) {
-    alertBox.classList.add('ok');
-    alertIcon.className = 'fa-solid fa-circle-check';
-    alertText.textContent = dict.sufficientBalanceText(daysLeft);
-    numElem.style.color = '#34d399';
-  } else if (daysLeft >= 0) {
-    alertBox.classList.add('warn');
-    alertIcon.className = 'fa-solid fa-triangle-exclamation';
-    alertText.textContent = daysLeft === 0 ? dict.depletedBalanceText : dict.sufficientBalanceText(daysLeft);
-    numElem.style.color = '#fbbf24';
+  if (daysLeft > 0) {
+    alertBanner.className = 'calc-alert ok';
+    alertIcon.className = 'ti ti-circle-check';
+    alertText.textContent = `Solde suffisant. Le directeur conservera ${daysLeft} jours en réserve après ce congé.`;
+  } else if (daysLeft === 0) {
+    alertBanner.className = 'calc-alert ok';
+    alertIcon.className = 'ti ti-circle-check';
+    alertText.textContent = `Solde entièrement utilisé. Le directeur utilise la totalité de ses droits (0 jour restant).`;
   } else {
-    alertBox.classList.add('danger');
-    alertIcon.className = 'fa-solid fa-circle-exclamation';
-    const deficit = Math.abs(daysLeft);
-    alertText.textContent = dict.overLimitText(deficit, requested, totalAvail);
-    numElem.style.color = '#f87171';
+    alertBanner.className = 'calc-alert danger';
+    alertIcon.className = 'ti ti-alert-triangle';
+    alertText.textContent = `Attention dépassement ! Le congé demandé (${requested}j) dépasse les droits disponibles (${totalAvail}j) de ${Math.abs(daysLeft)} jour(s).`;
   }
 
   renderDocumentSheet();
 }
 
-function onDateDepartInput() {
-  const depStr = document.getElementById('f-date-depart').value;
-  const days = parseInt(document.getElementById('f-leave-days').value) || 0;
-  if (!depStr || days <= 0) return;
-
-  const dep = new Date(depStr);
-  const ret = new Date(dep);
-  ret.setDate(ret.getDate() + (days - 1));
-
-  document.getElementById('f-date-retour').value = ret.toISOString().split('T')[0];
-  recalcAndRender();
-}
-
-function onLeaveDaysInput() {
-  onDateDepartInput();
-}
-
-function onDateRetourInput() {
-  const depStr = document.getElementById('f-date-depart').value;
-  const retStr = document.getElementById('f-date-retour').value;
-  if (!depStr || !retStr) return;
-
-  const dep = new Date(depStr);
-  const ret = new Date(retStr);
-
-  const diffTime = ret.getTime() - dep.getTime();
-  const diffDays = Math.round(diffTime / (1000 * 3600 * 24)) + 1;
-
-  if (diffDays > 0) {
-    document.getElementById('f-leave-days').value = diffDays;
-    recalcAndRender();
-  }
-}
-
-// Split date into DD MM YY
 function getSplitDateParts(dateStr) {
   if (!dateStr) return { d1: '', d2: '', m1: '', m2: '', y1: '', y2: '' };
   const parts = dateStr.split('-');
@@ -699,7 +852,7 @@ function formatDisplayDate(dateStr) {
 
 function getFormData() {
   const prevBal = parseFloat(document.getElementById('f-prev-balance').value) || 0;
-  const annual = parseFloat(document.getElementById('f-annual-entitlement').value) || 0;
+  const annual = parseFloat(document.getElementById('f-annual-entitlement').value) || 30;
   const requested = parseFloat(document.getElementById('f-leave-days').value) || 0;
   const totalAvail = prevBal + annual;
   const daysLeft = totalAvail - requested;
@@ -708,13 +861,24 @@ function getFormData() {
   const retStr = document.getElementById('f-date-retour').value;
   const issueDateStr = document.getElementById('f-issue-date').value;
 
+  const fullAddress = document.getElementById('f-address').value || '';
+  let addressLine1 = fullAddress;
+  let addressLine2 = '';
+  if (fullAddress.length > 55) {
+    const breakIdx = fullAddress.lastIndexOf(' ', 50);
+    if (breakIdx > 20) {
+      addressLine1 = fullAddress.slice(0, breakIdx);
+      addressLine2 = fullAddress.slice(breakIdx + 1);
+    }
+  }
+
   return {
     employeeId: activeEmployee ? activeEmployee.id : null,
     agent_name: document.getElementById('f-agent-name').value || '',
     grade: document.getElementById('f-grade').value || '',
     service: document.getElementById('f-service').value || '',
-    address_line_1: document.getElementById('f-address').value || '',
-    address_line_2: '',
+    address_line_1: addressLine1,
+    address_line_2: addressLine2,
     leave_days: requested,
     dep_date: depStr,
     ret_date: retStr,
@@ -732,103 +896,41 @@ function getFormData() {
   };
 }
 
-// Mode toggle: Full document vs Pre-printed paper overlay
-function setDocumentPrintMode(isOverlay) {
-  isPreviewDataOnly = isOverlay;
+// Render the live document sheet inside drawer
+function renderDocumentSheet() {
+  const container = document.getElementById('drawer-paper-container');
+  if (!container) return;
 
-  // Sync modal mode tabs
-  const modalFull = document.getElementById('modal-mode-full');
-  const modalOverlay = document.getElementById('modal-mode-overlay');
-  if (modalFull) modalFull.classList.toggle('active', !isOverlay);
-  if (modalOverlay) modalOverlay.classList.toggle('active', isOverlay);
-
-  // Sync drawer mode tabs
-  const drawerFull = document.getElementById('drawer-mode-full');
-  const drawerOverlay = document.getElementById('drawer-mode-overlay');
-  if (drawerFull) drawerFull.classList.toggle('active', !isOverlay);
-  if (drawerOverlay) drawerOverlay.classList.toggle('active', isOverlay);
-
-  // Update Preview Status Banner
-  const statusBanner = document.getElementById('preview-status-banner');
-  const statusText = document.getElementById('preview-status-text');
   const isAr = (currentDocLang === 'ar');
+  const data = getFormData();
+  const html = buildSheetHTML(data, isAr, isPreviewDataOnly);
+  container.innerHTML = html;
 
-  if (statusBanner && statusText) {
-    statusBanner.classList.toggle('mode-overlay-active', isOverlay);
-    if (isOverlay) {
-      statusText.innerHTML = isAr
-        ? '<i class="fa-solid fa-layer-group"></i> <strong>وضع الورق الرسمي :</strong> يظهر النموذج كعلامة مائية خفيفة للتأكد من مواضع الكتابة. <strong>ستتم طباعة البيانات فقط</strong> على الورق المطبوع مسبقاً.'
-        : '<i class="fa-solid fa-layer-group"></i> <strong>Mode Papier Pré-imprimé :</strong> Le formulaire est affiché en filigrane pour alignement. <strong>Seules les données seront imprimées</strong> sur votre feuille.';
-    } else {
-      statusText.innerHTML = isAr
-        ? '<i class="fa-solid fa-circle-check"></i> <strong>وضع النموذج الكامل :</strong> ستتم طباعة الوثيقة كاملة مع الترويسة والحدود والبيانات.'
-        : '<i class="fa-solid fa-circle-check"></i> <strong>Mode Document Complet :</strong> Le modèle officiel avec en-tête CNAS, bordures et données sera imprimé intégralement.';
-    }
+  const sheet = container.querySelector('.document-page');
+  if (sheet) {
+    sheet.style.transform = `scale(${currentZoom})`;
   }
-
-  // Update Dynamic Action Button labels
-  const btnPrintMain = document.getElementById('lbl-modal-print-main');
-  const btnExportPdf = document.getElementById('lbl-modal-export-pdf');
-  const btnAltPdf = document.getElementById('lbl-modal-alt-pdf');
-
-  if (btnPrintMain) {
-    if (isOverlay) {
-      btnPrintMain.textContent = isAr ? 'طباعة على ورق رسمي' : 'Imprimer sur Papier Pré-imprimé';
-    } else {
-      btnPrintMain.textContent = isAr ? 'طباعة النموذج الكامل' : 'Imprimer Tout (Modèle Complet)';
-    }
-  }
-
-  if (btnExportPdf) {
-    if (isOverlay) {
-      btnExportPdf.textContent = isAr ? 'تصدير PDF بيانات فقط' : 'Exporter PDF Données Seules';
-    } else {
-      btnExportPdf.textContent = isAr ? 'تصدير PDF كامل' : 'Exporter PDF Complet';
-    }
-  }
-
-  if (btnAltPdf) {
-    if (isOverlay) {
-      btnAltPdf.textContent = isAr ? 'PDF كامل' : 'PDF Complet';
-    } else {
-      btnAltPdf.textContent = isAr ? 'PDF بيانات فقط' : 'PDF Données Seules';
-    }
-  }
-
-  const formatBadgeEl = document.querySelector('.paper-format-badge');
-  if (formatBadgeEl) {
-    formatBadgeEl.innerHTML = isAr ? '<i class="fa-solid fa-receipt"></i> حجم A4 رسمي (210 × 297 مم)' : '<i class="fa-solid fa-receipt"></i> Format A4 Officiel (210 × 297 mm)';
-  }
-
-  renderModalDocumentSheet();
-  renderDocumentSheet();
 }
 
-function executeCurrentPrint() {
-  printDocument(isPreviewDataOnly);
-}
-
-// Build Official Sheet HTML using precision template overlay
-function buildDocumentSheetHTML(data, isAr, overlayMode = false) {
-  const modeClass = overlayMode ? 'mode-preprinted' : 'mode-full';
+function buildSheetHTML(data, isAr, overlayMode) {
   const langClass = isAr ? 'lang-ar' : 'lang-fr';
-  const dir = isAr ? 'rtl' : 'ltr';
+  const modeClass = overlayMode ? 'mode-preprinted' : 'mode-full';
 
   return `
-    <div class="document-page ${langClass} ${modeClass}" dir="${dir}">
+    <div class="document-page ${langClass} ${modeClass}">
       <div class="data-layer">
         <!-- Nom et prénom de l'agent -->
-        <div class="field-item field-agent-name">${data.agent_name || ''}</div>
+        <div class="field-item field-agent-name">${escapeHtml(data.agent_name || '')}</div>
 
         <!-- Grade ou fonction -->
-        <div class="field-item field-grade">${data.grade || ''}</div>
+        <div class="field-item field-grade">${escapeHtml(data.grade || '')}</div>
 
         <!-- Service -->
-        <div class="field-item field-service">${data.service || ''}</div>
+        <div class="field-item field-service">${escapeHtml(data.service || '')}</div>
 
-        <!-- Adresse personnelle -->
-        <div class="field-item field-address-1">${data.address_line_1 || ''}</div>
-        ${data.address_line_2 ? `<div class="field-item field-address-2">${data.address_line_2}</div>` : ''}
+        <!-- Adresse -->
+        <div class="field-item field-address-1">${escapeHtml(data.address_line_1 || '')}</div>
+        ${data.address_line_2 ? `<div class="field-item field-address-2">${escapeHtml(data.address_line_2)}</div>` : ''}
 
         <!-- Bénéficie d'un congé de X jours -->
         <div class="field-item field-leave-days">${data.leave_days || ''}</div>
@@ -854,14 +956,14 @@ function buildDocumentSheetHTML(data, isAr, overlayMode = false) {
         </div>
 
         <!-- Adresse durant le congé -->
-        <div class="field-item field-leave-address">${data.leave_address || ''}</div>
+        <div class="field-item field-leave-address">${escapeHtml(data.leave_address || '')}</div>
 
         <!-- Fait à ... Le ... -->
-        <div class="field-item field-location">${data.location || ''}</div>
-        <div class="field-item field-date">${data.date || ''}</div>
+        <div class="field-item field-location">${escapeHtml(data.location || '')}</div>
+        <div class="field-item field-date">${escapeHtml(data.date || '')}</div>
 
         <!-- Le Directeur -->
-        <div class="field-item field-signatory">${data.director || ''}</div>
+        <div class="field-item field-signatory">${escapeHtml(data.director || '')}</div>
 
         <!-- Detail des droits values -->
         <div class="rights-values">
@@ -876,27 +978,15 @@ function buildDocumentSheetHTML(data, isAr, overlayMode = false) {
   `;
 }
 
-function renderDocumentSheet() {
-  const isAr = (currentDocLang === 'ar');
-  const data = getFormData();
-  const html = buildDocumentSheetHTML(data, isAr, isPreviewDataOnly);
-
-  const container = document.getElementById('drawer-paper-container');
-  if (container) {
-    container.innerHTML = html;
-    const sheet = container.querySelector('.document-page');
-    if (sheet) {
-      sheet.style.transform = `scale(${currentZoom})`;
-    }
-  }
-}
-
-// Generate Standalone HTML for Printing / PDF
+// Generate print / PDF HTML with transparent coordinates
 function generatePrintHTML(dataOnly = false) {
   const isAr = (currentDocLang === 'ar');
   const data = getFormData();
-  const bgDataUri = (!dataOnly && window.TEMPLATES_B64) ? window.TEMPLATES_B64[isAr ? 'ar' : 'fr'] : '';
-  const content = buildDocumentSheetHTML(data, isAr, dataOnly);
+  const content = buildSheetHTML(data, isAr, dataOnly);
+
+  const bgDataUri = (!dataOnly && typeof TEMPLATE_IMAGES !== 'undefined')
+    ? (isAr ? TEMPLATE_IMAGES.ar : TEMPLATE_IMAGES.fr)
+    : null;
 
   return `<!DOCTYPE html>
 <html lang="${isAr ? 'ar' : 'fr'}" dir="${isAr ? 'rtl' : 'ltr'}">
@@ -906,19 +996,11 @@ function generatePrintHTML(dataOnly = false) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <style>
-    @page {
-      size: A4;
-      margin: 0;
-    }
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    @page { size: A4; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       background: ${dataOnly ? 'transparent' : '#ffffff'};
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
     }
@@ -934,20 +1016,10 @@ function generatePrintHTML(dataOnly = false) {
       margin: 0 auto;
       overflow: hidden;
     }
-    .document-page::after {
-      display: none !important;
-    }
     .data-layer {
       position: absolute;
       top: 0; left: 0; width: 100%; height: 100%;
       pointer-events: none;
-    }
-    .field-item {
-      position: absolute;
-      color: #000000 !important;
-      font-weight: 700;
-      line-height: 1;
-      white-space: nowrap;
     }
     .field-item {
       position: absolute;
@@ -1057,11 +1129,11 @@ async function printDocument(dataOnly = true) {
   const htmlContent = generatePrintHTML(dataOnly);
   const res = await window.electronAPI.printDocument({ htmlContent, dataOnly });
   if (res && res.error) {
-    alert("Print Error: " + res.error);
+    alert("Erreur d'impression : " + res.error);
   }
 }
 
-// Export PDF (dataOnly = false for complete doc, true for transparent data-only)
+// Export PDF
 async function saveAsPDF(dataOnly = false) {
   const data = getFormData();
   const safeName = data.agent_name ? data.agent_name.replace(/\s+/g, '_') : 'GRH22';
@@ -1070,51 +1142,35 @@ async function saveAsPDF(dataOnly = false) {
     : `Titre_Conge_${safeName}.pdf`;
 
   if (!window.electronAPI) {
-    alert("Available in Electron.");
+    alert("Fonctionnalité disponible dans Electron.");
     return;
   }
 
   const htmlContent = generatePrintHTML(dataOnly);
   const res = await window.electronAPI.savePDF({ htmlContent, defaultName, dataOnly });
   if (res && res.success) {
-    alert(currentAppLang === 'ar' ? `تم حفظ ملف PDF بنجاح:\n${res.filePath}` : `Document PDF enregistré avec succès :\n${res.filePath}`);
+    alert(`Document PDF enregistré avec succès :\n${res.filePath}`);
   } else if (res && res.error) {
-    alert("Error: " + res.error);
-  }
-}
-
-// Fill PDF Direct with pdf-lib onto GRH22_cleaned.pdf
-async function exportFilledPDFDirect() {
-  if (!window.electronAPI || !window.electronAPI.fillPdfDirect) {
-    alert("Available in Electron.");
-    return;
-  }
-
-  const data = getFormData();
-  const res = await window.electronAPI.fillPdfDirect(data);
-  if (res && res.success) {
-    alert("Cleaned official PDF filled successfully:\n" + res.filePath);
-  } else if (res && res.error) {
-    alert("Error: " + res.error);
+    alert("Erreur: " + res.error);
   }
 }
 
 // Save Leave Record into history & update balance
 async function saveCurrentLeaveRecord() {
   if (!window.electronAPI || !window.electronAPI.saveLeaveRecord) {
-    alert("Saved (Browser mode).");
+    alert("Enregistré (Mode navigateur).");
     return;
   }
 
   const data = getFormData();
   const res = await window.electronAPI.saveLeaveRecord(data);
   if (res && res.success) {
-    alert(`Leave record saved successfully for ${data.agent_name}!\nNew vacation balance: ${data.new_balance} days.`);
+    alert(`Titre de congé enregistré avec succès pour ${data.agent_name} !\nNouveau solde de congé : ${data.new_balance} jours.`);
     await loadEmployees();
     await loadHistory();
     closeLeaveDrawer();
   } else {
-    alert("Error saving record.");
+    alert("Erreur lors de l'enregistrement du congé.");
   }
 }
 
@@ -1130,50 +1186,26 @@ function resetZoom() {
 }
 
 function updateZoomDisplay() {
-  document.getElementById('zoom-txt').textContent = `${Math.round(currentZoom * 100)}%`;
+  const txt = document.getElementById('zoom-txt');
+  if (txt) txt.textContent = `${Math.round(currentZoom * 100)}%`;
   const sheet = document.querySelector('#drawer-paper-container .document-page');
   if (sheet) {
     sheet.style.transform = `scale(${currentZoom})`;
   }
 }
 
-// Modal handling for adding employee
-function openNewEmployeeModal() {
-  document.getElementById('employee-modal').style.display = 'flex';
+// Security / formatting helper functions
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
-function closeNewEmployeeModal() {
-  document.getElementById('employee-modal').style.display = 'none';
-}
-
-async function submitNewEmployee() {
-  const nameFr = document.getElementById('m-name-fr').value.trim();
-  const nameAr = document.getElementById('m-name-ar').value.trim();
-  if (!nameFr && !nameAr) {
-    alert(currentAppLang === 'ar' ? "يرجى إدخال الاسم على الأقل بالعربية أو الفرنسية." : "Veuillez renseigner au moins le nom en français ou en arabe.");
-    return;
-  }
-
-  const newEmp = {
-    id: 'emp-' + Date.now(),
-    name_fr: nameFr || nameAr,
-    name_ar: nameAr || nameFr,
-    grade_fr: document.getElementById('m-grade-fr').value.trim() || 'Agent',
-    grade_ar: document.getElementById('m-grade-ar').value.trim() || 'عون',
-    service_fr: document.getElementById('m-service-fr').value.trim() || 'Administration',
-    service_ar: document.getElementById('m-service-ar').value.trim() || 'المصلحة الإدارية',
-    address_fr: document.getElementById('m-address-fr').value.trim() || '',
-    address_ar: document.getElementById('m-address-fr').value.trim() || '',
-    prev_balance: parseFloat(document.getElementById('m-prev-balance').value) || 0,
-    annual_entitlement: parseFloat(document.getElementById('m-annual-entitlement').value) || 30
-  };
-
-  if (window.electronAPI && window.electronAPI.saveEmployee) {
-    await window.electronAPI.saveEmployee(newEmp);
-  } else {
-    employees.push(newEmp);
-  }
-
-  closeNewEmployeeModal();
-  await loadEmployees();
+function escapeJsStr(str) {
+  if (str === null || str === undefined) return '';
+  return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;');
 }
