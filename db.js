@@ -190,6 +190,187 @@ function saveLeaveRecord(record) {
   return { success: true, id };
 }
 
+// Seed realistic Algerian CNAS random employee & leave data
+function seedSampleData(clearFirst = false) {
+  if (clearFirst) {
+    db.exec('DELETE FROM leave_records; DELETE FROM employees;');
+  }
+
+  const sampleEmployees = [
+    {
+      id: 'emp_01',
+      name_fr: 'BENALI Ahmed',
+      name_ar: 'بن علي أحمد',
+      grade_fr: "Attaché Principal d'Administration",
+      grade_ar: 'ملحق رئيسي للإدارة',
+      service_fr: 'Sous-Direction des Ressources Humaines',
+      service_ar: 'المديرية الفرعية للموارد البشرية',
+      address_fr: '12 Rue Didouche Mourad, Alger-Centre',
+      address_ar: '12 شارع ديدوش مراد، الجزائر الوسطى',
+      prev_balance: 14,
+      annual_entitlement: 30
+    },
+    {
+      id: 'emp_02',
+      name_fr: 'MEZIANE Samira',
+      name_ar: 'مزيان سميرة',
+      grade_fr: 'Ingénieur Principal en Informatique',
+      grade_ar: 'مهندس رئيسي في الإعلام الآلي',
+      service_fr: 'Direction des Systèmes d\'Information',
+      service_ar: 'مديرية أنظمة الإعلام الآلي',
+      address_fr: '25 Boulevard Colonel Amirouche, Bab El Oued, Alger',
+      address_ar: '25 شارع العقيد عميروش، باب الواد، الجزائر',
+      prev_balance: 8,
+      annual_entitlement: 30
+    },
+    {
+      id: 'emp_03',
+      name_fr: 'KACI Mohamed',
+      name_ar: 'قاسي محمد',
+      grade_fr: 'Chef de Service Recouvrement',
+      grade_ar: 'رئيس مصلحة التحصيل',
+      service_fr: 'Direction du Recouvrement et du Contentieux',
+      service_ar: 'مديرية التحصيل والمنازعات',
+      address_fr: '08 Cité 5 Juillet, Bab Ezzouar, Alger',
+      address_ar: '08 حي 5 جويلية، باب الزوار، الجزائر',
+      prev_balance: 22,
+      annual_entitlement: 30
+    },
+    {
+      id: 'emp_04',
+      name_fr: 'BOUZID Amina',
+      name_ar: 'بوزيد أمينة',
+      grade_fr: 'Médecin Contrôleur Principal',
+      grade_ar: 'طبيب مراقب رئيسي',
+      service_fr: 'Département du Contrôle Médical',
+      service_ar: 'قسم المراقبة الطبية',
+      address_fr: '14 Rue Hassiba Ben Bouali, Sidi M\'Hamed, Alger',
+      address_ar: '14 شارع حسيبة بن بوعلي، سيدي امحمد، الجزائر',
+      prev_balance: 5,
+      annual_entitlement: 30
+    },
+    {
+      id: 'emp_05',
+      name_fr: 'HADJ-ALI Karim',
+      name_ar: 'حاج علي كريم',
+      grade_fr: 'Comptable Agréé Principal',
+      grade_ar: 'محاسب معتمد رئيسي',
+      service_fr: 'Sous-Direction des Finances et de la Comptabilité',
+      service_ar: 'المديرية الفرعية للمالية والمحاسبة',
+      address_fr: '03 Rue Larbi Ben M\'hidi, Oran',
+      address_ar: '03 شارع العربي بن مهيدي، وهران',
+      prev_balance: 19,
+      annual_entitlement: 30
+    },
+    {
+      id: 'emp_06',
+      name_fr: 'MANSOURI Fatima',
+      name_ar: 'منصوري فاطمة',
+      grade_fr: 'Administrateur Conseiller',
+      grade_ar: 'متصرف مستشار',
+      service_fr: 'Secrétariat Général',
+      service_ar: 'الأمانة العامة',
+      address_fr: '17 Avenue de l\'Indépendance, Rouiba, Alger',
+      address_ar: '17 شارع الاستقلال، الرويبة، الجزائر',
+      prev_balance: 0,
+      annual_entitlement: 30
+    },
+    {
+      id: 'emp_07',
+      name_fr: 'DAHMANI Youcef',
+      name_ar: 'دحماني يوسف',
+      grade_fr: 'Technicien Supérieur Réseaux & Télécoms',
+      grade_ar: 'تقني سامي في الشبكات والمواصلات السلكية واللاسلكية',
+      service_fr: 'Centre d\'Exploitation Informatique',
+      service_ar: 'مركز الاستغلال المعلوماتي',
+      address_fr: '52 Rue Tripoli, Hussein Dey, Alger',
+      address_ar: '52 شارع طرابلس، حسين داي، الجزائر',
+      prev_balance: 11,
+      annual_entitlement: 30
+    },
+    {
+      id: 'emp_08',
+      name_fr: 'CHERRADI Souad',
+      name_ar: 'شرادي سعاد',
+      grade_fr: 'Chargée des Relations Publiques & Accueil',
+      grade_ar: 'مكلفة بالعلاقات العامة والاستقبال',
+      service_fr: 'Cellule Communication & Écoute Sociale',
+      service_ar: 'خلية الإعلام والتواصل الاجتماعي',
+      address_fr: '09 Boulevard Zighout Youcef, Alger',
+      address_ar: '09 شارع زيغود يوسف، الجزائر',
+      prev_balance: 15,
+      annual_entitlement: 30
+    }
+  ];
+
+  sampleEmployees.forEach(emp => saveEmployee(emp));
+
+  // Seed sample leave history
+  const sampleLeaves = [
+    {
+      employeeId: 'emp_01',
+      agent_name: 'BENALI Ahmed',
+      grade: "Attaché Principal d'Administration",
+      service: 'Sous-Direction des Ressources Humaines',
+      leave_days: 16,
+      dep_date: '01/07/2026',
+      ret_date: '17/07/2026',
+      leave_address: '05 Boulevard des Martyrs, Tipaza',
+      location: 'Alger',
+      date: '25/06/2026',
+      director: 'Le Directeur d\'Agence',
+      prev_balance: 30,
+      cur_entitlement: 30,
+      tot_entitlement: 60,
+      leave_granted: 16,
+      new_balance: 14,
+      timestamp: '2026-06-25T10:30:00Z'
+    },
+    {
+      employeeId: 'emp_02',
+      agent_name: 'MEZIANE Samira',
+      grade: 'Ingénieur Principal en Informatique',
+      service: 'Direction des Systèmes d\'Information',
+      leave_days: 22,
+      dep_date: '10/08/2026',
+      ret_date: '01/09/2026',
+      leave_address: 'Cité Plage, Ain El Turck, Oran',
+      location: 'Alger',
+      date: '02/08/2026',
+      director: 'Le Directeur d\'Agence',
+      prev_balance: 0,
+      cur_entitlement: 30,
+      tot_entitlement: 30,
+      leave_granted: 22,
+      new_balance: 8,
+      timestamp: '2026-08-02T14:15:00Z'
+    },
+    {
+      employeeId: 'emp_03',
+      agent_name: 'KACI Mohamed',
+      grade: 'Chef de Service Recouvrement',
+      service: 'Direction du Recouvrement et du Contentieux',
+      leave_days: 8,
+      dep_date: '15/09/2026',
+      ret_date: '23/09/2026',
+      leave_address: 'Résidence Sahel, Zéralda, Alger',
+      location: 'Alger',
+      date: '10/09/2026',
+      director: 'Le Directeur d\'Agence',
+      prev_balance: 0,
+      cur_entitlement: 30,
+      tot_entitlement: 30,
+      leave_granted: 8,
+      new_balance: 22,
+      timestamp: '2026-09-10T09:00:00Z'
+    }
+  ];
+
+  sampleLeaves.forEach(rec => saveLeaveRecord(rec));
+
+  return { success: true, employeesCount: sampleEmployees.length, leavesCount: sampleLeaves.length };
+}
+
 // Auto-initialize on module load
 initDatabase();
 
@@ -201,5 +382,6 @@ module.exports = {
   saveEmployee,
   deleteEmployee,
   getLeaveHistory,
-  saveLeaveRecord
+  saveLeaveRecord,
+  seedSampleData
 };

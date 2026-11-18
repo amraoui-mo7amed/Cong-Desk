@@ -9,5 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   printDocument: (options) => ipcRenderer.invoke('print-document', options),
   savePDF: (data) => ipcRenderer.invoke('save-pdf', data),
   fillPdfDirect: (data) => ipcRenderer.invoke('fill-pdf-direct', data),
-  openFileFolder: (path) => ipcRenderer.invoke('open-file-folder', path)
+  openFileFolder: (path) => ipcRenderer.invoke('open-file-folder', path),
+  seedSampleData: () => ipcRenderer.invoke('seed-sample-data'),
+  clearAllData: () => ipcRenderer.invoke('clear-all-data')
 });

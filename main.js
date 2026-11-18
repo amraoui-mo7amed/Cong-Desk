@@ -95,6 +95,27 @@ ipcMain.handle('save-leave-record', async (event, record) => {
   }
 });
 
+// Seed random realistic sample data
+ipcMain.handle('seed-sample-data', async () => {
+  try {
+    return db.seedSampleData(true);
+  } catch (err) {
+    console.error('Error seeding sample data:', err);
+    return { success: false, error: err.message };
+  }
+});
+
+// Clear all data
+ipcMain.handle('clear-all-data', async () => {
+  try {
+    db.db.exec('DELETE FROM leave_records; DELETE FROM employees;');
+    return { success: true };
+  } catch (err) {
+    console.error('Error clearing data:', err);
+    return { success: false, error: err.message };
+  }
+});
+
 // Print Document (Direct system printer)
 ipcMain.handle('print-document', async (event, { htmlContent, dataOnly = false }) => {
   try {

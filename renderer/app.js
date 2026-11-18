@@ -19,6 +19,7 @@ const i18n = {
     searchPlaceholder: "Rechercher employé, grade, service...",
     langBtnLabel: "العربية",
     addEmployee: "Ajouter Employé",
+    randomData: "Données Aléatoires",
     kpiTotal: "Total Employés",
     kpiQuota: "Droit Annuel Légal",
     kpiQuotaVal: "30 Jours",
@@ -93,6 +94,7 @@ const i18n = {
     searchPlaceholder: "بحث عن موظف، رتبة، مصلحة...",
     langBtnLabel: "Français",
     addEmployee: "إضافة موظف",
+    randomData: "بيانات عشوائية",
     kpiTotal: "إجمالي الموظفين",
     kpiQuota: "الحق السنوي القانوني",
     kpiQuotaVal: "30 يوماً",
@@ -335,7 +337,8 @@ function renderEmployeeCards(list) {
     container.innerHTML = `
       <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: var(--text-dim); background: var(--bg-surface); border: 1px dashed var(--border-color); border-radius: var(--radius-xl);">
         <i class="fa-solid fa-user-slash" style="font-size: 32px; margin-bottom: 12px; display: block; color: var(--text-dim);"></i>
-        <span style="font-size: 15px; font-weight: 600;">${dict.noEmployeesFound}</span>
+        <span style="font-size: 15px; font-weight: 600; display: block; margin-bottom: 16px;">${dict.noEmployeesFound}</span>
+        <button class="btn btn-secondary" onclick="seedRandomDataUI()"><i class="fa-solid fa-dice"></i> <span>${dict.randomData}</span></button>
       </div>
     `;
     return;
@@ -472,6 +475,26 @@ async function deleteEmployee(empId) {
     employees = employees.filter(e => e.id !== empId);
     updateKPICards();
     renderEmployeeCards(employees);
+  }
+}
+
+// Generate random realistic data
+async function seedRandomDataUI() {
+  const isAr = (currentAppLang === 'ar');
+  const confirmMsg = isAr 
+    ? 'هل تريد توليد بيانات عشوائية للموظفين وسجلات العطل للتجربة؟'
+    : 'Voulez-vous générer des données aléatoires d\'employés et d\'historique de congés pour les tests ?';
+  
+  if (!confirm(confirmMsg)) return;
+
+  if (window.electronAPI && window.electronAPI.seedSampleData) {
+    const res = await window.electronAPI.seedSampleData();
+    if (res && res.success) {
+      await loadEmployees();
+      alert(isAr ? `تم توليد ${res.employeesCount} موظف و ${res.leavesCount} سجل عطلة بنجاح!` : `${res.employeesCount} employés et ${res.leavesCount} titres de congé ont été générés avec succès !`);
+    } else {
+      alert("Erreur: " + (res?.error || "Inconnue"));
+    }
   }
 }
 
