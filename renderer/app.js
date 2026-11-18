@@ -5,7 +5,7 @@ let currentAppLang = 'fr'; // 'fr' or 'ar'
 let currentDocLang = 'fr'; // 'fr' or 'ar'
 let currentTheme = 'light'; // 'light' (default) or 'dark'
 let currentZoom = 1.0;
-let modalZoom = 1.0;
+let modalZoom = 0.85;
 let isPreviewDataOnly = false; // Toggle between full document and transparent pre-printed overlay mode
 
 let employees = [];
@@ -301,48 +301,7 @@ async function loadEmployees() {
   if (window.electronAPI && window.electronAPI.getEmployees) {
     employees = await window.electronAPI.getEmployees();
   } else {
-    // Default mock data
-    employees = [
-      {
-        id: "emp-001",
-        name_fr: "BENALI Ahmed",
-        name_ar: "بن علي أحمد",
-        grade_fr: "Ingénieur Principal en Informatique",
-        grade_ar: "مهندس رئيسي في الإعلام الآلي",
-        service_fr: "Direction des Systèmes d'Information",
-        service_ar: "مديرية أنظمة الإعلام الآلي",
-        address_fr: "Cité 500 Logements, Bt B3, N° 12, Alger",
-        address_ar: "حي 500 مسكن، عمارة ب3، رقم 12، الجزائر",
-        prev_balance: 14,
-        annual_entitlement: 30
-      },
-      {
-        id: "emp-002",
-        name_fr: "MEZIANE Samira",
-        name_ar: "مزيان سميرة",
-        grade_fr: "Attachée Principale d'Administration",
-        grade_ar: "ملحقة رئيسية للإدارة",
-        service_fr: "Sous-Direction des Ressources Humaines",
-        service_ar: "المديرية الفرعية للموارد البشرية",
-        address_fr: "08 Rue Didouche Mourad, Alger-Centre",
-        address_ar: "08 نهج ديدوش مراد، الجزائر الوسطى",
-        prev_balance: 8,
-        annual_entitlement: 30
-      },
-      {
-        id: "emp-003",
-        name_fr: "KACI Mohamed",
-        name_ar: "قاسي محمد",
-        grade_fr: "Chef de Département Contrôle Médical",
-        grade_ar: "رئيس قسم المراقبة الطبية",
-        service_fr: "Direction du Contrôle et des Prestations",
-        service_ar: "مديرية المراقبة والأداءات",
-        address_fr: "Lotissement El-Binaa, N° 45, Dely Ibrahim",
-        address_ar: "تجزئة البناء، رقم 45، دالي براهيم",
-        prev_balance: 22,
-        annual_entitlement: 30
-      }
-    ];
+    employees = [];
   }
 
   updateKPICards();
@@ -539,6 +498,8 @@ function openPreviewModalFor(empId) {
   document.getElementById('modal-tab-fr').classList.toggle('active', currentDocLang === 'fr');
   document.getElementById('modal-tab-ar').classList.toggle('active', currentDocLang === 'ar');
 
+  setDocumentPrintMode(isPreviewDataOnly);
+
   // Render sheet into modal paper container
   renderModalDocumentSheet();
 
@@ -567,9 +528,14 @@ function setPreviewModalLanguage(lang) {
     const subEl = document.getElementById('drawer-agent-subtitle');
     if (titleEl) titleEl.textContent = `${empName} - GRH.22`;
     if (subEl) subEl.textContent = empRole;
+    const modalNameEl = document.getElementById('preview-modal-emp-name');
+    const modalSubEl = document.getElementById('preview-modal-emp-sub');
+    if (modalNameEl) modalNameEl.textContent = `${empName} - ${isAr ? 'بيان العطلة السنوية GRH.22' : 'Titre de Congé GRH.22'}`;
+    if (modalSubEl) modalSubEl.textContent = empRole;
     populateDrawerFields(activeEmployee, lang);
   }
 
+  setDocumentPrintMode(isPreviewDataOnly);
   renderModalDocumentSheet();
   recalcAndRender();
 }
@@ -577,14 +543,14 @@ function setPreviewModalLanguage(lang) {
 function renderModalDocumentSheet() {
   const isAr = (currentDocLang === 'ar');
   const data = getFormData();
-  const bannerPath = isAr ? '../resources/header_banner_ar.png' : '../resources/header_banner.png';
-
-  const html = buildDocumentSheetHTML(data, isAr, bannerPath, isPreviewDataOnly);
+  const html = buildDocumentSheetHTML(data, isAr, isPreviewDataOnly);
   const container = document.getElementById('preview-modal-paper-container');
-  container.innerHTML = html;
-  const sheet = container.querySelector('.document-page');
-  if (sheet) {
-    sheet.style.transform = `scale(${modalZoom})`;
+  if (container) {
+    container.innerHTML = html;
+    const sheet = container.querySelector('.document-page');
+    if (sheet) {
+      sheet.style.transform = `scale(${modalZoom})`;
+    }
   }
 }
 
@@ -598,11 +564,11 @@ function adjustModalZoom(delta) {
 }
 
 function resetModalZoom() {
-  modalZoom = 1.0;
-  document.getElementById('modal-zoom-txt').textContent = '100%';
+  modalZoom = 0.85;
+  document.getElementById('modal-zoom-txt').textContent = `${Math.round(modalZoom * 100)}%`;
   const sheet = document.querySelector('#preview-modal-paper-container .document-page');
   if (sheet) {
-    sheet.style.transform = `scale(1)`;
+    sheet.style.transform = `scale(${modalZoom})`;
   }
 }
 
@@ -862,168 +828,130 @@ function setDocumentPrintMode(isOverlay) {
   if (drawerFull) drawerFull.classList.toggle('active', !isOverlay);
   if (drawerOverlay) drawerOverlay.classList.toggle('active', isOverlay);
 
+  // Update Preview Status Banner
+  const statusBanner = document.getElementById('preview-status-banner');
+  const statusText = document.getElementById('preview-status-text');
+  const isAr = (currentDocLang === 'ar');
+
+  if (statusBanner && statusText) {
+    statusBanner.classList.toggle('mode-overlay-active', isOverlay);
+    if (isOverlay) {
+      statusText.innerHTML = isAr
+        ? '<i class="fa-solid fa-layer-group"></i> <strong>وضع الورق الرسمي :</strong> يظهر النموذج كعلامة مائية خفيفة للتأكد من مواضع الكتابة. <strong>ستتم طباعة البيانات فقط</strong> على الورق المطبوع مسبقاً.'
+        : '<i class="fa-solid fa-layer-group"></i> <strong>Mode Papier Pré-imprimé :</strong> Le formulaire est affiché en filigrane pour alignement. <strong>Seules les données seront imprimées</strong> sur votre feuille.';
+    } else {
+      statusText.innerHTML = isAr
+        ? '<i class="fa-solid fa-circle-check"></i> <strong>وضع النموذج الكامل :</strong> ستتم طباعة الوثيقة كاملة مع الترويسة والحدود والبيانات.'
+        : '<i class="fa-solid fa-circle-check"></i> <strong>Mode Document Complet :</strong> Le modèle officiel avec en-tête CNAS, bordures et données sera imprimé intégralement.';
+    }
+  }
+
+  // Update Dynamic Action Button labels
+  const btnPrintMain = document.getElementById('lbl-modal-print-main');
+  const btnExportPdf = document.getElementById('lbl-modal-export-pdf');
+  const btnAltPdf = document.getElementById('lbl-modal-alt-pdf');
+
+  if (btnPrintMain) {
+    if (isOverlay) {
+      btnPrintMain.textContent = isAr ? 'طباعة على ورق رسمي' : 'Imprimer sur Papier Pré-imprimé';
+    } else {
+      btnPrintMain.textContent = isAr ? 'طباعة النموذج الكامل' : 'Imprimer Tout (Modèle Complet)';
+    }
+  }
+
+  if (btnExportPdf) {
+    if (isOverlay) {
+      btnExportPdf.textContent = isAr ? 'تصدير PDF بيانات فقط' : 'Exporter PDF Données Seules';
+    } else {
+      btnExportPdf.textContent = isAr ? 'تصدير PDF كامل' : 'Exporter PDF Complet';
+    }
+  }
+
+  if (btnAltPdf) {
+    if (isOverlay) {
+      btnAltPdf.textContent = isAr ? 'PDF كامل' : 'PDF Complet';
+    } else {
+      btnAltPdf.textContent = isAr ? 'PDF بيانات فقط' : 'PDF Données Seules';
+    }
+  }
+
+  const formatBadgeEl = document.querySelector('.paper-format-badge');
+  if (formatBadgeEl) {
+    formatBadgeEl.innerHTML = isAr ? '<i class="fa-solid fa-receipt"></i> حجم A4 رسمي (210 × 297 مم)' : '<i class="fa-solid fa-receipt"></i> Format A4 Officiel (210 × 297 mm)';
+  }
+
   renderModalDocumentSheet();
   renderDocumentSheet();
 }
 
-// Build Official Sheet HTML
-function buildDocumentSheetHTML(data, isAr, bannerPath, overlayMode = false) {
+function executeCurrentPrint() {
+  printDocument(isPreviewDataOnly);
+}
+
+// Build Official Sheet HTML using precision template overlay
+function buildDocumentSheetHTML(data, isAr, overlayMode = false) {
+  const modeClass = overlayMode ? 'mode-preprinted' : 'mode-full';
+  const langClass = isAr ? 'lang-ar' : 'lang-fr';
+  const dir = isAr ? 'rtl' : 'ltr';
+
   return `
-    <div class="document-page ${isAr ? 'lang-ar' : 'lang-fr'} ${overlayMode ? 'preview-data-only' : ''}" dir="${isAr ? 'rtl' : 'ltr'}">
-      
-      <!-- Header Banner -->
-      <div class="header-banner">
-        <img src="${bannerPath}" alt="CNAS Banner">
-      </div>
+    <div class="document-page ${langClass} ${modeClass}" dir="${dir}">
+      <div class="data-layer">
+        <!-- Nom et prénom de l'agent -->
+        <div class="field-item field-agent-name">${data.agent_name || ''}</div>
 
-      <!-- Sub Header -->
-      <div class="sub-header">
-        ${isAr ? `
-          <div class="doc-title">بيان <span class="underline">العطلة السنوية</span></div>
-          <div class="visa-box"><span>تأشيرة الهيئة</span></div>
-        ` : `
-          <div class="visa-box"><span>Visa de la Structure</span></div>
-          <div class="doc-title">TITRE <span class="underline">DE CONGE</span> ANNUEL</div>
-        `}
-      </div>
+        <!-- Grade ou fonction -->
+        <div class="field-item field-grade">${data.grade || ''}</div>
 
-      <!-- Main Form Border -->
-      <div class="form-wrapper">
-        <div class="form-border">
-          
-          <div class="fields-group">
-            
-            <div class="field-row">
-              <span class="field-label">${isAr ? 'إسم ولقب العون :' : 'Nom et prénom de l’agent :'}</span>
-              <div class="field-dotted"><span class="field-data">${data.agent_name}</span></div>
-            </div>
+        <!-- Service -->
+        <div class="field-item field-service">${data.service || ''}</div>
 
-            <div class="field-row">
-              <span class="field-label">${isAr ? 'الرتبة أو الوظيفة :' : 'Grade ou fonction :'}</span>
-              <div class="field-dotted"><span class="field-data">${data.grade}</span></div>
-            </div>
+        <!-- Adresse personnelle -->
+        <div class="field-item field-address-1">${data.address_line_1 || ''}</div>
+        ${data.address_line_2 ? `<div class="field-item field-address-2">${data.address_line_2}</div>` : ''}
 
-            <div class="field-row">
-              <span class="field-label">${isAr ? 'مصلحة :' : 'Service :'}</span>
-              <div class="field-dotted"><span class="field-data">${data.service}</span></div>
-            </div>
+        <!-- Bénéficie d'un congé de X jours -->
+        <div class="field-item field-leave-days">${data.leave_days || ''}</div>
 
-            <div class="field-row">
-              <span class="field-label">${isAr ? 'العنــــوان :' : 'Adresse :'}</span>
-              <div class="field-dotted"><span class="field-data">${data.address_line_1}</span></div>
-            </div>
-
-            <div class="field-row">
-              <div class="field-dotted"><span class="field-data"></span></div>
-            </div>
-
-            <div class="field-row" style="margin-top: 3px;">
-              <span class="field-label">${isAr ? 'يستفيد من عطلة تدوم :' : 'Bénéficie d’un congé de :'}</span>
-              <div class="days-bracket">${data.leave_days}</div>
-              <span class="field-label">${isAr ? 'يوما.' : 'jours.'}</span>
-            </div>
-
-            <div class="field-row" style="margin-top: 2px;">
-              <span class="field-label">${isAr ? 'تاريخ الذهاب :' : 'Date de départ :'}</span>
-              <div class="date-box-container">
-                <div class="date-segment">
-                  <div class="date-cell">${data.dep.d1}</div>
-                  <div class="date-cell">${data.dep.d2}</div>
-                </div>
-                <div class="date-segment">
-                  <div class="date-cell">${data.dep.m1}</div>
-                  <div class="date-cell">${data.dep.m2}</div>
-                </div>
-                <div class="date-segment">
-                  <div class="date-cell">${data.dep.y1}</div>
-                  <div class="date-cell">${data.dep.y2}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="field-row" style="margin-top: 2px;">
-              <span class="field-label">${isAr ? 'تاريخ العودة :' : 'Date de retour :'}</span>
-              <div class="date-box-container">
-                <div class="date-segment">
-                  <div class="date-cell">${data.ret.d1}</div>
-                  <div class="date-cell">${data.ret.d2}</div>
-                </div>
-                <div class="date-segment">
-                  <div class="date-cell">${data.ret.m1}</div>
-                  <div class="date-cell">${data.ret.m2}</div>
-                </div>
-                <div class="date-segment">
-                  <div class="date-cell">${data.ret.y1}</div>
-                  <div class="date-cell">${data.ret.y2}</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="field-row" style="margin-top: 2px;">
-              <span class="field-label">${isAr ? 'العنوان خلال العطلة :' : 'Adresse durant le congé :'}</span>
-              <div class="field-dotted"><span class="field-data">${data.leave_address}</span></div>
-            </div>
-
-            <div class="field-row">
-              <div class="field-dotted"><span class="field-data"></span></div>
-            </div>
-
-          </div>
-
-          <!-- Date & Signature section -->
-          <div class="mid-signature-block">
-            <div class="date-location-line">
-              <div class="item">
-                <span class="field-label">${isAr ? 'حرر بـ' : 'Fait à'}</span> <span class="dotted-box-short">${data.location}</span>
-              </div>
-              <div class="item">
-                <span class="field-label">${isAr ? 'في' : 'Le'}</span> <span class="dotted-box-short">${data.date}</span>
-              </div>
-            </div>
-            <div class="director-role">
-              ${data.director}
-            </div>
-          </div>
-
-          <!-- Detail des droits Table -->
-          <div class="table-container">
-            <table class="rights-table">
-              <thead>
-                <tr>
-                  <th colspan="2">${isAr ? 'كشف المستحقات' : 'DETAIL DES DROITS'}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td class="col-label">${isAr ? 'الباقي من السنة الماضية :' : 'Reliquat année précédente :'}</td>
-                  <td class="col-val">${data.prev_balance}</td>
-                </tr>
-                <tr>
-                  <td class="col-label">${isAr ? 'حقوق السنة الجارية :' : 'Droit année en cours :'}</td>
-                  <td class="col-val">${data.cur_entitlement}</td>
-                </tr>
-                <tr>
-                  <td class="col-label">${isAr ? 'مجموع الحقوق :' : 'Total droit :'}</td>
-                  <td class="col-val">${data.tot_entitlement}</td>
-                </tr>
-                <tr>
-                  <td class="col-label">${isAr ? 'العطل المسموحة :' : 'Congé accordé :'}</td>
-                  <td class="col-val">${data.leave_granted}</td>
-                </tr>
-                <tr class="row-reliquat">
-                  <td class="col-label reliquat-title">${isAr ? 'الباقي : ...' : 'Reliquat : .....'}</td>
-                  <td class="col-val">${data.new_balance}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
+        <!-- Date de départ (6 individual cells) -->
+        <div class="date-group group-dep">
+          <span class="cell cell-d1">${data.dep?.d1 || ''}</span>
+          <span class="cell cell-d2">${data.dep?.d2 || ''}</span>
+          <span class="cell cell-m1">${data.dep?.m1 || ''}</span>
+          <span class="cell cell-m2">${data.dep?.m2 || ''}</span>
+          <span class="cell cell-y1">${data.dep?.y1 || ''}</span>
+          <span class="cell cell-y2">${data.dep?.y2 || ''}</span>
         </div>
 
-        <!-- Vertical side reference -->
-        <div class="side-reference">IMP.CNAS 03-2020 - GRH.22</div>
-      </div>
+        <!-- Date de retour (6 individual cells) -->
+        <div class="date-group group-ret">
+          <span class="cell cell-d1">${data.ret?.d1 || ''}</span>
+          <span class="cell cell-d2">${data.ret?.d2 || ''}</span>
+          <span class="cell cell-m1">${data.ret?.m1 || ''}</span>
+          <span class="cell cell-m2">${data.ret?.m2 || ''}</span>
+          <span class="cell cell-y1">${data.ret?.y1 || ''}</span>
+          <span class="cell cell-y2">${data.ret?.y2 || ''}</span>
+        </div>
 
+        <!-- Adresse durant le congé -->
+        <div class="field-item field-leave-address">${data.leave_address || ''}</div>
+
+        <!-- Fait à ... Le ... -->
+        <div class="field-item field-location">${data.location || ''}</div>
+        <div class="field-item field-date">${data.date || ''}</div>
+
+        <!-- Le Directeur -->
+        <div class="field-item field-signatory">${data.director || ''}</div>
+
+        <!-- Detail des droits values -->
+        <div class="rights-values">
+          <div class="field-item right-val-prev">${data.prev_balance ?? ''}</div>
+          <div class="field-item right-val-cur">${data.cur_entitlement ?? ''}</div>
+          <div class="field-item right-val-tot">${data.tot_entitlement ?? ''}</div>
+          <div class="field-item right-val-granted">${data.leave_granted ?? ''}</div>
+          <div class="field-item right-val-new">${data.new_balance ?? ''}</div>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -1031,14 +959,15 @@ function buildDocumentSheetHTML(data, isAr, bannerPath, overlayMode = false) {
 function renderDocumentSheet() {
   const isAr = (currentDocLang === 'ar');
   const data = getFormData();
-  const bannerPath = isAr ? '../resources/header_banner_ar.png' : '../resources/header_banner.png';
-  const html = buildDocumentSheetHTML(data, isAr, bannerPath, isPreviewDataOnly);
+  const html = buildDocumentSheetHTML(data, isAr, isPreviewDataOnly);
 
   const container = document.getElementById('drawer-paper-container');
-  container.innerHTML = html;
-  const sheet = container.querySelector('.document-page');
-  if (sheet) {
-    sheet.style.transform = `scale(${currentZoom})`;
+  if (container) {
+    container.innerHTML = html;
+    const sheet = container.querySelector('.document-page');
+    if (sheet) {
+      sheet.style.transform = `scale(${currentZoom})`;
+    }
   }
 }
 
@@ -1046,105 +975,132 @@ function renderDocumentSheet() {
 function generatePrintHTML(dataOnly = false) {
   const isAr = (currentDocLang === 'ar');
   const data = getFormData();
-  const bannerPath = isAr ? '../resources/header_banner_ar.png' : '../resources/header_banner.png';
-  const content = buildDocumentSheetHTML(data, isAr, bannerPath, false);
+  const bgDataUri = (!dataOnly && window.TEMPLATES_B64) ? window.TEMPLATES_B64[isAr ? 'ar' : 'fr'] : '';
+  const content = buildDocumentSheetHTML(data, isAr, dataOnly);
 
   return `<!DOCTYPE html>
-<html>
+<html lang="${isAr ? 'ar' : 'fr'}" dir="${isAr ? 'rtl' : 'ltr'}">
 <head>
   <meta charset="UTF-8">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
   <style>
-    @page { size: 140mm 220mm; margin: 4mm 6mm; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: ${dataOnly ? 'transparent' : '#ffffff'}; padding: 0; margin: 0; }
-    .document-page { width: 140mm; min-height: 220mm; background: ${dataOnly ? 'transparent' : '#ffffff'}; padding: 5mm 6mm 4mm 6mm; position: relative; display: flex; flex-direction: column; color: #111; margin: 0 auto; box-sizing: border-box; }
-    .header-banner { width: 100%; margin-bottom: 8px; }
-    .header-banner img { width: 100%; height: auto; display: block; }
-    .sub-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 10px; padding: 0 2px; }
-    .visa-box { width: 125px; height: 64px; border: 1.2px solid #231f20; border-radius: 8px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; }
-    .doc-title { font-weight: bold; color: #111; padding-bottom: 4px; }
-    .doc-title .underline { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1.2px; }
-    .form-wrapper { position: relative; flex: 1; display: flex; flex-direction: column; }
-    .form-border { border: 1.2px solid #231f20; padding: 10px 12px 8px 12px; flex: 1; display: flex; flex-direction: column; position: relative; }
-    .side-reference { position: absolute; bottom: 2px; font-family: Arial, Helvetica, sans-serif; font-size: 6.8px; letter-spacing: 0.5px; color: #222; white-space: nowrap; }
-    .fields-group { display: flex; flex-direction: column; gap: 6px; }
-    .field-row { display: flex; align-items: baseline; }
-    .field-label { white-space: nowrap; font-weight: 500; }
-    .field-dotted { flex: 1; border-bottom: 1px dotted #444; min-height: 16px; position: relative; display: flex; align-items: flex-end; padding: 0 4px 1px 4px; }
-    .field-data { font-weight: bold; color: #000; }
-    .days-bracket { display: inline-flex; align-items: center; justify-content: center; min-width: 44px; height: 19px; border-left: 1.2px solid #000; border-bottom: 1.2px solid #000; border-right: 1.2px solid #000; margin: 0 5px; font-weight: bold; color: #000; padding: 0 4px; line-height: 1; }
-    .date-box-container { display: inline-flex; border-bottom: 1.2px solid #000; border-right: 1.2px solid #000; border-left: 1.2px solid #000; height: 19px; align-items: center; background: #fff; direction: ltr !important; }
-    .date-segment { display: inline-flex; height: 100%; align-items: center; border-right: 1.2px solid #000; position: relative; }
-    .date-segment:last-child { border-right: none; }
-    .date-cell { width: 14px; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11.5px; font-weight: bold; color: #000; line-height: 1; }
-    .date-cell:first-child::after { content: ''; position: absolute; left: 14px; bottom: 0; width: 1px; height: 48%; background-color: #666; }
-    .mid-signature-block { margin-top: 18px; margin-bottom: 12px; display: flex; flex-direction: column; width: 100%; }
-    .date-location-line { display: flex; font-weight: bold; gap: 15px; margin-bottom: 8px; }
-    .date-location-line .item { display: inline-flex; align-items: baseline; }
-    .dotted-box-short { display: inline-block; min-width: 65px; border-bottom: 1px dotted #333; margin: 0 4px; text-align: center; color: #000; }
-    .table-container { margin-top: auto; display: flex; }
-    .rights-table { width: 185px; border-collapse: collapse; border: 1.2px solid #231f20; background: #fff; }
-    .rights-table th { background: #231f20; color: #fff; font-weight: bold; padding: 3px 4px; text-align: center; border: 1.2px solid #231f20; }
-    .rights-table td { border: 1px solid #231f20; padding: 2px 4px; vertical-align: middle; }
-    .rights-table td.col-label { font-weight: bold; width: 70%; }
-    .rights-table td.col-val { width: 30%; text-align: center; font-weight: bold; color: #000; }
+    @page {
+      size: A4;
+      margin: 0;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: ${dataOnly ? 'transparent' : '#ffffff'};
+      margin: 0;
+      padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .document-page {
+      width: 210mm;
+      height: 297mm;
+      position: relative;
+      background-size: 100% 100%;
+      background-repeat: no-repeat;
+      background-position: center;
+      ${(!dataOnly && bgDataUri) ? `background-image: url('${bgDataUri}');` : 'background: transparent !important; background-image: none !important;'}
+      box-sizing: border-box;
+      margin: 0 auto;
+      overflow: hidden;
+    }
+    .document-page::after {
+      display: none !important;
+    }
+    .data-layer {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+    }
+    .field-item {
+      position: absolute;
+      color: #000000 !important;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    .date-group {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      line-height: 1;
+    }
+    .date-group .cell {
+      position: absolute;
+      font-weight: 800;
+      color: #000000 !important;
+      line-height: 1;
+      text-align: center;
+      width: 16px;
+    }
 
-    /* French */
-    .lang-fr { font-family: 'Times New Roman', Times, serif; direction: ltr; }
-    .lang-fr .visa-box span { font-family: 'Tajawal', Arial, sans-serif; font-style: italic; font-size: 8.5px; color: #333; }
-    .lang-fr .doc-title { font-size: 15px; letter-spacing: 0.5px; }
-    .lang-fr .field-row { font-size: 11.8px; line-height: 17px; }
-    .lang-fr .field-label { padding-right: 5px; }
-    .lang-fr .field-data { font-size: 11.5px; }
-    .lang-fr .days-bracket { font-size: 11.5px; }
-    .lang-fr .date-box-container { margin-left: 6px; }
-    .lang-fr .side-reference { right: -22px; transform: rotate(-90deg); transform-origin: bottom right; }
-    .lang-fr .mid-signature-block { align-items: flex-end; padding-left: 15px; }
-    .lang-fr .date-location-line { font-size: 10.5px; }
-    .lang-fr .director-role { font-size: 11px; font-style: italic; margin-right: 25px; }
-    .lang-fr .table-container { justify-content: flex-start; }
-    .lang-fr .rights-table th { font-size: 10px; letter-spacing: 0.6px; }
-    .lang-fr .rights-table td { font-size: 9px; }
-    .lang-fr .rights-table tr.row-reliquat td { font-size: 10.5px; padding: 3px 4px; }
-    .lang-fr .rights-table td.reliquat-title { font-style: italic; font-weight: bold; }
+    /* French Coordinates */
+    .lang-fr { font-family: 'Times New Roman', Times, serif; }
+    .lang-fr .field-agent-name { top: 30.6%; left: 39.5%; font-size: 14.5px; }
+    .lang-fr .field-grade { top: 33.7%; left: 33.5%; font-size: 13px; }
+    .lang-fr .field-service { top: 36.8%; left: 25.5%; font-size: 13px; }
+    .lang-fr .field-address-1 { top: 39.9%; left: 25.5%; font-size: 12.5px; }
+    .lang-fr .field-address-2 { top: 43.1%; left: 13.5%; font-size: 12.5px; }
+    .lang-fr .field-leave-days { top: 46.2%; left: 39.0%; width: 7%; text-align: center; font-size: 14.5px; font-weight: 800; }
+    .lang-fr .group-dep { top: 49.4%; width: 100%; left: 0; }
+    .lang-fr .group-ret { top: 52.5%; width: 100%; left: 0; }
+    .lang-fr .cell-d1 { left: 30.1%; font-size: 13px; }
+    .lang-fr .cell-d2 { left: 33.5%; font-size: 13px; }
+    .lang-fr .cell-m1 { left: 36.9%; font-size: 13px; }
+    .lang-fr .cell-m2 { left: 40.3%; font-size: 13px; }
+    .lang-fr .cell-y1 { left: 43.8%; font-size: 13px; }
+    .lang-fr .cell-y2 { left: 47.2%; font-size: 13px; }
+    .lang-fr .field-leave-address { top: 55.6%; left: 36.0%; font-size: 12.5px; }
+    .lang-fr .field-location { top: 63.6%; left: 52.0%; font-size: 13px; }
+    .lang-fr .field-date { top: 63.6%; left: 71.5%; font-size: 13px; }
+    .lang-fr .field-signatory { top: 67.2%; left: 65.5%; font-size: 13px; font-style: italic; }
+    .lang-fr .rights-values .field-item { left: 43.5%; width: 9%; text-align: center; font-size: 13.5px; }
+    .lang-fr .right-val-prev { top: 76.9%; }
+    .lang-fr .right-val-cur  { top: 80.0%; }
+    .lang-fr .right-val-tot  { top: 83.1%; }
+    .lang-fr .right-val-granted { top: 86.2%; }
+    .lang-fr .right-val-new { top: 91.7%; font-size: 14.5px; font-weight: 800; }
 
-    /* Arabic */
+    /* Arabic Coordinates */
     .lang-ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
-    .lang-ar .visa-box span { font-family: 'Tajawal', sans-serif; font-size: 11px; font-weight: bold; color: #222; }
-    .lang-ar .doc-title { font-size: 20px; letter-spacing: 0; }
-    .lang-ar .field-row { font-size: 14px; line-height: 20px; }
-    .lang-ar .field-label { padding-left: 5px; font-weight: 700; }
-    .lang-ar .field-data { font-size: 13.5px; }
-    .lang-ar .days-bracket { font-size: 12px; }
-    .lang-ar .date-box-container { margin-right: 6px; }
-    .lang-ar .side-reference { left: -22px; transform: rotate(90deg); transform-origin: bottom left; }
-    .lang-ar .mid-signature-block { align-items: flex-end; padding-left: 30px; }
-    .lang-ar .date-location-line { font-size: 13px; }
-    .lang-ar .director-role { font-size: 14px; font-style: normal; font-weight: bold; margin-left: 40px; }
-    .lang-ar .table-container { justify-content: flex-start; }
-    .lang-ar .rights-table th { font-size: 11px; letter-spacing: 0; }
-    .lang-ar .rights-table td { font-size: 11.5px; }
-    .lang-ar .rights-table tr.row-reliquat td { font-size: 12px; padding: 3px 4px; }
-    .lang-ar .rights-table td.reliquat-title { font-style: normal; font-weight: bold; text-align: right; }
-
-    ${dataOnly ? `
-    /* DATA-ONLY PRINT OVERLAY: FOR PRE-PRINTED PHYSICAL SHEETS */
-    body { background: transparent !important; }
-    .document-page { background: transparent !important; box-shadow: none !important; }
-    .header-banner, .sub-header, .side-reference, .field-label, .rights-table th, .rights-table td.col-label { visibility: hidden !important; opacity: 0 !important; }
-    .form-border, .field-dotted, .days-bracket, .date-box-container, .date-segment, .dotted-box-short, .rights-table, .rights-table td { border-color: transparent !important; background: transparent !important; }
-    .date-cell:first-child::after { display: none !important; }
-    .field-data, .days-bracket, .date-cell, .dotted-box-short, .director-role, .rights-table td.col-val { color: #000000 !important; visibility: visible !important; opacity: 1 !important; }
-    ` : ''}
+    .lang-ar .field-agent-name { top: 30.6%; right: 30.5%; font-size: 15.5px; }
+    .lang-ar .field-grade { top: 33.7%; right: 32.5%; font-size: 14px; }
+    .lang-ar .field-service { top: 36.8%; right: 25.5%; font-size: 14px; }
+    .lang-ar .field-address-1 { top: 39.9%; right: 25.5%; font-size: 13.5px; }
+    .lang-ar .field-address-2 { top: 43.1%; right: 14.0%; font-size: 13.5px; }
+    .lang-ar .field-leave-days { top: 46.2%; right: 38.5%; width: 7.5%; text-align: center; font-size: 15px; font-weight: 800; }
+    .lang-ar .group-dep { top: 49.4%; width: 100%; right: 0; left: auto; }
+    .lang-ar .group-ret { top: 52.5%; width: 100%; right: 0; left: auto; }
+    .lang-ar .cell-d1 { left: 53.5%; font-size: 13px; }
+    .lang-ar .cell-d2 { left: 56.9%; font-size: 13px; }
+    .lang-ar .cell-m1 { left: 60.3%; font-size: 13px; }
+    .lang-ar .cell-m2 { left: 63.7%; font-size: 13px; }
+    .lang-ar .cell-y1 { left: 67.1%; font-size: 13px; }
+    .lang-ar .cell-y2 { left: 70.5%; font-size: 13px; }
+    .lang-ar .field-leave-address { top: 55.6%; right: 34.0%; font-size: 13.5px; }
+    .lang-ar .field-location { top: 63.6%; right: 48.0%; font-size: 14px; }
+    .lang-ar .field-date { top: 63.6%; right: 69.5%; font-size: 14px; }
+    .lang-ar .field-signatory { top: 67.2%; right: 65.0%; font-size: 14px; }
+    .lang-ar .rights-values .field-item { right: 42.5%; width: 9%; text-align: center; font-size: 14.5px; }
+    .lang-ar .right-val-prev { top: 76.9%; }
+    .lang-ar .right-val-cur  { top: 80.0%; }
+    .lang-ar .right-val-tot  { top: 83.1%; }
+    .lang-ar .right-val-granted { top: 86.2%; }
+    .lang-ar .right-val-new { top: 91.7%; font-size: 15.5px; font-weight: 800; }
   </style>
 </head>
 <body>
-  <div class="document-page ${isAr ? 'lang-ar' : 'lang-fr'} ${dataOnly ? 'print-data-only' : ''}">
-    ${content.replace(/<div class="document-page[^>]*>/, '').replace(/<\/div>\s*$/, '')}
-  </div>
+  ${content}
 </body>
 </html>`;
 }

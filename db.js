@@ -22,16 +22,6 @@ if (!fs.existsSync(DATA_DIR)) {
 
 const DB_PATH = path.join(DATA_DIR, 'congedesk.sqlite');
 
-// If packaged and db doesn't exist yet, check if there's an initial db in app resources to copy
-const DEV_DB = path.join(__dirname, 'data', 'congedesk.sqlite');
-if (!fs.existsSync(DB_PATH) && fs.existsSync(DEV_DB)) {
-  try {
-    fs.copyFileSync(DEV_DB, DB_PATH);
-  } catch (err) {
-    console.warn('Could not copy initial db file:', err.message);
-  }
-}
-
 const db = new DatabaseSync(DB_PATH);
 
 // Initialize Tables
@@ -73,78 +63,6 @@ function initDatabase() {
       timestamp TEXT DEFAULT (datetime('now'))
     );
   `);
-
-  // Check if employees table is empty, seed initial data
-  const countStmt = db.prepare('SELECT COUNT(*) as count FROM employees');
-  const result = countStmt.get();
-  
-  if (result.count === 0) {
-    const defaultEmployees = [
-      {
-        id: "emp-001",
-        name_fr: "BENALI Ahmed",
-        name_ar: "بن علي أحمد",
-        grade_fr: "Ingénieur Principal en Informatique",
-        grade_ar: "مهندس رئيسي في الإعلام الآلي",
-        service_fr: "Direction des Systèmes d'Information",
-        service_ar: "مديرية أنظمة الإعلام الآلي",
-        address_fr: "Cité 500 Logements, Bt B3, N° 12, Alger",
-        address_ar: "حي 500 مسكن، عمارة ب3، رقم 12، الجزائر",
-        prev_balance: 14,
-        annual_entitlement: 30
-      },
-      {
-        id: "emp-002",
-        name_fr: "MEZIANE Samira",
-        name_ar: "مزيان سميرة",
-        grade_fr: "Attachée Principale d'Administration",
-        grade_ar: "ملحقة رئيسية للإدارة",
-        service_fr: "Sous-Direction des Ressources Humaines",
-        service_ar: "المديرية الفرعية للموارد البشرية",
-        address_fr: "08 Rue Didouche Mourad, Alger-Centre",
-        address_ar: "08 نهج ديدوش مراد، الجزائر الوسطى",
-        prev_balance: 8,
-        annual_entitlement: 30
-      },
-      {
-        id: "emp-003",
-        name_fr: "KACI Mohamed",
-        name_ar: "قاسي محمد",
-        grade_fr: "Chef de Département Contrôle Médical",
-        grade_ar: "رئيس قسم المراقبة الطبية",
-        service_fr: "Direction du Contrôle et des Prestations",
-        service_ar: "مديرية المراقبة والأداءات",
-        address_fr: "Lotissement El-Binaa, N° 45, Dely Ibrahim",
-        address_ar: "تجزئة البناء، رقم 45، دالي براهيم",
-        prev_balance: 22,
-        annual_entitlement: 30
-      }
-    ];
-
-    const insertStmt = db.prepare(`
-      INSERT INTO employees (
-        id, name_fr, name_ar, grade_fr, grade_ar, 
-        service_fr, service_ar, address_fr, address_ar, 
-        prev_balance, annual_entitlement
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `);
-
-    for (const emp of defaultEmployees) {
-      insertStmt.run(
-        emp.id,
-        emp.name_fr,
-        emp.name_ar,
-        emp.grade_fr,
-        emp.grade_ar,
-        emp.service_fr,
-        emp.service_ar,
-        emp.address_fr,
-        emp.address_ar,
-        emp.prev_balance,
-        emp.annual_entitlement
-      );
-    }
-  }
 }
 
 // Queries

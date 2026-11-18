@@ -112,8 +112,8 @@ ipcMain.handle('print-document', async (event, { htmlContent, dataOnly = false }
     return new Promise((resolve) => {
       printWindow.webContents.print({
         silent: false,
-        printBackground: !dataOnly,
-        pageSize: 'A5',
+        printBackground: true,
+        pageSize: 'A4',
         margins: { marginType: 'none' }
       }, (success, failureReason) => {
         printWindow.close();
@@ -145,8 +145,8 @@ ipcMain.handle('save-pdf', async (event, { htmlContent, defaultName, dataOnly = 
     await printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
 
     const pdfBuffer = await printWindow.webContents.printToPDF({
-      printBackground: !dataOnly,
-      pageSize: 'A5',
+      printBackground: true,
+      pageSize: 'A4',
       margins: { marginType: 'none' }
     });
 
@@ -170,71 +170,67 @@ ipcMain.handle('save-pdf', async (event, { htmlContent, defaultName, dataOnly = 
   }
 });
 
-// Fill PDF Direct with pdf-lib onto GRH22_cleaned.pdf
+// Fill PDF Direct with pdf-lib onto official template (TDC_fr.pdf / TDC_ar.pdf)
 ipcMain.handle('fill-pdf-direct', async (event, formData) => {
   try {
-    const pdfPath = path.join(__dirname, 'resources', 'GRH22_cleaned.pdf');
+    const isAr = (formData.lang === 'ar' || formData.isAr);
+    const templateName = isAr ? 'TDC_ar.pdf' : 'TDC_fr.pdf';
+    const pdfPath = path.join(__dirname, 'resources', templateName);
     if (!fs.existsSync(pdfPath)) {
-      throw new Error("Le fichier resources/GRH22_cleaned.pdf est introuvable.");
+      throw new Error(`Le fichier resources/${templateName} est introuvable.`);
     }
 
     const existingPdfBytes = fs.readFileSync(pdfPath);
     const pdfDoc = await PDFDocument.load(existingPdfBytes);
-    const font = await pdfDoc.embedFont(StandardFonts.TimesRomanBold);
-    const fontRegular = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+    const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+    const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-    // Page 1: French version
     const page = pdfDoc.getPages()[0];
-    const { height } = page.getSize();
+    const { width, height } = page.getSize();
 
-    // In PDF coordinates (0,0 is bottom-left):
-    // Nom et prénom:
-    page.drawText(formData.agent_name || '', { x: 155, y: height - 193, size: 10, font });
-    // Grade:
-    page.drawText(formData.grade || '', { x: 120, y: height - 215, size: 9.5, font });
-    // Service:
-    page.drawText(formData.service || '', { x: 75, y: height - 237, size: 9.5, font });
-    // Adresse:
-    page.drawText(formData.address_line_1 || '', { x: 80, y: height - 259, size: 9, font });
-    if (formData.address_line_2) {
-      page.drawText(formData.address_line_2, { x: 35, y: height - 280, size: 9, font });
+    // Map percentage to points: y goes bottom-to-top in PDF points
+    const ptX = (pct) => width * pct;
+    const ptY = (pct) => height * (1.0 - pct);
+
+    if (!isAr) {
+      page.drawText(formData.agent_name || '', { x: ptX(0.400), y: ptY(0.312), size: 10.5, font });
+      page.drawText(formData.grade || '', { x: ptX(0.340), y: ptY(0.344), size: 9.5, font });
+      page.drawText(formData.service || '', { x: ptX(0.255), y: ptY(0.375), size: 9.5, font });
+      page.drawText(formData.address_line_1 || '', { x: ptX(0.260), y: ptY(0.406), size: 9, font });
+      if (formData.address_line_2) {
+        page.drawText(formData.address_line_2, { x: ptX(0.135), y: ptY(0.437), size: 9, font });
+      }
+      page.drawText(String(formData.leave_days || ''), { x: ptX(0.410), y: ptY(0.468), size: 10.5, font });
+
+      if (formData.dep) {
+        page.drawText(formData.dep.d1 || '', { x: ptX(0.302), y: ptY(0.500), size: 9.5, font });
+        page.drawText(formData.dep.d2 || '', { x: ptX(0.336), y: ptY(0.500), size: 9.5, font });
+        page.drawText(formData.dep.m1 || '', { x: ptX(0.370), y: ptY(0.500), size: 9.5, font });
+        page.drawText(formData.dep.m2 || '', { x: ptX(0.404), y: ptY(0.500), size: 9.5, font });
+        page.drawText(formData.dep.y1 || '', { x: ptX(0.439), y: ptY(0.500), size: 9.5, font });
+        page.drawText(formData.dep.y2 || '', { x: ptX(0.473), y: ptY(0.500), size: 9.5, font });
+      }
+
+      if (formData.ret) {
+        page.drawText(formData.ret.d1 || '', { x: ptX(0.302), y: ptY(0.531), size: 9.5, font });
+        page.drawText(formData.ret.d2 || '', { x: ptX(0.336), y: ptY(0.531), size: 9.5, font });
+        page.drawText(formData.ret.m1 || '', { x: ptX(0.370), y: ptY(0.531), size: 9.5, font });
+        page.drawText(formData.ret.m2 || '', { x: ptX(0.404), y: ptY(0.531), size: 9.5, font });
+        page.drawText(formData.ret.y1 || '', { x: ptX(0.439), y: ptY(0.531), size: 9.5, font });
+        page.drawText(formData.ret.y2 || '', { x: ptX(0.473), y: ptY(0.531), size: 9.5, font });
+      }
+
+      page.drawText(formData.leave_address || '', { x: ptX(0.360), y: ptY(0.562), size: 9, font });
+      page.drawText(formData.location || '', { x: ptX(0.525), y: ptY(0.642), size: 9.5, font });
+      page.drawText(formData.date || '', { x: ptX(0.720), y: ptY(0.642), size: 9.5, font });
+      page.drawText(formData.director || '', { x: ptX(0.660), y: ptY(0.678), size: 9.5, font: fontRegular });
+
+      page.drawText(String(formData.prev_balance ?? '0'), { x: ptX(0.440), y: ptY(0.774), size: 10, font });
+      page.drawText(String(formData.cur_entitlement ?? '30'), { x: ptX(0.440), y: ptY(0.805), size: 10, font });
+      page.drawText(String(formData.tot_entitlement ?? '0'), { x: ptX(0.440), y: ptY(0.836), size: 10, font });
+      page.drawText(String(formData.leave_granted ?? '0'), { x: ptX(0.440), y: ptY(0.867), size: 10, font });
+      page.drawText(String(formData.new_balance ?? '0'), { x: ptX(0.440), y: ptY(0.922), size: 11, font });
     }
-    // Bénéficie d'un congé de X jours:
-    page.drawText(String(formData.leave_days || ''), { x: 152, y: height - 303, size: 10, font });
-    
-    // Date de départ (segmented DD MM YY)
-    if (formData.dep) {
-      page.drawText(formData.dep.d1 || '', { x: 107, y: height - 324, size: 9, font });
-      page.drawText(formData.dep.d2 || '', { x: 124, y: height - 324, size: 9, font });
-      page.drawText(formData.dep.m1 || '', { x: 140, y: height - 324, size: 9, font });
-      page.drawText(formData.dep.m2 || '', { x: 157, y: height - 324, size: 9, font });
-      page.drawText(formData.dep.y1 || '', { x: 174, y: height - 324, size: 9, font });
-      page.drawText(formData.dep.y2 || '', { x: 191, y: height - 324, size: 9, font });
-    }
-
-    // Date de retour
-    if (formData.ret) {
-      page.drawText(formData.ret.d1 || '', { x: 107, y: height - 346, size: 9, font });
-      page.drawText(formData.ret.d2 || '', { x: 124, y: height - 346, size: 9, font });
-      page.drawText(formData.ret.m1 || '', { x: 140, y: height - 346, size: 9, font });
-      page.drawText(formData.ret.m2 || '', { x: 157, y: height - 346, size: 9, font });
-      page.drawText(formData.ret.y1 || '', { x: 174, y: height - 346, size: 9, font });
-      page.drawText(formData.ret.y2 || '', { x: 191, y: height - 346, size: 9, font });
-    }
-
-    // Adresse durant le congé:
-    page.drawText(formData.leave_address || '', { x: 145, y: height - 369, size: 9, font });
-
-    // Fait à ... Le ...
-    page.drawText(formData.location || '', { x: 200, y: height - 425, size: 9.5, font });
-    page.drawText(formData.date || '', { x: 295, y: height - 425, size: 9.5, font });
-
-    // DETAIL DES DROITS
-    page.drawText(String(formData.prev_balance || '0'), { x: 165, y: height - 505, size: 10, font });
-    page.drawText(String(formData.cur_entitlement || '30'), { x: 165, y: height - 523, size: 10, font });
-    page.drawText(String(formData.tot_entitlement || '0'), { x: 165, y: height - 540, size: 10, font });
-    page.drawText(String(formData.leave_granted || '0'), { x: 165, y: height - 558, size: 10, font });
-    page.drawText(String(formData.new_balance || '0'), { x: 165, y: height - 588, size: 11, font });
 
     const filledPdfBytes = await pdfDoc.save();
 

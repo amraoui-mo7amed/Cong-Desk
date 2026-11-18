@@ -31,7 +31,6 @@
       "renderer/**/*",
       "resources/**/*",
       "assets/**/*",
-      "data/**/*",
       "package.json"
     ],
     "win": {

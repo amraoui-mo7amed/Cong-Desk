@@ -129,46 +129,55 @@
       <!-- Preview Header -->
       <div class="preview-modal-header">
         <div class="preview-modal-title">
-          <i class="fa-solid fa-eye" style="color: var(--primary); font-size: 18px;"></i>
-          <div>
+          <div class="doc-badge-tag"><i class="fa-solid fa-file-invoice"></i> <span>GRH.22</span></div>
+          <div class="title-meta">
             <h3 id="preview-modal-emp-name">Aperçu Titre de Congé GRH.22</h3>
-            <span id="preview-modal-emp-sub" style="font-size: 12px; color: var(--text-dim);">Aperçu officiel avant impression et archivage</span>
+            <span id="preview-modal-emp-sub">Aperçu officiel avant impression et archivage</span>
           </div>
         </div>
 
-        <!-- Mode Toggle: Full vs Pre-printed Paper -->
-        <div class="drawer-tabs">
-          <button class="drawer-tab-btn active" id="modal-mode-full" onclick="setDocumentPrintMode(false)">
-            <i class="fa-solid fa-file-invoice"></i> <span data-i18n="modeFullDoc">Modèle Complet</span>
-          </button>
-          <button class="drawer-tab-btn" id="modal-mode-overlay" onclick="setDocumentPrintMode(true)">
-            <i class="fa-solid fa-layer-group"></i> <span data-i18n="modePrePrinted">Papier Pré-imprimé</span>
-          </button>
+        <div class="preview-header-center">
+          <!-- Mode Toggle: Full vs Pre-printed Paper (Segmented Control) -->
+          <div class="segmented-control mode-selector">
+            <button class="segmented-btn active" id="modal-mode-full" onclick="setDocumentPrintMode(false)" title="Modèle officiel complet avec en-tête CNAS et données">
+              <i class="fa-solid fa-file-invoice"></i> <span data-i18n="modeFullDoc">Modèle Complet</span>
+            </button>
+            <button class="segmented-btn" id="modal-mode-overlay" onclick="setDocumentPrintMode(true)" title="Impression des données seules sur papier officiel pré-imprimé">
+              <i class="fa-solid fa-layer-group"></i> <span data-i18n="modePrePrinted">Papier Pré-imprimé</span>
+            </button>
+          </div>
+
+          <!-- Language Pill Switch in Preview -->
+          <div class="segmented-control lang-selector">
+            <button class="segmented-btn active" id="modal-tab-fr" onclick="setPreviewModalLanguage('fr')" title="Page 1 : Version Française">
+              <span class="flag-text">FR</span> <span>Français</span>
+            </button>
+            <button class="segmented-btn" id="modal-tab-ar" onclick="setPreviewModalLanguage('ar')" title="الصفحة 2 : النسخة العربية">
+              <span class="flag-text">AR</span> <span>العربية</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Language Pill Switch in Preview -->
-        <div class="drawer-tabs">
-          <button class="drawer-tab-btn active" id="modal-tab-fr" onclick="setPreviewModalLanguage('fr')">
-            <i class="fa-solid fa-file-lines"></i> Page 1 : FR
-          </button>
-          <button class="drawer-tab-btn" id="modal-tab-ar" onclick="setPreviewModalLanguage('ar')">
-            <i class="fa-solid fa-file-lines"></i> ص 2 : AR
-          </button>
+        <!-- Zoom & Close Controls -->
+        <div class="preview-header-right">
+          <div class="preview-zoom-bar">
+            <button class="btn-icon" onclick="adjustModalZoom(-0.05)" title="Zoom Arrière"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+            <span id="modal-zoom-txt">100%</span>
+            <button class="btn-icon" onclick="adjustModalZoom(0.05)" title="Zoom Avant"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+            <button class="btn-icon" onclick="resetModalZoom()" title="Réinitialiser Zoom"><i class="fa-solid fa-rotate-left"></i></button>
+          </div>
+          <button class="btn-close-modal" onclick="closePreviewModal()" title="Fermer"><i class="fa-solid fa-xmark"></i></button>
         </div>
-
-        <!-- Zoom Controls -->
-        <div class="preview-zoom-bar">
-          <button class="btn-icon" onclick="adjustModalZoom(-0.05)" title="Zoom Arrière"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
-          <span id="modal-zoom-txt" style="font-size: 11px; font-weight: 700; min-width: 38px; text-align: center;">100%</span>
-          <button class="btn-icon" onclick="adjustModalZoom(0.05)" title="Zoom Avant"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
-          <button class="btn-icon" onclick="resetModalZoom()" title="Réinitialiser Zoom"><i class="fa-solid fa-rotate-left"></i></button>
-        </div>
-
-        <button class="btn-icon" onclick="closePreviewModal()" title="Fermer"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
       <!-- Preview Modal Body (Sheet Canvas) -->
       <div class="preview-modal-body" id="preview-modal-paper-wrapper">
+        <!-- Live status hint for the current print mode -->
+        <div class="preview-status-pill" id="preview-status-banner">
+          <i class="fa-solid fa-circle-check"></i>
+          <span id="preview-status-text">Mode Document Complet : Le document sera imprimé intégralement avec l'en-tête et les bordures officielles.</span>
+        </div>
+
         <div id="preview-modal-paper-container">
           <!-- Live rendered document sheet -->
         </div>
@@ -176,26 +185,30 @@
 
       <!-- Preview Modal Footer Toolbar -->
       <div class="preview-modal-footer">
-        <button class="btn btn-secondary" onclick="openLeaveDrawerFromPreview()">
-          <i class="fa-solid fa-sliders"></i> <span data-i18n="modifyParameters">Ajuster Paramètres</span>
-        </button>
+        <div class="footer-left">
+          <button class="btn btn-secondary" onclick="openLeaveDrawerFromPreview()">
+            <i class="fa-solid fa-sliders"></i> <span data-i18n="modifyParameters">Ajuster Paramètres</span>
+          </button>
+        </div>
 
-        <div style="display: flex; gap: 8px;">
-          <!-- Print on Official Pre-printed Paper (Data only) -->
-          <button class="btn btn-primary" onclick="printDocument(true)" title="Imprimer les données seules sur le papier pré-imprimé déjà présent dans l'imprimante">
-            <i class="fa-solid fa-print"></i> <span data-i18n="printPrePrinted">Imprimer (Papier Officiel)</span>
+        <div class="footer-center">
+          <span class="paper-format-badge"><i class="fa-solid fa-receipt"></i> Format A4 Officiel (210 × 297 mm)</span>
+        </div>
+
+        <div class="footer-right">
+          <!-- Dynamic Primary Print Button -->
+          <button class="btn btn-primary btn-action-main" id="btn-modal-print-main" onclick="executeCurrentPrint()">
+            <i class="fa-solid fa-print"></i> <span id="lbl-modal-print-main">Imprimer Tout (Modèle Complet)</span>
           </button>
-          <!-- Print Full Document (Template + Data) -->
-          <button class="btn btn-secondary" onclick="printDocument(false)" title="Imprimer le document complet avec en-tête et modèle">
-            <i class="fa-solid fa-file-lines"></i> <span data-i18n="printFullDoc">Imprimer Tout</span>
+
+          <!-- PDF Export Button -->
+          <button class="btn btn-secondary" id="btn-modal-export-pdf" onclick="saveAsPDF(isPreviewDataOnly)" title="Exporter le PDF du mode actuellement sélectionné">
+            <i class="fa-solid fa-file-pdf"></i> <span id="lbl-modal-export-pdf">Exporter PDF Complet</span>
           </button>
-          <!-- Export Transparent Data-Only PDF -->
-          <button class="btn btn-secondary" onclick="saveAsPDF(true)" title="Générer un PDF transparent avec uniquement les données pour papier existant">
-            <i class="fa-solid fa-file-shield"></i> <span data-i18n="pdfDataOnly">PDF Données Seules</span>
-          </button>
-          <!-- Export Full Document PDF -->
-          <button class="btn btn-secondary" onclick="saveAsPDF(false)" title="Exporter le document complet en PDF">
-            <i class="fa-solid fa-file-pdf"></i> <span data-i18n="pdfFullDoc">PDF Complet</span>
+
+          <!-- Alternative Mode PDF Shortcut -->
+          <button class="btn btn-outline" id="btn-modal-alt-pdf" onclick="saveAsPDF(!isPreviewDataOnly)" title="Exporter l'autre format">
+            <i class="fa-solid fa-download"></i> <span id="lbl-modal-alt-pdf">PDF Données Seules</span>
           </button>
         </div>
       </div>
@@ -517,6 +530,7 @@
     </div>
   </div>
 
+  <script src="templates_b64.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
