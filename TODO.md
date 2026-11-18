@@ -1,6 +1,7 @@
-- [x] Change the icon of the taskbar and the logo, be more professional 
+- [x] Change the icon of the taskbar and the logo, be more professional; Use the cnas logo 
 - [x] Create a sidebar with collapse option to show the pages and settings tab
 - [x] Add a home Page
+- [x] all the buttons are not styled, style them
 - [x] Settings button must:
     - [x] Be at the bottom of the sidebar
     - [x] Open Settings Page in a dedicate page
@@ -10,6 +11,7 @@
     - [x] Style the buttons in settings page 
 - [x] Remove the Header and put the add button and lang button at the bottom left/right edge above each other making them icon only
 - [x] theme/lang button Must Be Squared
+- [x] Remove the theme button from the bottom left/right screen
 - [x] Rename the employee to director 
 - [x] Populate the data of 'data.xlsx' directly into the app with:
     - [x] allowing user to edit and delete and view details of a director 
@@ -18,4 +20,5 @@
     - [x] use tabler icons to modify/delete 
     - [x] use a modal for delete confirmation 
     - [x] use a text only with button of adding a vacation
-- [x] Style all the modals
+    - [x] Style all the modals
+- [x] instead of a normal select, use a custom overflowed dropwodns

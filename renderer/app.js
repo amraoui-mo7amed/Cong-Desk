@@ -257,6 +257,10 @@ function applyTheme(theme) {
   if (fabIcon) {
     fabIcon.className = (theme === 'dark') ? 'ti ti-sun' : 'ti ti-moon';
   }
+  const sidebarIcon = document.getElementById('sidebar-theme-icon');
+  if (sidebarIcon) {
+    sidebarIcon.className = (theme === 'dark') ? 'ti ti-sun' : 'ti ti-moon';
+  }
 }
 
 // ================= DIRECTORS DATA & WILAYA FILTER =================
@@ -269,6 +273,7 @@ async function loadEmployees() {
 
   populateWilayaFilter();
   updateKPICards();
+  updateHomeDashboard();
   renderEmployeeCards(employees);
 }
 
@@ -277,6 +282,7 @@ async function loadHistory() {
     leaveHistory = await window.electronAPI.getLeaveHistory();
     const issuedEl = document.getElementById('kpi-issued-titles');
     if (issuedEl) issuedEl.textContent = leaveHistory.length;
+    updateHomeDashboard();
   }
 }
 
@@ -293,12 +299,50 @@ function updateKPICards() {
   if (reserveEl) reserveEl.textContent = `${totalReserve} j`;
 }
 
+let selectedWilayaCode = '';
+let cachedWilayaList = [];
+
+function toggleWilayaDropdown(event) {
+  if (event) event.stopPropagation();
+  const dropdown = document.getElementById('wilaya-dropdown');
+  const menu = document.getElementById('wilaya-dropdown-menu');
+  if (!dropdown || !menu) return;
+
+  const isOpen = dropdown.classList.contains('open');
+  if (isOpen) {
+    closeWilayaDropdown();
+  } else {
+    dropdown.classList.add('open');
+    menu.style.display = 'block';
+    const searchInput = document.getElementById('wilaya-dropdown-search');
+    if (searchInput) {
+      searchInput.value = '';
+      setTimeout(() => searchInput.focus(), 60);
+      filterWilayaDropdownList('');
+    }
+  }
+}
+
+function closeWilayaDropdown() {
+  const dropdown = document.getElementById('wilaya-dropdown');
+  const menu = document.getElementById('wilaya-dropdown-menu');
+  if (dropdown) dropdown.classList.remove('open');
+  if (menu) menu.style.display = 'none';
+}
+
+// Global click to close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+  const dropdown = document.getElementById('wilaya-dropdown');
+  if (dropdown && !dropdown.contains(e.target)) {
+    closeWilayaDropdown();
+  }
+});
+
 function populateWilayaFilter() {
   const select = document.getElementById('wilaya-filter-select');
-  if (!select) return;
-
-  const currentVal = select.value;
-  select.innerHTML = '<option value="">Toutes les Wilayas & Établissements</option>';
+  if (select) {
+    select.innerHTML = '<option value="">Toutes les Wilayas & Établissements</option>';
+  }
 
   // Group wilayas/agencies
   const wilayaList = [];
@@ -321,14 +365,74 @@ function populateWilayaFilter() {
     return a.label.localeCompare(b.label);
   });
 
-  wilayaList.forEach(w => {
-    const opt = document.createElement('option');
-    opt.value = w.code;
-    opt.textContent = w.label;
-    select.appendChild(opt);
+  cachedWilayaList = wilayaList;
+
+  if (select) {
+    wilayaList.forEach(w => {
+      const opt = document.createElement('option');
+      opt.value = w.code;
+      opt.textContent = w.label;
+      select.appendChild(opt);
+    });
+  }
+
+  renderWilayaDropdownItems(cachedWilayaList);
+}
+
+function renderWilayaDropdownItems(items) {
+  const container = document.getElementById('wilaya-dropdown-items');
+  if (!container) return;
+
+  let html = `
+    <div class="dropdown-item ${!selectedWilayaCode ? 'active' : ''}" onclick="selectWilayaDropdownItem('', 'Toutes les Wilayas & Établissements')">
+      <div class="dropdown-item-badge"><i class="ti ti-world"></i></div>
+      <span class="dropdown-item-name">Toutes les Wilayas & Établissements</span>
+      ${!selectedWilayaCode ? '<i class="ti ti-check dropdown-item-check"></i>' : ''}
+    </div>
+  `;
+
+  items.forEach(w => {
+    const isActive = (selectedWilayaCode === w.code);
+    const badgeText = w.code.length <= 4 ? w.code : 'DG';
+    html += `
+      <div class="dropdown-item ${isActive ? 'active' : ''}" onclick="selectWilayaDropdownItem('${escapeHtml(w.code)}', '${escapeHtml(w.label)}')">
+        <div class="dropdown-item-badge">${escapeHtml(badgeText)}</div>
+        <span class="dropdown-item-name">${escapeHtml(w.label)}</span>
+        ${isActive ? '<i class="ti ti-check dropdown-item-check"></i>' : ''}
+      </div>
+    `;
   });
 
-  if (currentVal) select.value = currentVal;
+  container.innerHTML = html;
+}
+
+function onWilayaDropdownSearch(event) {
+  const query = (event.target.value || '').toLowerCase().trim();
+  filterWilayaDropdownList(query);
+}
+
+function filterWilayaDropdownList(query) {
+  if (!query) {
+    renderWilayaDropdownItems(cachedWilayaList);
+    return;
+  }
+  const filtered = cachedWilayaList.filter(w => 
+    w.code.toLowerCase().includes(query) || w.label.toLowerCase().includes(query)
+  );
+  renderWilayaDropdownItems(filtered);
+}
+
+function selectWilayaDropdownItem(code, label) {
+  selectedWilayaCode = code;
+  const labelEl = document.getElementById('wilaya-selected-label');
+  if (labelEl) labelEl.textContent = label;
+
+  const select = document.getElementById('wilaya-filter-select');
+  if (select) select.value = code;
+
+  closeWilayaDropdown();
+  renderWilayaDropdownItems(cachedWilayaList);
+  filterAndRenderDirectors();
 }
 
 function onWilayaFilterChange() {
@@ -354,7 +458,7 @@ function clearSearchInput() {
 
 function filterAndRenderDirectors() {
   const query = (document.getElementById('search-employee-input')?.value || '').toLowerCase().trim();
-  const selectedWilaya = document.getElementById('wilaya-filter-select')?.value || '';
+  const selectedWilaya = selectedWilayaCode || (document.getElementById('wilaya-filter-select')?.value || '');
 
   const filtered = employees.filter(e => {
     // Match wilaya code

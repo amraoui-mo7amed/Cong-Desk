@@ -29,7 +29,7 @@
       <!-- Top Brand Section -->
       <div class="sidebar-brand">
         <div class="brand-avatar-box">
-          <img src="../assets/logo.png" alt="CongéDesk Logo" class="sidebar-logo-img">
+          <img src="../assets/logo.png" alt="CNAS CongéDesk Logo" class="sidebar-logo-img">
         </div>
         <div class="sidebar-brand-meta">
           <h1 class="sidebar-brand-title">CongéDesk</h1>
@@ -58,12 +58,17 @@
         </button>
       </nav>
 
-      <!-- Bottom of Sidebar: Dedicated Settings Navigation Item -->
+      <!-- Bottom of Sidebar: Dedicated Settings Navigation Item & Theme Toggle -->
       <div class="sidebar-footer">
-        <button class="nav-item nav-settings" id="nav-settings" onclick="switchAppView('settings')">
-          <i class="ti ti-settings"></i>
-          <span class="nav-label">Paramètres</span>
-        </button>
+        <div class="sidebar-footer-row">
+          <button class="nav-item nav-settings" id="nav-settings" onclick="switchAppView('settings')">
+            <i class="ti ti-settings"></i>
+            <span class="nav-label">Paramètres</span>
+          </button>
+          <button class="btn-theme-sidebar" onclick="toggleAppTheme()" title="Basculer le Thème (Sombre / Clair)">
+            <i class="ti ti-moon" id="sidebar-theme-icon"></i>
+          </button>
+        </div>
       </div>
     </aside>
 
@@ -201,7 +206,7 @@
       <!-- ============================================== -->
       <section class="app-page" id="page-directors" style="display: none;">
         
-        <!-- Top Search, Wilaya Filter & Controls Bar -->
+        <!-- Top Search, Custom Overflow Dropdown & Controls Bar -->
         <div class="directors-top-bar">
           <div class="search-box">
             <i class="ti ti-search search-icon"></i>
@@ -211,13 +216,24 @@
             </button>
           </div>
 
-          <!-- Wilaya Filter Selector -->
-          <div class="wilaya-select-wrapper">
-            <i class="ti ti-map-pin wilaya-select-icon"></i>
-            <select id="wilaya-filter-select" class="wilaya-select" onchange="onWilayaFilterChange()">
-              <option value="">Toutes les Wilayas & Établissements</option>
-              <!-- Populated dynamically -->
-            </select>
+          <!-- CUSTOM OVERFLOW DROPDOWN FOR WILAYA FILTER -->
+          <div class="custom-dropdown" id="wilaya-dropdown">
+            <button type="button" class="custom-dropdown-trigger" id="wilaya-dropdown-trigger" onclick="toggleWilayaDropdown(event)">
+              <i class="ti ti-map-pin dropdown-pin-icon"></i>
+              <span class="dropdown-selected-label" id="wilaya-selected-label">Toutes les Wilayas & Établissements</span>
+              <i class="ti ti-chevron-down dropdown-arrow" id="wilaya-dropdown-arrow"></i>
+            </button>
+
+            <!-- Overflowed Dropdown Menu -->
+            <div class="custom-dropdown-menu" id="wilaya-dropdown-menu" style="display: none;">
+              <div class="dropdown-search-box">
+                <i class="ti ti-search"></i>
+                <input type="text" id="wilaya-dropdown-search" placeholder="Filtrer une wilaya..." oninput="onWilayaDropdownSearch(event)">
+              </div>
+              <div class="dropdown-items-list" id="wilaya-dropdown-items">
+                <!-- Dynamically populated custom overflow items -->
+              </div>
+            </div>
           </div>
 
           <!-- Quick Stats Pill -->
@@ -429,7 +445,7 @@
     </div>
   </div>
 
-  <!-- FLOATING ACTION BUTTONS (BOTTOM-RIGHT EDGE, STACKED VERTICALLY, SQUARED SHAPE) -->
+  <!-- FLOATING ACTION BUTTONS (BOTTOM-RIGHT EDGE, STACKED VERTICALLY: ADD & LANG ONLY, STRICTLY SQUARED) -->
   <div class="fab-dock">
     <!-- Add Director FAB (Squared) -->
     <button class="fab-btn fab-add" onclick="openNewEmployeeModal()" title="Ajouter un Nouveau Directeur">
@@ -438,10 +454,6 @@
     <!-- Language Toggle FAB (Squared) -->
     <button class="fab-btn fab-lang" id="fab-lang-btn" onclick="toggleAppLanguage()" title="Changer de Langue (Français / العربية)">
       <i class="ti ti-language"></i>
-    </button>
-    <!-- Theme Switcher FAB (Squared) -->
-    <button class="fab-btn fab-theme" onclick="toggleAppTheme()" title="Basculer le Thème (Sombre / Clair)">
-      <i class="ti ti-moon" id="fab-theme-icon"></i>
     </button>
   </div>
 

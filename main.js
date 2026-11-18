@@ -33,6 +33,9 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+  if (process.platform === 'win32') {
+    app.setAppUserModelId('dz.cnas.congedesk');
+  }
   Menu.setApplicationMenu(null);
   createWindow();
 
