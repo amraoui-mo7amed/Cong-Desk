@@ -8,7 +8,7 @@
   "scripts": {
     "start": "electron .",
     "build:x64": "electron-builder --win --x64",
-    "build:ia32": "electron-builder --win --ia32 -c.electronVersion=43.2.0"
+    "build:ia32": "electron-builder --win --ia32 --config.electronVersion=43.2.0"
   },
   "keywords": [
     "cnas",
