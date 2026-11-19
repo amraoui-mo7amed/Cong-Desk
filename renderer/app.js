@@ -131,8 +131,24 @@ const i18n = {
     drawer_subtitle: "Calcul & Remplissage automatique",
     drawer_mode_full: "Modèle",
     drawer_mode_overlay: "Papier Officiel",
-    drawer_tab_p1: "Page 1 : FR",
-    drawer_tab_p2: "Page 2 : AR",
+    drawer_tab_p1: "Page 1 (FR)",
+    drawer_tab_p2: "Page 2 (AR)",
+    drawer_btn_calibrate: "Calibrage",
+    stab_print: "Impression & Calibrage",
+    calib_modal_title: "Calibrage & Alignement Papier Officiel",
+    calib_modal_sub: "Ajustement millimétrique pour formulaires pré-imprimés CNAS GRH.22",
+    calib_lbl_feed: "Mode d'Alimentation du Papier dans l'Imprimante",
+    calib_opt_140x220: "Papier Officiel CNAS (140 × 220 mm) — Recommandé",
+    calib_opt_a4_center: "Bac A4 — Centré avec guides papier (HP / Canon / Epson)",
+    calib_opt_a4_left: "Bac A4 — Aligné sur le bord gauche",
+    calib_feed_hint: "Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.",
+    calib_lbl_x: "Décalage Horizontal X (mm)",
+    calib_lbl_y: "Décalage Vertical Y (mm)",
+    calib_x_hint: "(- Gauche / + Droite)",
+    calib_y_hint: "(- Haut / + Bas)",
+    calib_test_tip: "Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.",
+    calib_btn_test: "Imprimer Feuille Test",
+    calib_btn_reset: "Réinitialiser (0, 0)",
     drawer_calc_title: "Jours de Congé Restants",
     drawer_calc_badge: "Calcul Automatique",
     drawer_stat_n1: "Reliquat N-1",
@@ -276,8 +292,24 @@ const i18n = {
     drawer_subtitle: "حساب وملء تلقائي معتمد",
     drawer_mode_full: "النموذج الكامل",
     drawer_mode_overlay: "الورق المطبوع مسبقاً",
-    drawer_tab_p1: "ص 1 : فرنسية",
-    drawer_tab_p2: "ص 2 : عربية",
+    drawer_tab_p1: "الصفحة 1 : فرنسية",
+    drawer_tab_p2: "الصفحة 2 : عربية",
+    drawer_btn_calibrate: "معايرة",
+    stab_print: "الطباعة والمعايرة",
+    calib_modal_title: "معايرة ومحاذاة الورق المطبوع مسبقاً",
+    calib_modal_sub: "ضبط دقيق بالمليمتر لمطبوعات كناس الرسمية GRH.22",
+    calib_lbl_feed: "طريقة إدخال الورق في درج الطابعة",
+    calib_opt_140x220: "الورق الرسمي كناس (140 × 220 مم) — موصى به",
+    calib_opt_a4_center: "درج A4 — في الوسط بواسطة موجهات الورق (HP / Canon / Epson)",
+    calib_opt_a4_left: "درج A4 — محاذاة للجهة اليسرى",
+    calib_feed_hint: "إذا كانت طابعتك تحتوي على موجهات ورق منزلقة في وسط الدرج، اختر خيار 'درج A4 — في الوسط'.",
+    calib_lbl_x: "إزاحة أفقية X (مم)",
+    calib_lbl_y: "إزاحة عمودية Y (مم)",
+    calib_x_hint: "(- يسار / + يمين)",
+    calib_y_hint: "(- أعلى / + أسفل)",
+    calib_test_tip: "تلميح: اطبع صفحة تجريبية على ورق أبيض عادي ثم ضعها فوق المطبوع الرسمي أمام الضوء للتحقق من تطابق الأسطر بدقة.",
+    calib_btn_test: "طباعة ورقة اختبار",
+    calib_btn_reset: "إعادة ضبط (0, 0)",
     drawer_calc_title: "أيام العطلة المتبقية",
     drawer_calc_badge: "حساب تلقائي",
     drawer_stat_n1: "متبقي N-1",
@@ -549,6 +581,16 @@ function switchSettingsTab(tab) {
   if (activePanel) {
     activePanel.style.display = 'block';
     activePanel.classList.add('active');
+  }
+
+  if (tab === 'print') {
+    const s = getPrintSettings();
+    const feedSet = document.getElementById('set-calib-paper-feed');
+    const xSet = document.getElementById('set-calib-offset-x');
+    const ySet = document.getElementById('set-calib-offset-y');
+    if (feedSet) feedSet.value = s.paper_feed;
+    if (xSet) xSet.value = s.offset_x;
+    if (ySet) ySet.value = s.offset_y;
   }
 }
 
@@ -1289,12 +1331,12 @@ function setDrawerLanguage(lang) {
     btnFr?.classList.remove('active');
     btnAr?.classList.add('active');
     const pill = document.getElementById('preview-page-pill');
-    if (pill) pill.textContent = isAppAr ? "الصفحة 2 : العربية (بيان العطلة السنوية)" : "Page 2 : Arabe (بيان العطلة السنوية)";
+    if (pill) pill.textContent = isAppAr ? "الصفحة 2 : العربية" : "Page 2 : Arabe";
   } else {
     btnFr?.classList.add('active');
     btnAr?.classList.remove('active');
     const pill = document.getElementById('preview-page-pill');
-    if (pill) pill.textContent = isAppAr ? "الصفحة 1 : الفرنسية (سند العطلة)" : "Page 1 : Français (TITRE DE CONGÉ)";
+    if (pill) pill.textContent = isAppAr ? "الصفحة 1 : الفرنسية" : "Page 1 : Français";
   }
 
   if (activeEmployee) {
@@ -1522,10 +1564,14 @@ function renderDocumentSheet() {
 function buildSheetHTML(data, isAr, overlayMode) {
   const langClass = isAr ? 'lang-ar' : 'lang-fr';
   const modeClass = overlayMode ? 'mode-preprinted' : 'mode-full';
+  const printSettings = getPrintSettings();
+  const offsetX = parseFloat(printSettings.offset_x) || 0;
+  const offsetY = parseFloat(printSettings.offset_y) || 0;
+  const transformStyle = overlayMode ? `transform: translate(${offsetX}mm, ${offsetY}mm);` : '';
 
   return `
     <div class="document-page ${langClass} ${modeClass}">
-      <div class="data-layer">
+      <div class="data-layer" style="${transformStyle}">
         <!-- Nom et prénom de l'agent -->
         <div class="field-item field-agent-name">${escapeHtml(data.agent_name || '')}</div>
 
@@ -1586,12 +1632,156 @@ function buildSheetHTML(data, isAr, overlayMode) {
 }
 
 // Generate print / PDF HTML with transparent coordinates
-function generatePrintHTML(dataOnly = false) {
+function generatePrintHTML(dataOnly = false, isTestPage = false) {
+  if (isTestPage) {
+    return generateTestPageHTML();
+  }
+
   const isAr = (currentDocLang === 'ar');
   const data = getFormData();
-  const content = buildSheetHTML(data, isAr, dataOnly);
+  const printSettings = getPrintSettings();
+  const feed = printSettings.paper_feed || 'official_140x220';
+  const offsetX = parseFloat(printSettings.offset_x) || 0;
+  const offsetY = parseFloat(printSettings.offset_y) || 0;
 
-  const bgDataUri = (!dataOnly && typeof TEMPLATE_IMAGES !== 'undefined')
+  if (dataOnly) {
+    // Official Pre-printed form dimensions and coordinates
+    const isCustom = (feed === 'official_140x220');
+    const pageSizeRule = isCustom ? '140mm 220mm' : 'A4';
+    const pageWidth = isCustom ? '140mm' : '210mm';
+    const pageHeight = isCustom ? '220mm' : '297mm';
+    const containerLeft = (feed === 'a4_center') ? '35mm' : '0mm';
+
+    const langClass = isAr ? 'lang-ar' : 'lang-fr';
+    const content = buildSheetHTML(data, isAr, true);
+
+    return `<!DOCTYPE html>
+<html lang="${isAr ? 'ar' : 'fr'}" dir="${isAr ? 'rtl' : 'ltr'}">
+<head>
+  <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    @page { size: ${pageSizeRule}; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: transparent !important;
+      margin: 0; padding: 0;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .document-page {
+      width: ${pageWidth};
+      height: ${pageHeight};
+      position: relative;
+      background: transparent !important;
+      background-image: none !important;
+      box-sizing: border-box;
+      margin: 0;
+      overflow: hidden;
+    }
+    .document-page::after {
+      display: none !important;
+    }
+    .data-layer {
+      position: absolute;
+      top: 0;
+      left: ${containerLeft};
+      width: 140mm;
+      height: 220mm;
+      transform: translate(${offsetX}mm, ${offsetY}mm);
+      transform-origin: top left;
+      pointer-events: none;
+    }
+    .field-item {
+      position: absolute;
+      color: #000000 !important;
+      font-weight: 700;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+    .field-item:empty {
+      display: none !important;
+    }
+    .date-group {
+      position: absolute;
+      display: flex;
+      align-items: center;
+      line-height: 1;
+    }
+    .date-group .cell {
+      position: absolute;
+      font-weight: 800;
+      color: #000000 !important;
+      line-height: 1;
+      text-align: center;
+    }
+
+    /* Calibrated French Coordinates (in mm on 140x220mm physical form) */
+    .lang-fr { font-family: 'Times New Roman', Times, serif; }
+    .lang-fr .field-agent-name { top: 58.5mm; left: 47.0mm; font-size: 13.5px; font-weight: 700; }
+    .lang-fr .field-grade { top: 66.0mm; left: 38.0mm; font-size: 12.5px; font-weight: 700; }
+    .lang-fr .field-service { top: 73.5mm; left: 24.0mm; font-size: 12.5px; font-weight: 700; }
+    .lang-fr .field-address-1 { top: 81.0mm; left: 24.0mm; font-size: 12.0px; font-weight: 700; }
+    .lang-fr .field-address-2 { top: 86.5mm; left: 13.0mm; font-size: 12.0px; font-weight: 700; }
+    .lang-fr .field-leave-days { top: 88.5mm; left: 48.0mm; width: 12.0mm; text-align: center; font-size: 14.0px; font-weight: 800; }
+    .lang-fr .group-dep { top: 96.5mm; width: 140mm; left: 0; }
+    .lang-fr .group-ret { top: 104.5mm; width: 140mm; left: 0; }
+    .lang-fr .cell-d1 { left: 34.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-fr .cell-d2 { left: 38.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-fr .cell-m1 { left: 44.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-fr .cell-m2 { left: 48.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-fr .cell-y1 { left: 54.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-fr .cell-y2 { left: 59.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-fr .field-leave-address { top: 112.5mm; left: 45.0mm; font-size: 12.0px; font-weight: 700; }
+    .lang-fr .field-location { top: 134.5mm; left: 20.0mm; font-size: 12.5px; font-weight: 700; }
+    .lang-fr .field-date { top: 134.5mm; left: 60.0mm; font-size: 12.5px; font-weight: 700; }
+    .lang-fr .field-signatory { top: 144.0mm; left: 75.0mm; font-size: 12.5px; font-style: italic; }
+    .lang-fr .rights-values .field-item { left: 48.0mm; width: 18.0mm; text-align: center; font-size: 13.5px; font-weight: 800; }
+    .lang-fr .right-val-prev { top: 167.0mm; }
+    .lang-fr .right-val-cur  { top: 173.5mm; }
+    .lang-fr .right-val-tot  { top: 180.0mm; }
+    .lang-fr .right-val-granted { top: 186.5mm; }
+    .lang-fr .right-val-new { top: 194.5mm; font-size: 14.5px; font-weight: 900; }
+
+    /* Calibrated Arabic Coordinates (in mm on 140x220mm physical form) */
+    .lang-ar { font-family: 'Tajawal', sans-serif; direction: rtl; }
+    .lang-ar .field-agent-name { top: 58.5mm; right: 38.0mm; font-size: 14.0px; font-weight: 700; }
+    .lang-ar .field-grade { top: 66.0mm; right: 40.0mm; font-size: 13.0px; font-weight: 700; }
+    .lang-ar .field-service { top: 73.5mm; right: 32.0mm; font-size: 13.0px; font-weight: 700; }
+    .lang-ar .field-address-1 { top: 81.0mm; right: 32.0mm; font-size: 12.5px; font-weight: 700; }
+    .lang-ar .field-address-2 { top: 86.5mm; right: 18.0mm; font-size: 12.5px; font-weight: 700; }
+    .lang-ar .field-leave-days { top: 88.5mm; right: 36.0mm; width: 12.0mm; text-align: center; font-size: 14.5px; font-weight: 800; }
+    .lang-ar .group-dep { top: 96.5mm; width: 140mm; right: 0; left: auto; }
+    .lang-ar .group-ret { top: 104.5mm; width: 140mm; right: 0; left: auto; }
+    .lang-ar .cell-d1 { left: 77.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-ar .cell-d2 { left: 81.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-ar .cell-m1 { left: 87.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-ar .cell-m2 { left: 91.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-ar .cell-y1 { left: 97.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-ar .cell-y2 { left: 102.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+    .lang-ar .field-leave-address { top: 112.5mm; right: 42.0mm; font-size: 12.5px; font-weight: 700; }
+    .lang-ar .field-location { top: 134.5mm; right: 25.0mm; font-size: 13.0px; font-weight: 700; }
+    .lang-ar .field-date { top: 134.5mm; right: 68.0mm; font-size: 13.0px; font-weight: 700; }
+    .lang-ar .field-signatory { top: 144.0mm; right: 68.0mm; font-size: 13.0px; }
+    .lang-ar .rights-values .field-item { left: 68.0mm; width: 18.0mm; text-align: center; font-size: 14.0px; font-weight: 800; }
+    .lang-ar .right-val-prev { top: 167.0mm; }
+    .lang-ar .right-val-cur  { top: 173.5mm; }
+    .lang-ar .right-val-tot  { top: 180.0mm; }
+    .lang-ar .right-val-granted { top: 186.5mm; }
+    .lang-ar .right-val-new { top: 194.5mm; font-size: 15.0px; font-weight: 900; }
+  </style>
+</head>
+<body>
+  ${content}
+</body>
+</html>`;
+  }
+
+  // Full Template Mode (Blank A4 sheet with template background)
+  const content = buildSheetHTML(data, isAr, false);
+  const bgDataUri = (typeof TEMPLATE_IMAGES !== 'undefined')
     ? (isAr ? TEMPLATE_IMAGES.ar : TEMPLATE_IMAGES.fr)
     : null;
 
@@ -1606,7 +1796,7 @@ function generatePrintHTML(dataOnly = false) {
     @page { size: A4; margin: 0; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
-      background: ${dataOnly ? 'transparent' : '#ffffff'};
+      background: #ffffff;
       margin: 0; padding: 0;
       -webkit-print-color-adjust: exact;
       print-color-adjust: exact;
@@ -1618,7 +1808,7 @@ function generatePrintHTML(dataOnly = false) {
       background-size: 100% 100%;
       background-repeat: no-repeat;
       background-position: center;
-      ${(!dataOnly && bgDataUri) ? `background-image: url('${bgDataUri}');` : 'background: transparent !important; background-image: none !important;'}
+      ${bgDataUri ? `background-image: url('${bgDataUri}');` : 'background: #ffffff;'}
       box-sizing: border-box;
       margin: 0 auto;
       overflow: hidden;
@@ -1638,7 +1828,7 @@ function generatePrintHTML(dataOnly = false) {
     .field-item:empty {
       display: none !important;
     }
-    .document-page:not(.mode-preprinted) .field-item:not(.field-leave-days) {
+    .document-page .field-item:not(.field-leave-days) {
       background: #ffffff;
       padding: 0 3px;
       border-radius: 2px;
@@ -1662,7 +1852,7 @@ function generatePrintHTML(dataOnly = false) {
       text-align: center;
       width: 16px;
     }
-    .document-page:not(.mode-preprinted) .field-signatory {
+    .document-page .field-signatory {
       display: none !important;
     }
 
@@ -1727,14 +1917,268 @@ function generatePrintHTML(dataOnly = false) {
 </html>`;
 }
 
+// Calibration Test Page Generator
+function generateTestPageHTML() {
+  const printSettings = getPrintSettings();
+  const offsetX = parseFloat(printSettings.offset_x) || 0;
+  const offsetY = parseFloat(printSettings.offset_y) || 0;
+  const feed = printSettings.paper_feed || 'official_140x220';
+  const isCustom = (feed === 'official_140x220');
+  const pageSizeRule = isCustom ? '140mm 220mm' : 'A4';
+  const pageWidth = isCustom ? '140mm' : '210mm';
+  const pageHeight = isCustom ? '220mm' : '297mm';
+  const containerLeft = (feed === 'a4_center') ? '35mm' : '0mm';
+
+  return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>CongéDesk - Test d'Alignement</title>
+  <style>
+    @page { size: ${pageSizeRule}; margin: 0; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #ffffff;
+      margin: 0; padding: 0;
+      font-family: Arial, sans-serif;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .page-sheet {
+      width: ${pageWidth};
+      height: ${pageHeight};
+      position: relative;
+      margin: 0;
+      overflow: hidden;
+    }
+    .card-box {
+      position: absolute;
+      top: 0;
+      left: ${containerLeft};
+      width: 140mm;
+      height: 220mm;
+      border: 1.5px dashed #2563eb;
+      transform: translate(${offsetX}mm, ${offsetY}mm);
+      transform-origin: top left;
+    }
+    .corner {
+      position: absolute;
+      width: 10mm;
+      height: 10mm;
+      border: 1.5px solid #000;
+    }
+    .c-tl { top: 0; left: 0; border-right: none; border-bottom: none; }
+    .c-tr { top: 0; right: 0; border-left: none; border-bottom: none; }
+    .c-bl { bottom: 0; left: 0; border-right: none; border-top: none; }
+    .c-br { bottom: 0; right: 0; border-left: none; border-top: none; }
+    .test-line {
+      position: absolute;
+      left: 6mm;
+      right: 6mm;
+      border-bottom: 1px dotted #dc2626;
+      font-size: 8.5px;
+      color: #dc2626;
+      line-height: 1;
+      padding-bottom: 1px;
+    }
+    .test-box {
+      position: absolute;
+      border: 1px solid #16a34a;
+      font-size: 8px;
+      color: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .meta-tag {
+      position: absolute;
+      top: 25mm;
+      left: 10mm;
+      right: 10mm;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-size: 9px;
+      color: #334155;
+      line-height: 1.4;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-sheet">
+    <div class="card-box">
+      <div class="corner c-tl"></div>
+      <div class="corner c-tr"></div>
+      <div class="corner c-bl"></div>
+      <div class="corner c-br"></div>
+
+      <div class="meta-tag">
+        <strong>CongéDesk — Page de Test d'Alignement Papier Officiel GRH.22</strong><br>
+        Mode : <strong>${feed}</strong> | Décalage X : <strong>${offsetX} mm</strong> | Décalage Y : <strong>${offsetY} mm</strong><br>
+        Placez cette feuille sur votre imprimé CNAS contre la lumière pour vérifier l'alignement.
+      </div>
+
+      <!-- Line 1: Nom et prénom -->
+      <div class="test-line" style="top: 62.5mm;">[Ligne 1: Nom et prénom de l'agent (58.5 mm)]</div>
+
+      <!-- Line 2: Grade -->
+      <div class="test-line" style="top: 70.0mm;">[Ligne 2: Grade ou fonction (66.0 mm)]</div>
+
+      <!-- Line 3: Service -->
+      <div class="test-line" style="top: 77.5mm;">[Ligne 3: Service (73.5 mm)]</div>
+
+      <!-- Line 4: Adresse -->
+      <div class="test-line" style="top: 85.0mm;">[Ligne 4: Adresse (81.0 mm)]</div>
+
+      <!-- Line 5: Jours box -->
+      <div class="test-box" style="top: 88.5mm; left: 48mm; width: 12mm; height: 6mm;">Jours</div>
+
+      <!-- Line 6: Date début -->
+      <div class="test-box" style="top: 96.5mm; left: 34mm; width: 30mm; height: 6mm;">Du : [JJ/MM/AA]</div>
+
+      <!-- Line 7: Date fin -->
+      <div class="test-box" style="top: 104.5mm; left: 34mm; width: 30mm; height: 6mm;">Au : [JJ/MM/AA]</div>
+
+      <!-- Line 8: Adresse conge -->
+      <div class="test-line" style="top: 116.5mm;">[Ligne 8: Adresse durant le congé (112.5 mm)]</div>
+
+      <!-- Line 9: Fait à ... Le ... -->
+      <div class="test-line" style="top: 138.5mm;">[Ligne 9: Fait à / Le (134.5 mm)]</div>
+
+      <!-- Signataire -->
+      <div class="test-box" style="top: 144mm; left: 75mm; width: 45mm; height: 12mm;">Signature Directeur</div>
+
+      <!-- Table detail des droits -->
+      <div class="test-box" style="top: 167mm; left: 45mm; width: 24mm; height: 32mm;">Tableau Droits (167-199mm)</div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+// Print Calibration Storage & Helpers
+const DEFAULT_PRINT_SETTINGS = {
+  paper_feed: 'official_140x220',
+  offset_x: 0,
+  offset_y: 0
+};
+
+function getPrintSettings() {
+  try {
+    const raw = localStorage.getItem('congedesk_print_settings');
+    if (raw) return { ...DEFAULT_PRINT_SETTINGS, ...JSON.parse(raw) };
+  } catch (e) {}
+  return { ...DEFAULT_PRINT_SETTINGS };
+}
+
+function savePrintSettings(settings) {
+  localStorage.setItem('congedesk_print_settings', JSON.stringify(settings));
+}
+
+function openPrintCalibrationModal() {
+  const modal = document.getElementById('modal-print-calibration');
+  if (!modal) return;
+  const s = getPrintSettings();
+  const feedSelect = document.getElementById('calib-paper-feed');
+  const inputX = document.getElementById('calib-offset-x');
+  const inputY = document.getElementById('calib-offset-y');
+  if (feedSelect) feedSelect.value = s.paper_feed;
+  if (inputX) inputX.value = s.offset_x;
+  if (inputY) inputY.value = s.offset_y;
+  modal.style.display = 'flex';
+}
+
+function closePrintCalibrationModal() {
+  const modal = document.getElementById('modal-print-calibration');
+  if (modal) modal.style.display = 'none';
+}
+
+function onCalibrationChange() {
+  const feedSelect = document.getElementById('calib-paper-feed');
+  const inputX = document.getElementById('calib-offset-x');
+  const inputY = document.getElementById('calib-offset-y');
+  const s = {
+    paper_feed: feedSelect ? feedSelect.value : 'official_140x220',
+    offset_x: inputX ? parseFloat(inputX.value) || 0 : 0,
+    offset_y: inputY ? parseFloat(inputY.value) || 0 : 0
+  };
+  savePrintSettings(s);
+  renderDocumentPreview();
+}
+
+function nudgeCalibration(field, delta, isSettingsTab = false) {
+  const s = getPrintSettings();
+  s[field] = Math.round(((parseFloat(s[field]) || 0) + delta) * 10) / 10;
+  savePrintSettings(s);
+  
+  const modalInput = document.getElementById(field === 'offset_x' ? 'calib-offset-x' : 'calib-offset-y');
+  const setInput = document.getElementById(field === 'offset_x' ? 'set-calib-offset-x' : 'set-calib-offset-y');
+  if (modalInput) modalInput.value = s[field];
+  if (setInput) setInput.value = s[field];
+
+  renderDocumentPreview();
+}
+
+function saveCalibrationModalSettings() {
+  onCalibrationChange();
+  closePrintCalibrationModal();
+}
+
+function syncSettingsCalibration(type) {
+  const feedSelect = document.getElementById('set-calib-paper-feed');
+  const inputX = document.getElementById('set-calib-offset-x');
+  const inputY = document.getElementById('set-calib-offset-y');
+  const s = {
+    paper_feed: feedSelect ? feedSelect.value : 'official_140x220',
+    offset_x: inputX ? parseFloat(inputX.value) || 0 : 0,
+    offset_y: inputY ? parseFloat(inputY.value) || 0 : 0
+  };
+  savePrintSettings(s);
+  renderDocumentPreview();
+}
+
+function saveSettingsTabCalibration() {
+  syncSettingsCalibration();
+  const isAr = (currentAppLang === 'ar');
+  alert(isAr ? 'تم حفظ إعدادات الطباعة والمعايرة بنجاح!' : 'Paramètres d\'impression et de calibrage enregistrés avec succès !');
+}
+
+function resetCalibrationOffsets(isSettingsTab = false) {
+  const s = { ...DEFAULT_PRINT_SETTINGS };
+  savePrintSettings(s);
+  const feedModal = document.getElementById('calib-paper-feed');
+  const xModal = document.getElementById('calib-offset-x');
+  const yModal = document.getElementById('calib-offset-y');
+  const feedSet = document.getElementById('set-calib-paper-feed');
+  const xSet = document.getElementById('set-calib-offset-x');
+  const ySet = document.getElementById('set-calib-offset-y');
+  if (feedModal) feedModal.value = s.paper_feed;
+  if (xModal) xModal.value = s.offset_x;
+  if (yModal) yModal.value = s.offset_y;
+  if (feedSet) feedSet.value = s.paper_feed;
+  if (xSet) xSet.value = s.offset_x;
+  if (ySet) ySet.value = s.offset_y;
+  renderDocumentPreview();
+}
+
+function printCalibrationTestPage() {
+  printDocument(true, true);
+}
+
 // Print Document
-async function printDocument(dataOnly = true) {
+async function printDocument(dataOnly = true, isTestPage = false) {
   if (!window.electronAPI) {
     window.print();
     return;
   }
-  const htmlContent = generatePrintHTML(dataOnly);
-  const res = await window.electronAPI.printDocument({ htmlContent, dataOnly });
+  const printSettings = getPrintSettings();
+  const feed = printSettings.paper_feed || 'official_140x220';
+  const htmlContent = generatePrintHTML(dataOnly, isTestPage);
+  // If printing on 140x220mm official paper directly, let Chromium honor CSS @page size 140mm 220mm
+  const pageSize = (dataOnly && feed === 'official_140x220') ? undefined : 'A4';
+  const res = await window.electronAPI.printDocument({ htmlContent, dataOnly, pageSize });
   if (res && res.error) {
     alert("Erreur d'impression : " + res.error);
   }
@@ -1753,8 +2197,11 @@ async function saveAsPDF(dataOnly = false) {
     return;
   }
 
+  const printSettings = getPrintSettings();
+  const feed = printSettings.paper_feed || 'official_140x220';
   const htmlContent = generatePrintHTML(dataOnly);
-  const res = await window.electronAPI.savePDF({ htmlContent, defaultName, dataOnly });
+  const pageSize = (dataOnly && feed === 'official_140x220') ? undefined : 'A4';
+  const res = await window.electronAPI.savePDF({ htmlContent, defaultName, dataOnly, pageSize });
   if (res && res.success) {
     alert(`Document PDF enregistré avec succès :\n${res.filePath}`);
   } else if (res && res.error) {

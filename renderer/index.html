@@ -329,6 +329,9 @@
           <button class="settings-tab-btn" id="stab-btn-data" onclick="switchSettingsTab('data')">
             <i class="ti ti-database"></i> <span data-i18n="stab_data">Base de Données CNAS</span>
           </button>
+          <button class="settings-tab-btn" id="stab-btn-print" onclick="switchSettingsTab('print')">
+            <i class="ti ti-printer"></i> <span data-i18n="stab_print">Impression & Calibrage</span>
+          </button>
           <button class="settings-tab-btn" id="stab-btn-about" onclick="switchSettingsTab('about')">
             <i class="ti ti-info-circle"></i> <span data-i18n="stab_about">À Propos</span>
           </button>
@@ -405,6 +408,73 @@
               </div>
               <button class="btn btn-settings-danger" onclick="confirmClearHistory()">
                 <i class="ti ti-trash"></i> <span data-i18n="set_btn_clear">Vider l'Historique</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- SETTINGS TAB: PRINT & CALIBRATION -->
+        <div class="settings-tab-panel" id="stab-panel-print" style="display: none;">
+          <div class="settings-card">
+            <h3 class="settings-card-title"><i class="ti ti-printer"></i> <span data-i18n="calib_modal_title">Calibrage & Alignement Papier Officiel</span></h3>
+            <p style="color: var(--text-dim); font-size: 13px; margin-bottom: 20px;" data-i18n="calib_modal_sub">
+              Ajustement millimétrique pour formulaires pré-imprimés CNAS GRH.22
+            </p>
+
+            <div class="form-field" style="margin-bottom: 18px;">
+              <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
+              <select id="set-calib-paper-feed" class="input-ctrl" onchange="syncSettingsCalibration('feed')">
+                <option value="official_140x220" data-i18n="calib_opt_140x220">Papier Officiel CNAS (140 × 220 mm) — Recommandé</option>
+                <option value="a4_center" data-i18n="calib_opt_a4_center">Bac A4 — Centré avec guides papier (HP / Canon / Epson)</option>
+                <option value="a4_left" data-i18n="calib_opt_a4_left">Bac A4 — Aligné sur le bord gauche</option>
+              </select>
+              <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
+                Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
+              </small>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+              <div class="form-field">
+                <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', -1, true)">-1</button>
+                  <input type="number" step="0.5" id="set-calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="syncSettingsCalibration('x')">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', 1, true)">+1</button>
+                </div>
+                <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
+                  (- Gauche / + Droite)
+                </small>
+              </div>
+
+              <div class="form-field">
+                <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
+                <div style="display: flex; align-items: center; gap: 6px;">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', -1, true)">-1</button>
+                  <input type="number" step="0.5" id="set-calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="syncSettingsCalibration('y')">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', 1, true)">+1</button>
+                </div>
+                <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
+                  (- Haut / + Bas)
+                </small>
+              </div>
+            </div>
+
+            <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12px; line-height: 1.5; color: var(--text-muted); margin-bottom: 20px;">
+              <i class="ti ti-info-circle" style="color: var(--primary); margin-right: 4px;"></i>
+              <span data-i18n="calib_test_tip">Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.</span>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
+              <div style="display: flex; gap: 8px;">
+                <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
+                  <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="resetCalibrationOffsets(true)">
+                  <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset">Réinitialiser (0, 0)</span>
+                </button>
+              </div>
+              <button type="button" class="btn btn-settings-primary" onclick="saveSettingsTabCalibration()">
+                <i class="ti ti-check"></i> <span data-i18n="btn_save">Enregistrer</span>
               </button>
             </div>
           </div>
@@ -664,29 +734,35 @@
           </div>
         </div>
 
-        <!-- Mode Toggle in Drawer -->
-        <div class="drawer-tabs">
-          <button class="drawer-tab-btn active" id="drawer-mode-full" onclick="setDocumentPrintMode(false)">
-            <i class="ti ti-file-invoice"></i> <span data-i18n="drawer_mode_full">Modèle</span>
+        <div class="drawer-header-controls">
+          <!-- Mode Toggle in Drawer -->
+          <div class="drawer-tabs">
+            <button class="drawer-tab-btn active" id="drawer-mode-full" onclick="setDocumentPrintMode(false)">
+              <i class="ti ti-file-invoice"></i> <span data-i18n="drawer_mode_full">Modèle</span>
+            </button>
+            <button class="drawer-tab-btn" id="drawer-mode-overlay" onclick="setDocumentPrintMode(true)">
+              <i class="ti ti-layers-subtract"></i> <span data-i18n="drawer_mode_overlay">Papier Officiel</span>
+            </button>
+          </div>
+
+          <!-- Language Pill Switch -->
+          <div class="drawer-tabs">
+            <button class="drawer-tab-btn active" id="btn-tab-fr" onclick="setDrawerLanguage('fr')">
+              <i class="ti ti-file-text"></i> <span data-i18n="drawer_tab_p1">Page 1 (FR)</span>
+            </button>
+            <button class="drawer-tab-btn" id="btn-tab-ar" onclick="setDrawerLanguage('ar')">
+              <i class="ti ti-file-text"></i> <span data-i18n="drawer_tab_p2">الصفحة 2 (عربية)</span>
+            </button>
+          </div>
+
+          <button class="btn-icon" onclick="openPrintCalibrationModal()" title="Calibrer l'alignement d'impression X / Y">
+            <i class="ti ti-adjustments"></i>
           </button>
-          <button class="drawer-tab-btn" id="drawer-mode-overlay" onclick="setDocumentPrintMode(true)">
-            <i class="ti ti-layers-subtract"></i> <span data-i18n="drawer_mode_overlay">Papier Officiel</span>
+
+          <button class="btn-icon" onclick="closeLeaveDrawer()" title="Fermer">
+            <i class="ti ti-x"></i>
           </button>
         </div>
-
-        <!-- Language Pill Switch -->
-        <div class="drawer-tabs">
-          <button class="drawer-tab-btn active" id="btn-tab-fr" onclick="setDrawerLanguage('fr')">
-            <i class="ti ti-file-text"></i> <span data-i18n="drawer_tab_p1">Page 1 : FR</span>
-          </button>
-          <button class="drawer-tab-btn" id="btn-tab-ar" onclick="setDrawerLanguage('ar')">
-            <i class="ti ti-file-text"></i> <span data-i18n="drawer_tab_p2">ص 2 : AR</span>
-          </button>
-        </div>
-
-        <button class="btn-icon" onclick="closeLeaveDrawer()" title="Fermer">
-          <i class="ti ti-x"></i>
-        </button>
       </div>
 
       <!-- Drawer Body Split: Left Form & Calculator / Right Live Document Preview -->
@@ -863,7 +939,11 @@
           <i class="ti ti-arrow-left"></i> <span data-i18n="drawer_btn_back">Retour à l'Annuaire</span>
         </button>
 
-        <div style="display: flex; gap: 8px;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <!-- Calibration Quick Button -->
+          <button class="btn btn-secondary" onclick="openPrintCalibrationModal()" title="Calibrer l'alignement d'impression X / Y">
+            <i class="ti ti-adjustments"></i> <span data-i18n="drawer_btn_calibrate">Calibrage</span>
+          </button>
           <!-- Print on Official Pre-printed Paper (Data only) -->
           <button class="btn btn-primary" onclick="printDocument(true)" title="Imprimer les données seules sur papier officiel pré-imprimé présent dans l'imprimante">
             <i class="ti ti-printer"></i> <span data-i18n="drawer_btn_print_official">Imprimer (Papier Officiel)</span>
@@ -887,6 +967,89 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- PRINT CALIBRATION MODAL -->
+  <div class="modal-overlay" id="modal-print-calibration" style="display: none;">
+    <div class="modal-dialog" style="max-width: 540px;">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <i class="ti ti-printer" style="color: var(--primary); font-size: 22px;"></i>
+          <div>
+            <h3 data-i18n="calib_modal_title">Calibrage & Alignement Papier Officiel</h3>
+            <span class="modal-sub" data-i18n="calib_modal_sub">Ajustement millimétrique pour formulaires pré-imprimés CNAS GRH.22</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closePrintCalibrationModal()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div class="modal-body" style="padding: 20px 24px;">
+        <!-- Paper Feeding Mode -->
+        <div class="form-field" style="margin-bottom: 18px;">
+          <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
+          <select id="calib-paper-feed" class="input-ctrl" onchange="onCalibrationChange()">
+            <option value="official_140x220" data-i18n="calib_opt_140x220">Papier Officiel CNAS (140 × 220 mm) — Recommandé</option>
+            <option value="a4_center" data-i18n="calib_opt_a4_center">Bac A4 — Centré avec guides papier (HP / Canon / Epson)</option>
+            <option value="a4_left" data-i18n="calib_opt_a4_left">Bac A4 — Aligné sur le bord gauche</option>
+          </select>
+          <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
+            Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
+          </small>
+        </div>
+
+        <!-- Offset Controls -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+          <!-- Offset X -->
+          <div class="form-field">
+            <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', -1)">-1</button>
+              <input type="number" step="0.5" id="calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="onCalibrationChange()">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', 1)">+1</button>
+            </div>
+            <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
+              (- Gauche / + Droite)
+            </small>
+          </div>
+
+          <!-- Offset Y -->
+          <div class="form-field">
+            <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', -1)">-1</button>
+              <input type="number" step="0.5" id="calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="onCalibrationChange()">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', 1)">+1</button>
+            </div>
+            <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
+              (- Haut / + Bas)
+            </small>
+          </div>
+        </div>
+
+        <!-- Info note -->
+        <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12px; line-height: 1.5; color: var(--text-muted); margin-bottom: 16px;">
+          <i class="ti ti-info-circle" style="color: var(--primary); margin-right: 4px;"></i>
+          <span data-i18n="calib_test_tip">Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.</span>
+        </div>
+
+        <!-- Test Print & Reset Buttons -->
+        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+          <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
+            <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
+          </button>
+          <button type="button" class="btn btn-secondary" onclick="resetCalibrationOffsets()">
+            <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset">Réinitialiser (0, 0)</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="modal-footer" style="padding: 16px 24px; display: flex; justify-content: flex-end; gap: 10px;">
+        <button type="button" class="btn btn-secondary" onclick="closePrintCalibrationModal()" data-i18n="btn_cancel">Fermer</button>
+        <button type="button" class="btn btn-primary" onclick="saveCalibrationModalSettings()">
+          <i class="ti ti-check"></i> <span data-i18n="btn_save">Enregistrer</span>
+        </button>
+      </div>
     </div>
   </div>
 

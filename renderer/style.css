@@ -1323,28 +1323,55 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 .drawer-header {
-  height: 68px;
+  min-height: 68px;
   border-bottom: 1px solid var(--glass-border-subtle);
-  padding: 0 24px;
+  padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--glass-header-bg);
   flex-shrink: 0;
-  gap: 16px;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .drawer-title-group {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex-shrink: 1;
 }
 
 .drawer-title-group h2 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--text-main);
   letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.drawer-header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+}
+
+[dir="rtl"] .drawer-header-controls {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+@media (max-width: 1100px) {
+  #drawer-agent-subtitle {
+    display: none;
+  }
+  .drawer-tab-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
 }
 
 .drawer-tabs {
@@ -1711,9 +1738,13 @@ input[type="range"]::-webkit-slider-thumb:hover {
 }
 
 #preview-page-pill {
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-main);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 280px;
 }
 
 /* ================= ICON BUTTONS (.btn-icon) STYLING ================= */
@@ -2127,6 +2158,62 @@ input[type="range"]::-webkit-slider-thumb:hover {
 .document-page.lang-ar .right-val-granted { top: 86.4%; }
 .document-page.lang-ar .right-val-new { top: 90.8%; font-size: 16px; font-weight: 900; }
 
+/* ================= PRE-PRINTED OFFICIAL FORM CALIBRATED COORDINATES (140mm x 220mm) ================= */
+.document-page.mode-preprinted {
+  width: 504px;
+  height: 792px;
+}
+
+.document-page.mode-preprinted.lang-fr .field-agent-name { top: 58.5mm; left: 47.0mm; font-size: 13.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-grade { top: 66.0mm; left: 38.0mm; font-size: 12.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-service { top: 73.5mm; left: 24.0mm; font-size: 12.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-address-1 { top: 81.0mm; left: 24.0mm; font-size: 12.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-address-2 { top: 86.5mm; left: 13.0mm; font-size: 12.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-leave-days { top: 88.5mm; left: 48.0mm; width: 12.0mm; text-align: center; font-size: 14.0px; font-weight: 800; }
+.document-page.mode-preprinted.lang-fr .group-dep { top: 96.5mm; width: 140mm; left: 0; }
+.document-page.mode-preprinted.lang-fr .group-ret { top: 104.5mm; width: 140mm; left: 0; }
+.document-page.mode-preprinted.lang-fr .cell-d1 { left: 34.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-fr .cell-d2 { left: 38.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-fr .cell-m1 { left: 44.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-fr .cell-m2 { left: 48.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-fr .cell-y1 { left: 54.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-fr .cell-y2 { left: 59.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-fr .field-leave-address { top: 112.5mm; left: 45.0mm; font-size: 12.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-location { top: 134.5mm; left: 20.0mm; font-size: 12.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-date { top: 134.5mm; left: 60.0mm; font-size: 12.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-fr .field-signatory { top: 144.0mm; left: 75.0mm; font-size: 12.5px; font-style: italic; }
+.document-page.mode-preprinted.lang-fr .rights-values .field-item { left: 48.0mm; width: 18.0mm; text-align: center; font-size: 13.5px; font-weight: 800; }
+.document-page.mode-preprinted.lang-fr .right-val-prev { top: 167.0mm; }
+.document-page.mode-preprinted.lang-fr .right-val-cur  { top: 173.5mm; }
+.document-page.mode-preprinted.lang-fr .right-val-tot  { top: 180.0mm; }
+.document-page.mode-preprinted.lang-fr .right-val-granted { top: 186.5mm; }
+.document-page.mode-preprinted.lang-fr .right-val-new { top: 194.5mm; font-size: 14.5px; font-weight: 900; }
+
+.document-page.mode-preprinted.lang-ar .field-agent-name { top: 58.5mm; right: 38.0mm; font-size: 14.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-grade { top: 66.0mm; right: 40.0mm; font-size: 13.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-service { top: 73.5mm; right: 32.0mm; font-size: 13.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-address-1 { top: 81.0mm; right: 32.0mm; font-size: 12.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-address-2 { top: 86.5mm; right: 18.0mm; font-size: 12.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-leave-days { top: 88.5mm; right: 36.0mm; width: 12.0mm; text-align: center; font-size: 14.5px; font-weight: 800; }
+.document-page.mode-preprinted.lang-ar .group-dep { top: 96.5mm; width: 140mm; right: 0; left: auto; }
+.document-page.mode-preprinted.lang-ar .group-ret { top: 104.5mm; width: 140mm; right: 0; left: auto; }
+.document-page.mode-preprinted.lang-ar .cell-d1 { left: 77.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-ar .cell-d2 { left: 81.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-ar .cell-m1 { left: 87.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-ar .cell-m2 { left: 91.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-ar .cell-y1 { left: 97.5mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-ar .cell-y2 { left: 102.0mm; width: 4.5mm; text-align: center; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-ar .field-leave-address { top: 112.5mm; right: 42.0mm; font-size: 12.5px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-location { top: 134.5mm; right: 25.0mm; font-size: 13.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-date { top: 134.5mm; right: 68.0mm; font-size: 13.0px; font-weight: 700; }
+.document-page.mode-preprinted.lang-ar .field-signatory { top: 144.0mm; right: 68.0mm; font-size: 13.0px; }
+.document-page.mode-preprinted.lang-ar .rights-values .field-item { left: 68.0mm; width: 18.0mm; text-align: center; font-size: 14.0px; font-weight: 800; }
+.document-page.mode-preprinted.lang-ar .right-val-prev { top: 167.0mm; }
+.document-page.mode-preprinted.lang-ar .right-val-cur  { top: 173.5mm; }
+.document-page.mode-preprinted.lang-ar .right-val-tot  { top: 180.0mm; }
+.document-page.mode-preprinted.lang-ar .right-val-granted { top: 186.5mm; }
+.document-page.mode-preprinted.lang-ar .right-val-new { top: 194.5mm; font-size: 15.0px; font-weight: 900; }
+
 /* Modal form controls */
 .modal-form-grid {
   display: grid;
@@ -2216,6 +2303,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
     border-radius: 0 !important;
   }
   .document-page.mode-preprinted {
+    width: 140mm !important;
+    height: 220mm !important;
     background-image: none !important;
     background: transparent !important;
   }

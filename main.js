@@ -145,7 +145,7 @@ ipcMain.handle('clear-all-data', async () => {
 });
 
 // Print Document (Direct system printer)
-ipcMain.handle('print-document', async (event, { htmlContent, dataOnly = false }) => {
+ipcMain.handle('print-document', async (event, { htmlContent, dataOnly = false, pageSize }) => {
   try {
     const printWindow = new BrowserWindow({
       show: false,
@@ -159,12 +159,18 @@ ipcMain.handle('print-document', async (event, { htmlContent, dataOnly = false }
     await printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
 
     return new Promise((resolve) => {
-      printWindow.webContents.print({
+      const printOpts = {
         silent: false,
         printBackground: true,
-        pageSize: 'A4',
         margins: { marginType: 'none' }
-      }, (success, failureReason) => {
+      };
+
+      // Only override pageSize if explicitly supplied, otherwise Chromium honors CSS @page
+      if (pageSize) {
+        printOpts.pageSize = pageSize;
+      }
+
+      printWindow.webContents.print(printOpts, (success, failureReason) => {
         printWindow.close();
         if (success) {
           resolve({ success: true });
@@ -180,7 +186,7 @@ ipcMain.handle('print-document', async (event, { htmlContent, dataOnly = false }
 });
 
 // Save to PDF using printToPDF
-ipcMain.handle('save-pdf', async (event, { htmlContent, defaultName, dataOnly = false }) => {
+ipcMain.handle('save-pdf', async (event, { htmlContent, defaultName, dataOnly = false, pageSize }) => {
   try {
     const printWindow = new BrowserWindow({
       show: false,
@@ -193,11 +199,17 @@ ipcMain.handle('save-pdf', async (event, { htmlContent, defaultName, dataOnly = 
 
     await printWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
 
-    const pdfBuffer = await printWindow.webContents.printToPDF({
+    const pdfOpts = {
       printBackground: true,
-      pageSize: 'A4',
       margins: { marginType: 'none' }
-    });
+    };
+
+    // Only override pageSize if explicitly supplied, otherwise Chromium honors CSS @page
+    if (pageSize) {
+      pdfOpts.pageSize = pageSize;
+    }
+
+    const pdfBuffer = await printWindow.webContents.printToPDF(pdfOpts);
 
     printWindow.close();
 
