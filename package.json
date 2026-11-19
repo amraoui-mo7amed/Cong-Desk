@@ -1,7 +1,7 @@
 {
   "name": "congedesk",
   "productName": "CongéDesk",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Application Electron de gestion des congés et remplissage du formulaire CNAS GRH.22",
   "main": "main.js",
   "private": true,

@@ -486,11 +486,37 @@
                       <span data-i18n="calib_active_field_title">Détail Sélectionné</span>
                     </div>
 
-                    <div class="form-field" style="margin-bottom: 12px;">
-                      <label style="font-size: 11.5px; font-weight: 700; color: var(--text-dim);" data-i18n="calib_sel_field_lbl">Choisir le champ à décaler :</label>
-                      <select id="calib-field-select" class="input-ctrl" onchange="selectCalibField(this.value)">
-                        <!-- Populated dynamically -->
-                      </select>
+                    <!-- Custom Overflowed Field Dropdown -->
+                    <div class="form-field" style="margin-bottom: 12px; position: relative;">
+                      <label style="font-size: 11.5px; font-weight: 700; color: var(--text-dim); margin-bottom: 6px; display: block;" data-i18n="calib_sel_field_lbl">Choisir le champ à décaler :</label>
+                      <div class="custom-calib-field-dropdown" id="calib-custom-dropdown">
+                        <button type="button" class="custom-dropdown-trigger calib-field-trigger-btn" id="calib-field-trigger" onclick="toggleCalibFieldDropdown(event)">
+                          <div style="display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1;">
+                            <div class="calib-field-active-icon-box">
+                              <i id="calib-trigger-icon" class="ti ti-world"></i>
+                            </div>
+                            <div style="display: flex; flex-direction: column; min-width: 0; text-align: start;">
+                              <span id="calib-trigger-label" style="font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Tout le document (Global)</span>
+                              <span id="calib-trigger-category" style="font-size: 10.5px; color: var(--text-dim);">Général</span>
+                            </div>
+                          </div>
+                          <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="calib-trigger-offset-pill" id="calib-trigger-offset-pill">0, 0</span>
+                            <i class="ti ti-chevron-down calib-chevron" id="calib-field-chevron"></i>
+                          </div>
+                        </button>
+
+                        <!-- FLOATING OVERFLOWED MENU -->
+                        <div class="calib-field-overflow-menu" id="calib-field-overflow-menu" style="display: none;">
+                          <div class="calib-menu-search-wrapper">
+                            <i class="ti ti-search" style="color: var(--text-dim); font-size: 14px;"></i>
+                            <input type="text" id="calib-field-search-input" class="calib-menu-search-input" placeholder="Filtrer les détails et chiffres..." data-i18n-placeholder="calib_search_placeholder" oninput="filterCalibFieldMenuItems(this.value)" autocomplete="off">
+                          </div>
+                          <div class="calib-menu-scroll-container" id="calib-field-menu-container">
+                            <!-- Rendered dynamically -->
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
                     <div class="calib-active-field-bar">

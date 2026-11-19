@@ -162,6 +162,7 @@ const i18n = {
     calib_fields_summary: "Tous les Détails Imprimés",
     calib_btn_reset_all: "Tout Réinitialiser",
     calib_prev_watermark: "Fond Officiel",
+    calib_search_placeholder: "Filtrer les détails et chiffres...",
     calib_preview_hint: "Cliquez sur n'importe quel texte dans l'aperçu pour le sélectionner et le décaler en direct.",
     drawer_calc_title: "Jours de Congé Restants",
     drawer_calc_badge: "Calcul Automatique",
@@ -337,6 +338,7 @@ const i18n = {
     calib_fields_summary: "جميع تفاصيل السند المطبوعة",
     calib_btn_reset_all: "إعادة ضبط الكل",
     calib_prev_watermark: "الخلفية الرسمية",
+    calib_search_placeholder: "البحث عن حقل أو رقم...",
     calib_preview_hint: "انقر على أي نص داخل المعاينة الحية لتحديده وضبط موضعه بالمليمتر مباشرة.",
     drawer_calc_title: "أيام العطلة المتبقية",
     drawer_calc_badge: "حساب تلقائي",
@@ -1617,13 +1619,30 @@ function buildSheetHTML(data, isAr, overlayMode) {
   const tGrade = getFieldTransform(fo, 'grade');
   const tService = getFieldTransform(fo, 'service');
   const tAddress = getFieldTransform(fo, 'address');
+  const tAddress2 = getFieldTransform(fo, 'address_2');
   const tLeaveDays = getFieldTransform(fo, 'leave_days');
+
   const tDep = getFieldTransform(fo, 'dates_dep');
+  const tDepDay = getFieldTransform(fo, 'dep_day');
+  const tDepMonth = getFieldTransform(fo, 'dep_month');
+  const tDepYear = getFieldTransform(fo, 'dep_year');
+
   const tRet = getFieldTransform(fo, 'dates_ret');
+  const tRetDay = getFieldTransform(fo, 'ret_day');
+  const tRetMonth = getFieldTransform(fo, 'ret_month');
+  const tRetYear = getFieldTransform(fo, 'ret_year');
+
   const tLeaveAddr = getFieldTransform(fo, 'leave_address');
-  const tLocDate = getFieldTransform(fo, 'location_date');
+  const tLocation = getFieldTransform(fo, 'location');
+  const tDocDate = getFieldTransform(fo, 'doc_date');
   const tSignatory = getFieldTransform(fo, 'signatory');
+
   const tRights = getFieldTransform(fo, 'rights_table');
+  const tRightsPrev = getFieldTransform(fo, 'rights_prev');
+  const tRightsCur = getFieldTransform(fo, 'rights_cur');
+  const tRightsTot = getFieldTransform(fo, 'rights_tot');
+  const tRightsGranted = getFieldTransform(fo, 'rights_granted');
+  const tRightsNew = getFieldTransform(fo, 'rights_new');
 
   return `
     <div class="document-page ${langClass} ${modeClass}">
@@ -1639,48 +1658,60 @@ function buildSheetHTML(data, isAr, overlayMode) {
 
         <!-- Adresse -->
         <div class="field-item field-address-1" data-calib-field="address" style="${tAddress}">${escapeHtml(data.address_line_1 || '')}</div>
-        ${data.address_line_2 ? `<div class="field-item field-address-2" data-calib-field="address" style="${tAddress}">${escapeHtml(data.address_line_2)}</div>` : ''}
+        ${data.address_line_2 ? `<div class="field-item field-address-2" data-calib-field="address_2" style="${tAddress2}">${escapeHtml(data.address_line_2)}</div>` : ''}
 
         <!-- Bénéficie d'un congé de X jours -->
         <div class="field-item field-leave-days" data-calib-field="leave_days" style="${tLeaveDays}">${data.leave_days || ''}</div>
 
-        <!-- Date de départ (6 individual cells) -->
+        <!-- Date de départ (6 individual cells in JJ / MM / AA subgroups) -->
         <div class="date-group group-dep" data-calib-field="dates_dep" style="${tDep}">
-          <span class="cell cell-d1">${data.dep?.d1 || ''}</span>
-          <span class="cell cell-d2">${data.dep?.d2 || ''}</span>
-          <span class="cell cell-m1">${data.dep?.m1 || ''}</span>
-          <span class="cell cell-m2">${data.dep?.m2 || ''}</span>
-          <span class="cell cell-y1">${data.dep?.y1 || ''}</span>
-          <span class="cell cell-y2">${data.dep?.y2 || ''}</span>
+          <div class="date-subgroup sub-day" data-calib-field="dep_day" style="${tDepDay}">
+            <span class="cell cell-d1">${data.dep?.d1 || ''}</span>
+            <span class="cell cell-d2">${data.dep?.d2 || ''}</span>
+          </div>
+          <div class="date-subgroup sub-month" data-calib-field="dep_month" style="${tDepMonth}">
+            <span class="cell cell-m1">${data.dep?.m1 || ''}</span>
+            <span class="cell cell-m2">${data.dep?.m2 || ''}</span>
+          </div>
+          <div class="date-subgroup sub-year" data-calib-field="dep_year" style="${tDepYear}">
+            <span class="cell cell-y1">${data.dep?.y1 || ''}</span>
+            <span class="cell cell-y2">${data.dep?.y2 || ''}</span>
+          </div>
         </div>
 
-        <!-- Date de retour (6 individual cells) -->
+        <!-- Date de retour (6 individual cells in JJ / MM / AA subgroups) -->
         <div class="date-group group-ret" data-calib-field="dates_ret" style="${tRet}">
-          <span class="cell cell-d1">${data.ret?.d1 || ''}</span>
-          <span class="cell cell-d2">${data.ret?.d2 || ''}</span>
-          <span class="cell cell-m1">${data.ret?.m1 || ''}</span>
-          <span class="cell cell-m2">${data.ret?.m2 || ''}</span>
-          <span class="cell cell-y1">${data.ret?.y1 || ''}</span>
-          <span class="cell cell-y2">${data.ret?.y2 || ''}</span>
+          <div class="date-subgroup sub-day" data-calib-field="ret_day" style="${tRetDay}">
+            <span class="cell cell-d1">${data.ret?.d1 || ''}</span>
+            <span class="cell cell-d2">${data.ret?.d2 || ''}</span>
+          </div>
+          <div class="date-subgroup sub-month" data-calib-field="ret_month" style="${tRetMonth}">
+            <span class="cell cell-m1">${data.ret?.m1 || ''}</span>
+            <span class="cell cell-m2">${data.ret?.m2 || ''}</span>
+          </div>
+          <div class="date-subgroup sub-year" data-calib-field="ret_year" style="${tRetYear}">
+            <span class="cell cell-y1">${data.ret?.y1 || ''}</span>
+            <span class="cell cell-y2">${data.ret?.y2 || ''}</span>
+          </div>
         </div>
 
         <!-- Adresse durant le congé -->
         <div class="field-item field-leave-address" data-calib-field="leave_address" style="${tLeaveAddr}">${escapeHtml(data.leave_address || '')}</div>
 
         <!-- Fait à ... Le ... -->
-        <div class="field-item field-location" data-calib-field="location_date" style="${tLocDate}">${escapeHtml(data.location || '')}</div>
-        <div class="field-item field-date" data-calib-field="location_date" style="${tLocDate}">${escapeHtml(data.date || '')}</div>
+        <div class="field-item field-location" data-calib-field="location" style="${tLocation}">${escapeHtml(data.location || '')}</div>
+        <div class="field-item field-date" data-calib-field="doc_date" style="${tDocDate}">${escapeHtml(data.date || '')}</div>
 
         <!-- Le Directeur -->
         <div class="field-item field-signatory" data-calib-field="signatory" style="${tSignatory}">${escapeHtml(data.director || '')}</div>
 
         <!-- Detail des droits values -->
         <div class="rights-values" data-calib-field="rights_table" style="${tRights}">
-          <div class="field-item right-val-prev">${data.prev_balance ?? ''}</div>
-          <div class="field-item right-val-cur">${data.cur_entitlement ?? ''}</div>
-          <div class="field-item right-val-tot">${data.tot_entitlement ?? ''}</div>
-          <div class="field-item right-val-granted">${data.leave_granted ?? ''}</div>
-          <div class="field-item right-val-new">${data.new_balance ?? ''}</div>
+          <div class="field-item right-val-prev" data-calib-field="rights_prev" style="${tRightsPrev}">${data.prev_balance ?? ''}</div>
+          <div class="field-item right-val-cur" data-calib-field="rights_cur" style="${tRightsCur}">${data.cur_entitlement ?? ''}</div>
+          <div class="field-item right-val-tot" data-calib-field="rights_tot" style="${tRightsTot}">${data.tot_entitlement ?? ''}</div>
+          <div class="field-item right-val-granted" data-calib-field="rights_granted" style="${tRightsGranted}">${data.leave_granted ?? ''}</div>
+          <div class="field-item right-val-new" data-calib-field="rights_new" style="${tRightsNew}">${data.new_balance ?? ''}</div>
         </div>
       </div>
     </div>
@@ -2311,6 +2342,8 @@ function selectCalibFeedMode(modeId, source) {
 document.addEventListener('click', (e) => {
   const setDropdown = document.getElementById('set-calib-dropdown');
   const modalDropdown = document.getElementById('modal-calib-dropdown');
+  const calibCustomDropdown = document.getElementById('calib-custom-dropdown');
+
   if (setDropdown && !setDropdown.contains(e.target)) {
     const setMenu = document.getElementById('set-calib-menu');
     const setTrigger = document.getElementById('set-calib-trigger');
@@ -2322,6 +2355,9 @@ document.addEventListener('click', (e) => {
     const modalTrigger = document.getElementById('modal-calib-trigger');
     if (modalMenu) modalMenu.style.display = 'none';
     if (modalTrigger) modalTrigger.classList.remove('active');
+  }
+  if (calibCustomDropdown && !calibCustomDropdown.contains(e.target)) {
+    closeCalibFieldDropdown();
   }
 });
 
@@ -2413,18 +2449,44 @@ function printCalibrationTestPage() {
 
 // ================= CALIBRATION STUDIO CONTROLLER =================
 const CALIB_FIELDS_DEF = [
-  { key: 'global', icon: 'ti-world', label_fr: '🌐 Tout le document (Global)', label_ar: '🌐 كامل السند (إزاحة عامة)' },
-  { key: 'agent_name', icon: 'ti-user', label_fr: "Nom et prénom de l'agent", label_ar: 'الاسم واللقب' },
-  { key: 'grade', icon: 'ti-briefcase', label_fr: 'Grade ou fonction', label_ar: 'الرتبة أو الوظيفة' },
-  { key: 'service', icon: 'ti-building', label_fr: 'Structure ou service', label_ar: 'المصلحة أو الوكالة' },
-  { key: 'address', icon: 'ti-home', label_fr: 'Adresse personnelle', label_ar: 'العنوان الشخصي' },
-  { key: 'leave_days', icon: 'ti-calendar-event', label_fr: 'Nombre de jours accordés', label_ar: 'عدد الأيام الممنوحة' },
-  { key: 'dates_dep', icon: 'ti-calendar-share', label_fr: 'Date de départ', label_ar: 'تاريخ الخروج' },
-  { key: 'dates_ret', icon: 'ti-calendar-check', label_fr: 'Date de reprise', label_ar: 'تاريخ العودة' },
-  { key: 'leave_address', icon: 'ti-map-pin', label_fr: 'Adresse durant le congé', label_ar: 'العنوان أثناء العطلة' },
-  { key: 'location_date', icon: 'ti-calendar-time', label_fr: 'Lieu et date (Fait à... Le...)', label_ar: 'المكان والتاريخ (حرر بـ... في...)' },
-  { key: 'signatory', icon: 'ti-signature', label_fr: 'Signature du Directeur', label_ar: 'إمضاء وختم المدير' },
-  { key: 'rights_table', icon: 'ti-table', label_fr: 'Tableau des droits (5 lignes)', label_ar: 'جدول تفصيل الحقوق (الأرصدة)' }
+  // 1. Général
+  { key: 'global', category: 'general', cat_fr: 'Général', cat_ar: 'عام', icon: 'ti-world', label_fr: '🌐 Tout le document (Décalage global)', label_ar: '🌐 كامل السند (إزاحة عامة)' },
+  
+  // 2. Identité de l'agent
+  { key: 'agent_name', category: 'agent', cat_fr: 'Agent', cat_ar: 'الموظف', icon: 'ti-user', label_fr: "Nom et prénom de l'agent", label_ar: 'الاسم واللقب' },
+  { key: 'grade', category: 'agent', cat_fr: 'Agent', cat_ar: 'الموظف', icon: 'ti-briefcase', label_fr: 'Grade ou fonction', label_ar: 'الرتبة أو الوظيفة' },
+  { key: 'service', category: 'agent', cat_fr: 'Agent', cat_ar: 'الموظف', icon: 'ti-building', label_fr: 'Structure ou service', label_ar: 'المصلحة أو الوكالة' },
+  { key: 'address', category: 'agent', cat_fr: 'Agent', cat_ar: 'الموظف', icon: 'ti-home', label_fr: 'Adresse personnelle (Ligne 1)', label_ar: 'العنوان الشخصي (السطر 1)' },
+  { key: 'address_2', category: 'agent', cat_fr: 'Agent', cat_ar: 'الموظف', icon: 'ti-home-2', label_fr: 'Adresse personnelle (Ligne 2)', label_ar: 'العنوان الشخصي (السطر 2)' },
+
+  // 3. Durée & Adresse du Congé
+  { key: 'leave_days', category: 'leave', cat_fr: 'Congé', cat_ar: 'العطلة', icon: 'ti-calendar-event', label_fr: 'Nombre de jours accordés (Chiffre)', label_ar: 'عدد الأيام الممنوحة (رقم)' },
+  { key: 'leave_address', category: 'leave', cat_fr: 'Congé', cat_ar: 'العطلة', icon: 'ti-map-pin', label_fr: 'Adresse durant le congé', label_ar: 'العنوان أثناء العطلة' },
+
+  // 4. Date de départ
+  { key: 'dates_dep', category: 'dep_date', cat_fr: 'Date de Départ', cat_ar: 'تاريخ الخروج', icon: 'ti-calendar-share', label_fr: 'Date de départ (Groupe complet 6 cases)', label_ar: 'تاريخ الخروج (المجموعة كاملة)' },
+  { key: 'dep_day', category: 'dep_date', cat_fr: 'Date de Départ', cat_ar: 'تاريخ الخروج', icon: 'ti-calendar', label_fr: 'Départ — Jour (Cases JJ)', label_ar: 'تاريخ الخروج — اليوم (JJ)' },
+  { key: 'dep_month', category: 'dep_date', cat_fr: 'Date de Départ', cat_ar: 'تاريخ الخروج', icon: 'ti-calendar', label_fr: 'Départ — Mois (Cases MM)', label_ar: 'تاريخ الخروج — الشهر (MM)' },
+  { key: 'dep_year', category: 'dep_date', cat_fr: 'Date de Départ', cat_ar: 'تاريخ الخروج', icon: 'ti-calendar', label_fr: 'Départ — Année (Cases AA)', label_ar: 'تاريخ الخروج — السنة (AA)' },
+
+  // 5. Date de reprise
+  { key: 'dates_ret', category: 'ret_date', cat_fr: 'Date de Reprise', cat_ar: 'تاريخ العودة', icon: 'ti-calendar-check', label_fr: 'Date de reprise (Groupe complet 6 cases)', label_ar: 'تاريخ العودة (المجموعة كاملة)' },
+  { key: 'ret_day', category: 'ret_date', cat_fr: 'Date de Reprise', cat_ar: 'تاريخ العودة', icon: 'ti-calendar', label_fr: 'Reprise — Jour (Cases JJ)', label_ar: 'تاريخ العودة — اليوم (JJ)' },
+  { key: 'ret_month', category: 'ret_date', cat_fr: 'Date de Reprise', cat_ar: 'تاريخ العودة', icon: 'ti-calendar', label_fr: 'Reprise — Mois (Cases MM)', label_ar: 'تاريخ العودة — الشهر (MM)' },
+  { key: 'ret_year', category: 'ret_date', cat_fr: 'Date de Reprise', cat_ar: 'تاريخ العودة', icon: 'ti-calendar', label_fr: 'Reprise — Année (Cases AA)', label_ar: 'تاريخ العودة — السنة (AA)' },
+
+  // 6. Lieu & Date d'établissement + Signature
+  { key: 'location', category: 'sign', cat_fr: 'Signature & Lieu', cat_ar: 'المكان والتوقيع', icon: 'ti-building-community', label_fr: "Lieu d'établissement (Fait à...)", label_ar: 'مكان التحرير (حرر بـ...)' },
+  { key: 'doc_date', category: 'sign', cat_fr: 'Signature & Lieu', cat_ar: 'المكان والتوقيع', icon: 'ti-calendar-time', label_fr: "Date d'établissement (Le...)", label_ar: 'تاريخ التحرير (في...)' },
+  { key: 'signatory', category: 'sign', cat_fr: 'Signature & Lieu', cat_ar: 'المكان والتوقيع', icon: 'ti-signature', label_fr: 'Signature du Directeur', label_ar: 'إمضاء وختم المدير' },
+
+  // 7. Chiffres & Tableau des droits
+  { key: 'rights_table', category: 'rights', cat_fr: 'Tableau des Droits', cat_ar: 'جدول الأرصدة', icon: 'ti-table', label_fr: 'Tableau des droits (5 lignes complètes)', label_ar: 'جدول تفصيل الحقوق (الأرصدة ككل)' },
+  { key: 'rights_prev', category: 'rights', cat_fr: 'Tableau des Droits', cat_ar: 'جدول الأرصدة', icon: 'ti-number', label_fr: '1. Reliquat antérieur (N-1)', label_ar: '1. رصيد سابق (N-1)' },
+  { key: 'rights_cur', category: 'rights', cat_fr: 'Tableau des Droits', cat_ar: 'جدول الأرصدة', icon: 'ti-number', label_fr: '2. Droit annuel (N)', label_ar: '2. استحقاق السنة الحالية (N)' },
+  { key: 'rights_tot', category: 'rights', cat_fr: 'Tableau des Droits', cat_ar: 'جدول الأرصدة', icon: 'ti-number', label_fr: '3. Total des droits acquis', label_ar: '3. مجموع الحقوق' },
+  { key: 'rights_granted', category: 'rights', cat_fr: 'Tableau des Droits', cat_ar: 'جدول الأرصدة', icon: 'ti-number', label_fr: '4. Nombre de jours accordés', label_ar: '4. العطلة الممنوحة' },
+  { key: 'rights_new', category: 'rights', cat_fr: 'Tableau des Droits', cat_ar: 'جدول الأرصدة', icon: 'ti-number', label_fr: '5. Nouveau solde restant', label_ar: '5. الرصيد المتبقي الجديد' }
 ];
 
 const SAMPLE_CALIB_DATA_FR = {
@@ -2432,7 +2494,7 @@ const SAMPLE_CALIB_DATA_FR = {
   grade: 'Chef de Département Informatique',
   service: 'Direction Générale - DSI',
   address_line_1: '12, Rue des Frères Bouadou, Bir Mourad Raïs',
-  address_line_2: '',
+  address_line_2: 'Bâtiment B, Alger',
   leave_days: 15,
   dep_date: '2026-07-01',
   ret_date: '2026-07-16',
@@ -2454,7 +2516,7 @@ const SAMPLE_CALIB_DATA_AR = {
   grade: 'رئيس قسم الإعلام الآلي',
   service: 'المديرية العامة - مديرية الأنظمة',
   address_line_1: '12، نهج الإخوة بوعدو، بئر مراد رايس',
-  address_line_2: '',
+  address_line_2: 'عمارة ب، الجزائر العاصمة',
   leave_days: 15,
   dep_date: '2026-07-01',
   ret_date: '2026-07-16',
@@ -2475,17 +2537,120 @@ let calibActiveFieldKey = 'global';
 let calibPreviewLang = 'fr';
 let calibPreviewShowBg = true;
 
+function toggleCalibFieldDropdown(event) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById('calib-field-overflow-menu');
+  const trigger = document.getElementById('calib-field-trigger');
+  if (!menu) return;
+
+  const isVisible = (menu.style.display === 'block');
+  closeAllCalibDropdowns();
+
+  if (!isVisible) {
+    menu.style.display = 'block';
+    if (trigger) trigger.classList.add('active');
+    const searchInput = document.getElementById('calib-field-search-input');
+    if (searchInput) {
+      searchInput.value = '';
+      filterCalibFieldMenuItems('');
+      setTimeout(() => searchInput.focus(), 60);
+    }
+  } else {
+    menu.style.display = 'none';
+    if (trigger) trigger.classList.remove('active');
+  }
+}
+
+function closeCalibFieldDropdown() {
+  const menu = document.getElementById('calib-field-overflow-menu');
+  const trigger = document.getElementById('calib-field-trigger');
+  if (menu) menu.style.display = 'none';
+  if (trigger) trigger.classList.remove('active');
+}
+
+function filterCalibFieldMenuItems(query) {
+  const container = document.getElementById('calib-field-menu-container');
+  if (!container) return;
+  const q = (query || '').toLowerCase().trim();
+  const isAr = (currentAppLang === 'ar');
+  const s = getPrintSettings();
+  const fo = s.field_offsets || {};
+
+  const categories = [
+    { id: 'general', title: isAr ? '🌐 عام' : '🌐 Général' },
+    { id: 'agent', title: isAr ? '👤 هوية الموظف' : "👤 Identité de l'agent" },
+    { id: 'leave', title: isAr ? '🏖️ تفاصيل العطلة' : '🏖️ Détails du Congé' },
+    { id: 'dep_date', title: isAr ? '📅 تاريخ الخروج' : '📅 Date de Départ' },
+    { id: 'ret_date', title: isAr ? '📅 تاريخ العودة' : '📅 Date de Reprise' },
+    { id: 'sign', title: isAr ? '✍️ التوقيع والمكان' : '✍️ Lieu & Signature' },
+    { id: 'rights', title: isAr ? '📊 جدول الأرصدة والحقوق' : '📊 Tableau des Droits' }
+  ];
+
+  let html = '';
+  categories.forEach(cat => {
+    const fieldsInCat = CALIB_FIELDS_DEF.filter(f => f.category === cat.id && (
+      !q ||
+      f.label_fr.toLowerCase().includes(q) ||
+      f.label_ar.toLowerCase().includes(q) ||
+      f.cat_fr.toLowerCase().includes(q) ||
+      f.cat_ar.toLowerCase().includes(q)
+    ));
+
+    if (fieldsInCat.length > 0) {
+      html += `<div class="calib-category-header">${cat.title}</div>`;
+      fieldsInCat.forEach(f => {
+        const isActive = (f.key === calibActiveFieldKey);
+        const label = isAr ? f.label_ar : f.label_fr;
+        let offX = 0;
+        let offY = 0;
+        if (f.key === 'global') {
+          offX = parseFloat(s.offset_x) || 0;
+          offY = parseFloat(s.offset_y) || 0;
+        } else if (fo[f.key]) {
+          offX = parseFloat(fo[f.key].x) || 0;
+          offY = parseFloat(fo[f.key].y) || 0;
+        }
+        const hasOffset = (offX !== 0 || offY !== 0);
+        const offsetTxt = hasOffset ? `X:${offX > 0 ? '+' : ''}${offX} | Y:${offY > 0 ? '+' : ''}${offY}` : '0, 0';
+
+        html += `
+          <div class="calib-menu-item-row ${isActive ? 'active' : ''}" onclick="selectCalibField('${f.key}'); closeCalibFieldDropdown();">
+            <div class="calib-menu-item-info">
+              <i class="ti ${f.icon} calib-menu-item-icon"></i>
+              <span class="calib-menu-item-text">${escapeHtml(label)}</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span class="calib-trigger-offset-pill ${hasOffset ? 'badge-modified' : ''}">${offsetTxt}</span>
+              ${isActive ? '<i class="ti ti-check" style="color: var(--primary); font-size: 15px;"></i>' : ''}
+            </div>
+          </div>
+        `;
+      });
+    }
+  });
+
+  if (!html) {
+    html = `<div style="padding: 16px; text-align: center; color: var(--text-dim); font-size: 12px;">${isAr ? 'لا توجد نتائج مطابقة' : 'Aucun résultat correspondant'}</div>`;
+  }
+
+  container.innerHTML = html;
+}
+
 function selectCalibField(fieldKey) {
   calibActiveFieldKey = fieldKey || 'global';
   const def = CALIB_FIELDS_DEF.find(f => f.key === calibActiveFieldKey) || CALIB_FIELDS_DEF[0];
   const isAr = (currentAppLang === 'ar');
   const label = isAr ? def.label_ar : def.label_fr;
+  const cat = isAr ? def.cat_ar : def.cat_fr;
 
-  // 1. Update selector dropdown
-  const selectEl = document.getElementById('calib-field-select');
-  if (selectEl && selectEl.value !== calibActiveFieldKey) {
-    selectEl.value = calibActiveFieldKey;
-  }
+  // 1. Update custom dropdown trigger
+  const trigIcon = document.getElementById('calib-trigger-icon');
+  const trigLabel = document.getElementById('calib-trigger-label');
+  const trigCat = document.getElementById('calib-trigger-category');
+  const trigPill = document.getElementById('calib-trigger-offset-pill');
+  if (trigIcon) trigIcon.className = `ti ${def.icon}`;
+  if (trigLabel) trigLabel.textContent = label;
+  if (trigCat) trigCat.textContent = cat;
 
   // 2. Update active badge
   const iconEl = document.getElementById('calib-active-icon');
@@ -2503,6 +2668,12 @@ function selectCalibField(fieldKey) {
   } else if (s.field_offsets && s.field_offsets[calibActiveFieldKey]) {
     valX = parseFloat(s.field_offsets[calibActiveFieldKey].x) || 0;
     valY = parseFloat(s.field_offsets[calibActiveFieldKey].y) || 0;
+  }
+
+  if (trigPill) {
+    const hasOffset = (valX !== 0 || valY !== 0);
+    trigPill.textContent = hasOffset ? `X:${valX > 0 ? '+' : ''}${valX} | Y:${valY > 0 ? '+' : ''}${valY}` : '0, 0';
+    trigPill.classList.toggle('badge-modified', hasOffset);
   }
 
   const inputX = document.getElementById('calib-active-input-x');
@@ -2589,7 +2760,7 @@ function resetActiveFieldOffset() {
 function resetAllFieldOffsets() {
   const isAr = (currentAppLang === 'ar');
   const confirmMsg = isAr 
-    ? 'هل أنت متأكد من إعادة ضبط جميع إزاحات الحقول وإعادتها إلى الصفر؟'
+    ? 'هل أنت متأكد من إعادة ضبط جميع إزاحات الحقول والأرقام وإعادتها إلى الصفر؟'
     : 'Êtes-vous sûr de vouloir réinitialiser tous les décalages à zéro ?';
   if (!confirm(confirmMsg)) return;
 
@@ -2665,19 +2836,14 @@ function renderCalibStudioPreview() {
   });
 }
 
-function updateCalibStudioUI(rebuildSelect = true) {
+function updateCalibStudioUI(rebuildMenu = true) {
   const isAr = (currentAppLang === 'ar');
   const s = getPrintSettings();
   const fo = s.field_offsets || {};
 
-  // 1. Rebuild select dropdown if requested
-  const selectEl = document.getElementById('calib-field-select');
-  if (selectEl && rebuildSelect) {
-    selectEl.innerHTML = CALIB_FIELDS_DEF.map(f => {
-      const label = isAr ? f.label_ar : f.label_fr;
-      return `<option value="${f.key}">${escapeHtml(label)}</option>`;
-    }).join('');
-    selectEl.value = calibActiveFieldKey;
+  // 1. Rebuild dropdown menu items
+  if (rebuildMenu) {
+    filterCalibFieldMenuItems('');
   }
 
   // 2. Quick list of all fields
@@ -2710,28 +2876,8 @@ function updateCalibStudioUI(rebuildSelect = true) {
     }).join('');
   }
 
-  // 3. Update inputs for active field
-  const def = CALIB_FIELDS_DEF.find(f => f.key === calibActiveFieldKey) || CALIB_FIELDS_DEF[0];
-  const activeLabel = isAr ? def.label_ar : def.label_fr;
-  const iconEl = document.getElementById('calib-active-icon');
-  const nameEl = document.getElementById('calib-active-name');
-  if (iconEl) iconEl.className = `ti ${def.icon}`;
-  if (nameEl) nameEl.textContent = activeLabel;
-
-  let valX = 0;
-  let valY = 0;
-  if (calibActiveFieldKey === 'global') {
-    valX = parseFloat(s.offset_x) || 0;
-    valY = parseFloat(s.offset_y) || 0;
-  } else if (fo[calibActiveFieldKey]) {
-    valX = parseFloat(fo[calibActiveFieldKey].x) || 0;
-    valY = parseFloat(fo[calibActiveFieldKey].y) || 0;
-  }
-
-  const inputX = document.getElementById('calib-active-input-x');
-  const inputY = document.getElementById('calib-active-input-y');
-  if (inputX) inputX.value = valX;
-  if (inputY) inputY.value = valY;
+  // 3. Update active item details
+  selectCalibField(calibActiveFieldKey);
 
   // 4. Update preview canvas
   renderCalibStudioPreview();

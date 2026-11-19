@@ -3958,3 +3958,214 @@ input[type="range"]::-webkit-slider-thumb:hover {
   justify-content: center;
   gap: 5px;
 }
+
+/* Custom Overflowed Field Dropdown */
+.custom-calib-field-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.calib-field-trigger-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-card, #ffffff);
+  border: 1px solid var(--border, #cbd5e1);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--text-main);
+  text-align: start;
+}
+
+.calib-field-trigger-btn:hover {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.calib-field-trigger-btn.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.calib-field-active-icon-box {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.calib-trigger-offset-pill {
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(100, 116, 139, 0.12);
+  color: var(--text-dim);
+  direction: ltr;
+  unicode-bidi: isolate;
+  border: 1px solid rgba(100, 116, 139, 0.2);
+}
+
+.calib-trigger-offset-pill.badge-modified {
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--primary);
+  border-color: rgba(37, 99, 235, 0.35);
+}
+
+.calib-field-overflow-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  z-index: 99999;
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22), 0 4px 14px rgba(15, 23, 42, 0.1);
+  overflow: hidden;
+  max-height: 380px;
+  display: flex;
+  flex-direction: column;
+}
+
+[data-theme="dark"] .calib-field-overflow-menu {
+  background: #0f172a;
+  border-color: rgba(51, 65, 85, 0.95);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.calib-menu-search-wrapper {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.02);
+  flex-shrink: 0;
+}
+
+[data-theme="dark"] .calib-menu-search-wrapper {
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom-color: rgba(51, 65, 85, 0.65);
+}
+
+.calib-menu-search-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  color: var(--text-main);
+  outline: none;
+  font-family: inherit;
+}
+
+.calib-menu-scroll-container {
+  overflow-y: auto;
+  max-height: 320px;
+  padding: 4px 0;
+}
+
+.calib-category-header {
+  padding: 6px 14px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  background: rgba(100, 116, 139, 0.06);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .calib-category-header {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.calib-menu-item-row {
+  padding: 9px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.4);
+}
+
+.calib-menu-item-row:last-child {
+  border-bottom: none;
+}
+
+[data-theme="dark"] .calib-menu-item-row {
+  border-bottom-color: rgba(51, 65, 85, 0.4);
+}
+
+.calib-menu-item-row:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.calib-menu-item-row.active {
+  background: rgba(37, 99, 235, 0.12);
+  border-left: 3px solid var(--primary);
+}
+
+[dir="rtl"] .calib-menu-item-row.active {
+  border-left: none;
+  border-right: 3px solid var(--primary);
+}
+
+.calib-menu-item-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.calib-menu-item-icon {
+  font-size: 16px;
+  color: var(--primary);
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.calib-menu-item-text {
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Date subgroups in preview */
+.date-subgroup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.calib-preview-canvas .date-subgroup {
+  pointer-events: none !important;
+}
+
+.calib-preview-canvas .date-subgroup .cell {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.calib-preview-canvas .date-subgroup.selected-field .cell {
+  outline: 2px solid #2563eb !important;
+  background: rgba(37, 99, 235, 0.22) !important;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
+}
