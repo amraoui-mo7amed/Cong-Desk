@@ -421,8 +421,8 @@
               Ajustement millimétrique pour formulaires pré-imprimés CNAS GRH.22
             </p>
 
+            <!-- SECTION 1: Paper Feed Mode Selection & Cards -->
             <div class="calib-layout-row">
-              <!-- COLUMN 1: Printing Settings Controls -->
               <div class="calib-settings-col">
                 <div class="form-field">
                   <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
@@ -441,56 +441,141 @@
                   </small>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
-                  <div class="form-field">
-                    <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
-                    <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
-                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', -1, true)">-1</button>
-                      <input type="number" step="0.5" id="set-calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('x')">
-                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', 1, true)">+1</button>
-                    </div>
-                    <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
-                      (- Gauche / + Droite)
-                    </small>
-                  </div>
-
-                  <div class="form-field">
-                    <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
-                    <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
-                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', -1, true)">-1</button>
-                      <input type="number" step="0.5" id="set-calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('y')">
-                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', 1, true)">+1</button>
-                    </div>
-                    <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
-                      (- Haut / + Bas)
-                    </small>
-                  </div>
-                </div>
-
                 <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-md); padding: 10px 12px; font-size: 11.5px; line-height: 1.45; color: var(--text-muted);">
                   <i class="ti ti-info-circle" style="color: var(--primary); margin-right: 4px;"></i>
                   <span data-i18n="calib_test_tip">Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.</span>
                 </div>
+              </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
-                  <div style="display: flex; gap: 8px;">
-                    <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
-                      <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
-                    </button>
-                    <button type="button" class="btn btn-secondary" onclick="resetCalibrationOffsets(true)">
-                      <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset">Réinitialiser (0, 0)</span>
-                    </button>
-                  </div>
+              <div class="calib-cards-col">
+                <label style="font-weight: 700; margin-bottom: 2px; font-size: 13px;" data-i18n="calib_lbl_modes_help">Détails & Recommandations des Modes</label>
+                <div class="calib-cards-grid" id="set-calib-cards-grid"></div>
+              </div>
+            </div>
+
+            <!-- SECTION 2: Interactive Calibration Studio (Controls + Live Preview) -->
+            <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--border-color);">
+              <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div>
+                  <h4 style="font-size: 14.5px; font-weight: 800; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+                    <i class="ti ti-adjustments-alt" style="color: var(--primary);"></i>
+                    <span data-i18n="calib_studio_heading">Ajustement Millimétrique des Détails & Prévisualisation en Direct</span>
+                  </h4>
+                  <span style="font-size: 12px; color: var(--text-dim);" data-i18n="calib_studio_sub">
+                    Sélectionnez un champ ou cliquez directement dessus dans l'aperçu pour modifier son décalage X et Y
+                  </span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
+                    <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
+                  </button>
                   <button type="button" class="btn btn-settings-primary" onclick="saveSettingsTabCalibration()">
                     <i class="ti ti-check"></i> <span data-i18n="btn_save">Enregistrer</span>
                   </button>
                 </div>
               </div>
 
-              <!-- COLUMN 2: Explanatory Cards (Stacked above each other) -->
-              <div class="calib-cards-col">
-                <label style="font-weight: 700; margin-bottom: 2px; font-size: 13px;" data-i18n="calib_lbl_modes_help">Détails & Recommandations des Modes</label>
-                <div class="calib-cards-grid" id="set-calib-cards-grid"></div>
+              <!-- SPLIT SCREEN -->
+              <div class="calib-studio-split">
+                <!-- LEFT CONTROLS -->
+                <div class="calib-studio-controls">
+                  <!-- Active Field Editor Card -->
+                  <div class="studio-card active-field-card">
+                    <div class="studio-card-header">
+                      <i class="ti ti-target"></i>
+                      <span data-i18n="calib_active_field_title">Détail Sélectionné</span>
+                    </div>
+
+                    <div class="form-field" style="margin-bottom: 12px;">
+                      <label style="font-size: 11.5px; font-weight: 700; color: var(--text-dim);" data-i18n="calib_sel_field_lbl">Choisir le champ à décaler :</label>
+                      <select id="calib-field-select" class="input-ctrl" onchange="selectCalibField(this.value)">
+                        <!-- Populated dynamically -->
+                      </select>
+                    </div>
+
+                    <div class="calib-active-field-bar">
+                      <div class="calib-active-field-badge">
+                        <i id="calib-active-icon" class="ti ti-world"></i>
+                        <span id="calib-active-name">Tout le document (Global)</span>
+                      </div>
+                      <button type="button" class="btn btn-secondary" style="padding: 4px 10px; font-size: 11px; font-weight: 700;" onclick="resetActiveFieldOffset()" title="Réinitialiser ce champ">
+                        <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset_field">Zéro (0, 0)</span>
+                      </button>
+                    </div>
+
+                    <div class="calib-axis-controls">
+                      <!-- X Axis -->
+                      <div class="calib-axis-row">
+                        <span class="calib-axis-lbl"><i class="ti ti-arrows-horizontal"></i> <span data-i18n="calib_lbl_axis_x">Axe X (mm) :</span></span>
+                        <div class="nudge-btn-group" dir="ltr">
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('x', -1)">-1</button>
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('x', -0.5)">-0.5</button>
+                          <input type="number" step="0.5" id="calib-active-input-x" class="nudge-input" value="0" onchange="onActiveFieldInputChange('x', this.value)">
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('x', 0.5)">+0.5</button>
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('x', 1)">+1</button>
+                        </div>
+                      </div>
+
+                      <!-- Y Axis -->
+                      <div class="calib-axis-row">
+                        <span class="calib-axis-lbl"><i class="ti ti-arrows-vertical"></i> <span data-i18n="calib_lbl_axis_y">Axe Y (mm) :</span></span>
+                        <div class="nudge-btn-group" dir="ltr">
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('y', -1)">-1</button>
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('y', -0.5)">-0.5</button>
+                          <input type="number" step="0.5" id="calib-active-input-y" class="nudge-input" value="0" onchange="onActiveFieldInputChange('y', this.value)">
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('y', 0.5)">+0.5</button>
+                          <button type="button" class="btn-nudge" onclick="nudgeActiveField('y', 1)">+1</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Summary of all fields -->
+                  <div class="studio-card fields-summary-card">
+                    <div class="studio-card-header" style="justify-content: space-between; margin-bottom: 8px;">
+                      <div style="display: flex; align-items: center; gap: 8px;">
+                        <i class="ti ti-list-check"></i>
+                        <span data-i18n="calib_fields_summary">Tous les Détails Imprimés</span>
+                      </div>
+                      <button type="button" class="btn btn-secondary" style="padding: 3px 8px; font-size: 11px; font-weight: 700;" onclick="resetAllFieldOffsets()" title="Tout réinitialiser à 0">
+                        <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset_all">Tout Réinitialiser</span>
+                      </button>
+                    </div>
+                    <div class="calib-fields-scroll-list" id="calib-fields-quick-list">
+                      <!-- Populated dynamically -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- RIGHT PREVIEW CANVAS -->
+                <div class="calib-studio-preview">
+                  <div class="calib-preview-toolbar">
+                    <div class="preview-toolbar-group">
+                      <button type="button" class="toolbar-pill-btn active" id="btn-calib-prev-lang-fr" onclick="setCalibPreviewLang('fr')">FR (Français)</button>
+                      <button type="button" class="toolbar-pill-btn" id="btn-calib-prev-lang-ar" onclick="setCalibPreviewLang('ar')">AR (العربية)</button>
+                    </div>
+
+                    <div class="preview-toolbar-group">
+                      <button type="button" class="toolbar-pill-btn active" id="btn-calib-prev-bg" onclick="toggleCalibPreviewBg()" title="Afficher/Masquer le formulaire officiel en arrière-plan">
+                        <i class="ti ti-photo"></i> <span data-i18n="calib_prev_watermark">Fond Officiel</span>
+                      </button>
+                    </div>
+
+                    <div class="preview-toolbar-group">
+                      <span class="preview-scale-tag">140 × 220 mm</span>
+                    </div>
+                  </div>
+
+                  <div class="calib-preview-viewport" id="calib-preview-viewport">
+                    <div class="calib-preview-canvas" id="calib-preview-canvas">
+                      <!-- Rendered sheet -->
+                    </div>
+                  </div>
+
+                  <div class="calib-preview-hint">
+                    <i class="ti ti-hand-click"></i> <span data-i18n="calib_preview_hint">Cliquez sur n'importe quel texte dans l'aperçu pour le sélectionner et le décaler en direct.</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

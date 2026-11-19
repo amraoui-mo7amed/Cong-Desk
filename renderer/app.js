@@ -152,6 +152,17 @@ const i18n = {
     calib_btn_test: "Imprimer Feuille Test",
     calib_btn_reset: "Réinitialiser (0, 0)",
     calib_lbl_modes_help: "Détails & Recommandations des Modes",
+    calib_studio_heading: "Ajustement Millimétrique des Détails & Prévisualisation en Direct",
+    calib_studio_sub: "Sélectionnez un champ ou cliquez directement dessus dans l'aperçu pour modifier son décalage X et Y",
+    calib_active_field_title: "Détail Sélectionné",
+    calib_sel_field_lbl: "Choisir le champ à décaler :",
+    calib_btn_reset_field: "Zéro (0, 0)",
+    calib_lbl_axis_x: "Axe X (mm) :",
+    calib_lbl_axis_y: "Axe Y (mm) :",
+    calib_fields_summary: "Tous les Détails Imprimés",
+    calib_btn_reset_all: "Tout Réinitialiser",
+    calib_prev_watermark: "Fond Officiel",
+    calib_preview_hint: "Cliquez sur n'importe quel texte dans l'aperçu pour le sélectionner et le décaler en direct.",
     drawer_calc_title: "Jours de Congé Restants",
     drawer_calc_badge: "Calcul Automatique",
     drawer_stat_n1: "Reliquat N-1",
@@ -316,6 +327,17 @@ const i18n = {
     calib_btn_test: "طباعة ورقة اختبار",
     calib_btn_reset: "إعادة ضبط (0, 0)",
     calib_lbl_modes_help: "تفاصيل وتوجيهات أوضاع التغذية",
+    calib_studio_heading: "الضبط الدقيق لتفاصيل الطباعة بالمليمتر مع المعاينة الحية",
+    calib_studio_sub: "حدد الحقل أو انقر عليه مباشرة في المعاينة لتعديل إزاحته الأفقية والعمودية",
+    calib_active_field_title: "الحقل المحدد حالياً",
+    calib_sel_field_lbl: "اختر الحقل المراد إزاحته:",
+    calib_btn_reset_field: "تصفير (0, 0)",
+    calib_lbl_axis_x: "المحور X (مم):",
+    calib_lbl_axis_y: "المحور Y (مم):",
+    calib_fields_summary: "جميع تفاصيل السند المطبوعة",
+    calib_btn_reset_all: "إعادة ضبط الكل",
+    calib_prev_watermark: "الخلفية الرسمية",
+    calib_preview_hint: "انقر على أي نص داخل المعاينة الحية لتحديده وضبط موضعه بالمليمتر مباشرة.",
     drawer_calc_title: "أيام العطلة المتبقية",
     drawer_calc_badge: "حساب تلقائي",
     drawer_stat_n1: "متبقي N-1",
@@ -393,6 +415,9 @@ function applyLanguage(lang) {
   }
 
   renderCalibDropdownAndCards();
+  if (typeof updateCalibStudioUI === 'function') {
+    updateCalibStudioUI();
+  }
 
   filterAndRenderDirectors();
   if (currentView === 'home') updateHomeDashboard();
@@ -598,6 +623,9 @@ function switchSettingsTab(tab) {
     if (xSet) xSet.value = s.offset_x;
     if (ySet) ySet.value = s.offset_y;
     renderCalibDropdownAndCards();
+  if (typeof updateCalibStudioUI === 'function') {
+    updateCalibStudioUI();
+  }
   }
 }
 
@@ -1568,6 +1596,14 @@ function renderDocumentSheet() {
   }
 }
 
+function getFieldTransform(fieldOffsets, fieldKey) {
+  if (!fieldOffsets || !fieldOffsets[fieldKey]) return '';
+  const x = parseFloat(fieldOffsets[fieldKey].x) || 0;
+  const y = parseFloat(fieldOffsets[fieldKey].y) || 0;
+  if (x === 0 && y === 0) return '';
+  return `transform: translate(${x}mm, ${y}mm);`;
+}
+
 function buildSheetHTML(data, isAr, overlayMode) {
   const langClass = isAr ? 'lang-ar' : 'lang-fr';
   const modeClass = overlayMode ? 'mode-preprinted' : 'mode-full';
@@ -1576,27 +1612,40 @@ function buildSheetHTML(data, isAr, overlayMode) {
   const offsetY = parseFloat(printSettings.offset_y) || 0;
   const transformStyle = overlayMode ? `transform: translate(${offsetX}mm, ${offsetY}mm);` : '';
 
+  const fo = printSettings.field_offsets || {};
+  const tName = getFieldTransform(fo, 'agent_name');
+  const tGrade = getFieldTransform(fo, 'grade');
+  const tService = getFieldTransform(fo, 'service');
+  const tAddress = getFieldTransform(fo, 'address');
+  const tLeaveDays = getFieldTransform(fo, 'leave_days');
+  const tDep = getFieldTransform(fo, 'dates_dep');
+  const tRet = getFieldTransform(fo, 'dates_ret');
+  const tLeaveAddr = getFieldTransform(fo, 'leave_address');
+  const tLocDate = getFieldTransform(fo, 'location_date');
+  const tSignatory = getFieldTransform(fo, 'signatory');
+  const tRights = getFieldTransform(fo, 'rights_table');
+
   return `
     <div class="document-page ${langClass} ${modeClass}">
       <div class="data-layer" style="${transformStyle}">
         <!-- Nom et prénom de l'agent -->
-        <div class="field-item field-agent-name">${escapeHtml(data.agent_name || '')}</div>
+        <div class="field-item field-agent-name" data-calib-field="agent_name" style="${tName}">${escapeHtml(data.agent_name || '')}</div>
 
         <!-- Grade ou fonction -->
-        <div class="field-item field-grade">${escapeHtml(data.grade || '')}</div>
+        <div class="field-item field-grade" data-calib-field="grade" style="${tGrade}">${escapeHtml(data.grade || '')}</div>
 
         <!-- Service -->
-        <div class="field-item field-service">${escapeHtml(data.service || '')}</div>
+        <div class="field-item field-service" data-calib-field="service" style="${tService}">${escapeHtml(data.service || '')}</div>
 
         <!-- Adresse -->
-        <div class="field-item field-address-1">${escapeHtml(data.address_line_1 || '')}</div>
-        ${data.address_line_2 ? `<div class="field-item field-address-2">${escapeHtml(data.address_line_2)}</div>` : ''}
+        <div class="field-item field-address-1" data-calib-field="address" style="${tAddress}">${escapeHtml(data.address_line_1 || '')}</div>
+        ${data.address_line_2 ? `<div class="field-item field-address-2" data-calib-field="address" style="${tAddress}">${escapeHtml(data.address_line_2)}</div>` : ''}
 
         <!-- Bénéficie d'un congé de X jours -->
-        <div class="field-item field-leave-days">${data.leave_days || ''}</div>
+        <div class="field-item field-leave-days" data-calib-field="leave_days" style="${tLeaveDays}">${data.leave_days || ''}</div>
 
         <!-- Date de départ (6 individual cells) -->
-        <div class="date-group group-dep">
+        <div class="date-group group-dep" data-calib-field="dates_dep" style="${tDep}">
           <span class="cell cell-d1">${data.dep?.d1 || ''}</span>
           <span class="cell cell-d2">${data.dep?.d2 || ''}</span>
           <span class="cell cell-m1">${data.dep?.m1 || ''}</span>
@@ -1606,7 +1655,7 @@ function buildSheetHTML(data, isAr, overlayMode) {
         </div>
 
         <!-- Date de retour (6 individual cells) -->
-        <div class="date-group group-ret">
+        <div class="date-group group-ret" data-calib-field="dates_ret" style="${tRet}">
           <span class="cell cell-d1">${data.ret?.d1 || ''}</span>
           <span class="cell cell-d2">${data.ret?.d2 || ''}</span>
           <span class="cell cell-m1">${data.ret?.m1 || ''}</span>
@@ -1616,17 +1665,17 @@ function buildSheetHTML(data, isAr, overlayMode) {
         </div>
 
         <!-- Adresse durant le congé -->
-        <div class="field-item field-leave-address">${escapeHtml(data.leave_address || '')}</div>
+        <div class="field-item field-leave-address" data-calib-field="leave_address" style="${tLeaveAddr}">${escapeHtml(data.leave_address || '')}</div>
 
         <!-- Fait à ... Le ... -->
-        <div class="field-item field-location">${escapeHtml(data.location || '')}</div>
-        <div class="field-item field-date">${escapeHtml(data.date || '')}</div>
+        <div class="field-item field-location" data-calib-field="location_date" style="${tLocDate}">${escapeHtml(data.location || '')}</div>
+        <div class="field-item field-date" data-calib-field="location_date" style="${tLocDate}">${escapeHtml(data.date || '')}</div>
 
         <!-- Le Directeur -->
-        <div class="field-item field-signatory">${escapeHtml(data.director || '')}</div>
+        <div class="field-item field-signatory" data-calib-field="signatory" style="${tSignatory}">${escapeHtml(data.director || '')}</div>
 
         <!-- Detail des droits values -->
-        <div class="rights-values">
+        <div class="rights-values" data-calib-field="rights_table" style="${tRights}">
           <div class="field-item right-val-prev">${data.prev_balance ?? ''}</div>
           <div class="field-item right-val-cur">${data.cur_entitlement ?? ''}</div>
           <div class="field-item right-val-tot">${data.tot_entitlement ?? ''}</div>
@@ -2069,7 +2118,8 @@ function generateTestPageHTML() {
 const DEFAULT_PRINT_SETTINGS = {
   paper_feed: 'official_140x220',
   offset_x: 0,
-  offset_y: 0
+  offset_y: 0,
+  field_offsets: {}
 };
 
 const CALIB_FEED_MODES = [
@@ -2123,9 +2173,16 @@ const CALIB_FEED_MODES = [
 function getPrintSettings() {
   try {
     const raw = localStorage.getItem('congedesk_print_settings');
-    if (raw) return { ...DEFAULT_PRINT_SETTINGS, ...JSON.parse(raw) };
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        ...DEFAULT_PRINT_SETTINGS,
+        ...parsed,
+        field_offsets: parsed.field_offsets || {}
+      };
+    }
   } catch (e) {}
-  return { ...DEFAULT_PRINT_SETTINGS };
+  return { ...DEFAULT_PRINT_SETTINGS, field_offsets: {} };
 }
 
 function savePrintSettings(settings) {
@@ -2244,6 +2301,9 @@ function selectCalibFeedMode(modeId, source) {
   savePrintSettings(s);
   closeAllCalibDropdowns();
   renderCalibDropdownAndCards();
+  if (typeof updateCalibStudioUI === 'function') {
+    updateCalibStudioUI();
+  }
   renderDocumentPreview();
 }
 
@@ -2274,6 +2334,9 @@ function openPrintCalibrationModal() {
   if (inputX) inputX.value = s.offset_x;
   if (inputY) inputY.value = s.offset_y;
   renderCalibDropdownAndCards();
+  if (typeof updateCalibStudioUI === 'function') {
+    updateCalibStudioUI();
+  }
   modal.style.display = 'flex';
 }
 
@@ -2322,13 +2385,12 @@ function syncSettingsCalibration(type) {
 }
 
 function saveSettingsTabCalibration() {
-  syncSettingsCalibration();
   const isAr = (currentAppLang === 'ar');
   alert(isAr ? 'تم حفظ إعدادات الطباعة والمعايرة بنجاح!' : 'Paramètres d\'impression et de calibrage enregistrés avec succès !');
 }
 
 function resetCalibrationOffsets(isSettingsTab = false) {
-  const s = { ...DEFAULT_PRINT_SETTINGS };
+  const s = { ...DEFAULT_PRINT_SETTINGS, field_offsets: {} };
   savePrintSettings(s);
   const xModal = document.getElementById('calib-offset-x');
   const yModal = document.getElementById('calib-offset-y');
@@ -2339,11 +2401,340 @@ function resetCalibrationOffsets(isSettingsTab = false) {
   if (xSet) xSet.value = s.offset_x;
   if (ySet) ySet.value = s.offset_y;
   renderCalibDropdownAndCards();
+  if (typeof updateCalibStudioUI === 'function') {
+    updateCalibStudioUI();
+  }
   renderDocumentPreview();
 }
 
 function printCalibrationTestPage() {
   printDocument(true, true);
+}
+
+// ================= CALIBRATION STUDIO CONTROLLER =================
+const CALIB_FIELDS_DEF = [
+  { key: 'global', icon: 'ti-world', label_fr: '🌐 Tout le document (Global)', label_ar: '🌐 كامل السند (إزاحة عامة)' },
+  { key: 'agent_name', icon: 'ti-user', label_fr: "Nom et prénom de l'agent", label_ar: 'الاسم واللقب' },
+  { key: 'grade', icon: 'ti-briefcase', label_fr: 'Grade ou fonction', label_ar: 'الرتبة أو الوظيفة' },
+  { key: 'service', icon: 'ti-building', label_fr: 'Structure ou service', label_ar: 'المصلحة أو الوكالة' },
+  { key: 'address', icon: 'ti-home', label_fr: 'Adresse personnelle', label_ar: 'العنوان الشخصي' },
+  { key: 'leave_days', icon: 'ti-calendar-event', label_fr: 'Nombre de jours accordés', label_ar: 'عدد الأيام الممنوحة' },
+  { key: 'dates_dep', icon: 'ti-calendar-share', label_fr: 'Date de départ', label_ar: 'تاريخ الخروج' },
+  { key: 'dates_ret', icon: 'ti-calendar-check', label_fr: 'Date de reprise', label_ar: 'تاريخ العودة' },
+  { key: 'leave_address', icon: 'ti-map-pin', label_fr: 'Adresse durant le congé', label_ar: 'العنوان أثناء العطلة' },
+  { key: 'location_date', icon: 'ti-calendar-time', label_fr: 'Lieu et date (Fait à... Le...)', label_ar: 'المكان والتاريخ (حرر بـ... في...)' },
+  { key: 'signatory', icon: 'ti-signature', label_fr: 'Signature du Directeur', label_ar: 'إمضاء وختم المدير' },
+  { key: 'rights_table', icon: 'ti-table', label_fr: 'Tableau des droits (5 lignes)', label_ar: 'جدول تفصيل الحقوق (الأرصدة)' }
+];
+
+const SAMPLE_CALIB_DATA_FR = {
+  agent_name: 'BENALI Ahmed',
+  grade: 'Chef de Département Informatique',
+  service: 'Direction Générale - DSI',
+  address_line_1: '12, Rue des Frères Bouadou, Bir Mourad Raïs',
+  address_line_2: '',
+  leave_days: 15,
+  dep_date: '2026-07-01',
+  ret_date: '2026-07-16',
+  dep: { d1: '0', d2: '1', m1: '0', m2: '7', y1: '2', y2: '6' },
+  ret: { d1: '1', d2: '6', m1: '0', m2: '7', y1: '2', y2: '6' },
+  leave_address: '05, Bd Front de Mer, Oran',
+  location: 'Alger',
+  date: '25/06/2026',
+  director: 'Le Directeur Général',
+  prev_balance: 10,
+  cur_entitlement: 30,
+  tot_entitlement: 40,
+  leave_granted: 15,
+  new_balance: 25
+};
+
+const SAMPLE_CALIB_DATA_AR = {
+  agent_name: 'بن علي أحمد',
+  grade: 'رئيس قسم الإعلام الآلي',
+  service: 'المديرية العامة - مديرية الأنظمة',
+  address_line_1: '12، نهج الإخوة بوعدو، بئر مراد رايس',
+  address_line_2: '',
+  leave_days: 15,
+  dep_date: '2026-07-01',
+  ret_date: '2026-07-16',
+  dep: { d1: '0', d2: '1', m1: '0', m2: '7', y1: '2', y2: '6' },
+  ret: { d1: '1', d2: '6', m1: '0', m2: '7', y1: '2', y2: '6' },
+  leave_address: '05، واجهة البحر، وهران',
+  location: 'الجزائر',
+  date: '25/06/2026',
+  director: 'المدير العام',
+  prev_balance: 10,
+  cur_entitlement: 30,
+  tot_entitlement: 40,
+  leave_granted: 15,
+  new_balance: 25
+};
+
+let calibActiveFieldKey = 'global';
+let calibPreviewLang = 'fr';
+let calibPreviewShowBg = true;
+
+function selectCalibField(fieldKey) {
+  calibActiveFieldKey = fieldKey || 'global';
+  const def = CALIB_FIELDS_DEF.find(f => f.key === calibActiveFieldKey) || CALIB_FIELDS_DEF[0];
+  const isAr = (currentAppLang === 'ar');
+  const label = isAr ? def.label_ar : def.label_fr;
+
+  // 1. Update selector dropdown
+  const selectEl = document.getElementById('calib-field-select');
+  if (selectEl && selectEl.value !== calibActiveFieldKey) {
+    selectEl.value = calibActiveFieldKey;
+  }
+
+  // 2. Update active badge
+  const iconEl = document.getElementById('calib-active-icon');
+  const nameEl = document.getElementById('calib-active-name');
+  if (iconEl) iconEl.className = `ti ${def.icon}`;
+  if (nameEl) nameEl.textContent = label;
+
+  // 3. Read current offset values
+  const s = getPrintSettings();
+  let valX = 0;
+  let valY = 0;
+  if (calibActiveFieldKey === 'global') {
+    valX = parseFloat(s.offset_x) || 0;
+    valY = parseFloat(s.offset_y) || 0;
+  } else if (s.field_offsets && s.field_offsets[calibActiveFieldKey]) {
+    valX = parseFloat(s.field_offsets[calibActiveFieldKey].x) || 0;
+    valY = parseFloat(s.field_offsets[calibActiveFieldKey].y) || 0;
+  }
+
+  const inputX = document.getElementById('calib-active-input-x');
+  const inputY = document.getElementById('calib-active-input-y');
+  if (inputX) inputX.value = valX;
+  if (inputY) inputY.value = valY;
+
+  // 4. Update quick list active highlight
+  document.querySelectorAll('#calib-fields-quick-list .calib-field-row').forEach(row => {
+    if (row.getAttribute('data-field-key') === calibActiveFieldKey) {
+      row.classList.add('active');
+      row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    } else {
+      row.classList.remove('active');
+    }
+  });
+
+  // 5. Update canvas selection outline
+  document.querySelectorAll('#calib-preview-canvas [data-calib-field]').forEach(el => {
+    if (el.getAttribute('data-calib-field') === calibActiveFieldKey) {
+      el.classList.add('selected-field');
+    } else {
+      el.classList.remove('selected-field');
+    }
+  });
+}
+
+function nudgeActiveField(axis, delta) {
+  const s = getPrintSettings();
+  if (!s.field_offsets) s.field_offsets = {};
+
+  if (calibActiveFieldKey === 'global') {
+    const prop = (axis === 'x') ? 'offset_x' : 'offset_y';
+    s[prop] = Math.round(((parseFloat(s[prop]) || 0) + delta) * 10) / 10;
+  } else {
+    if (!s.field_offsets[calibActiveFieldKey]) {
+      s.field_offsets[calibActiveFieldKey] = { x: 0, y: 0 };
+    }
+    const curVal = parseFloat(s.field_offsets[calibActiveFieldKey][axis]) || 0;
+    s.field_offsets[calibActiveFieldKey][axis] = Math.round((curVal + delta) * 10) / 10;
+  }
+
+  savePrintSettings(s);
+  updateCalibStudioUI(false);
+  renderDocumentSheet();
+}
+
+function onActiveFieldInputChange(axis, val) {
+  const num = parseFloat(val) || 0;
+  const s = getPrintSettings();
+  if (!s.field_offsets) s.field_offsets = {};
+
+  if (calibActiveFieldKey === 'global') {
+    const prop = (axis === 'x') ? 'offset_x' : 'offset_y';
+    s[prop] = Math.round(num * 10) / 10;
+  } else {
+    if (!s.field_offsets[calibActiveFieldKey]) {
+      s.field_offsets[calibActiveFieldKey] = { x: 0, y: 0 };
+    }
+    s.field_offsets[calibActiveFieldKey][axis] = Math.round(num * 10) / 10;
+  }
+
+  savePrintSettings(s);
+  updateCalibStudioUI(false);
+  renderDocumentSheet();
+}
+
+function resetActiveFieldOffset() {
+  const s = getPrintSettings();
+  if (!s.field_offsets) s.field_offsets = {};
+
+  if (calibActiveFieldKey === 'global') {
+    s.offset_x = 0;
+    s.offset_y = 0;
+  } else {
+    delete s.field_offsets[calibActiveFieldKey];
+  }
+
+  savePrintSettings(s);
+  updateCalibStudioUI(false);
+  renderDocumentSheet();
+}
+
+function resetAllFieldOffsets() {
+  const isAr = (currentAppLang === 'ar');
+  const confirmMsg = isAr 
+    ? 'هل أنت متأكد من إعادة ضبط جميع إزاحات الحقول وإعادتها إلى الصفر؟'
+    : 'Êtes-vous sûr de vouloir réinitialiser tous les décalages à zéro ?';
+  if (!confirm(confirmMsg)) return;
+
+  const s = getPrintSettings();
+  s.offset_x = 0;
+  s.offset_y = 0;
+  s.field_offsets = {};
+  savePrintSettings(s);
+  updateCalibStudioUI();
+  renderDocumentSheet();
+}
+
+function setCalibPreviewLang(lang) {
+  calibPreviewLang = lang;
+  const btnFr = document.getElementById('btn-calib-prev-lang-fr');
+  const btnAr = document.getElementById('btn-calib-prev-lang-ar');
+  if (btnFr) btnFr.classList.toggle('active', lang === 'fr');
+  if (btnAr) btnAr.classList.toggle('active', lang === 'ar');
+  renderCalibStudioPreview();
+}
+
+function toggleCalibPreviewBg() {
+  calibPreviewShowBg = !calibPreviewShowBg;
+  const btnBg = document.getElementById('btn-calib-prev-bg');
+  if (btnBg) btnBg.classList.toggle('active', calibPreviewShowBg);
+  renderCalibStudioPreview();
+}
+
+function renderCalibStudioPreview() {
+  const canvas = document.getElementById('calib-preview-canvas');
+  if (!canvas) return;
+
+  const isAr = (calibPreviewLang === 'ar');
+  const data = isAr ? SAMPLE_CALIB_DATA_AR : SAMPLE_CALIB_DATA_FR;
+
+  const html = buildSheetHTML(data, isAr, true);
+  canvas.innerHTML = html;
+
+  const pageEl = canvas.querySelector('.document-page');
+  if (pageEl) {
+    pageEl.style.transform = 'scale(0.68)';
+    pageEl.style.transformOrigin = 'top center';
+    pageEl.style.margin = '0 auto';
+
+    if (calibPreviewShowBg) {
+      const bgUri = isAr 
+        ? (window.TEMPLATE_AR_B64 || (typeof TEMPLATE_AR_B64 !== 'undefined' ? TEMPLATE_AR_B64 : ''))
+        : (window.TEMPLATE_FR_B64 || (typeof TEMPLATE_FR_B64 !== 'undefined' ? TEMPLATE_FR_B64 : ''));
+      if (bgUri) {
+        pageEl.style.backgroundImage = `url("${bgUri}")`;
+        pageEl.style.backgroundSize = '140mm 220mm';
+        pageEl.style.backgroundColor = '#ffffff';
+      }
+    } else {
+      pageEl.style.backgroundImage = 'none';
+      pageEl.style.backgroundColor = '#ffffff';
+    }
+  }
+
+  // Bind click-to-select on all fields inside preview
+  canvas.querySelectorAll('[data-calib-field]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const targetField = e.currentTarget.getAttribute('data-calib-field');
+      if (targetField) {
+        selectCalibField(targetField);
+      }
+    });
+
+    if (el.getAttribute('data-calib-field') === calibActiveFieldKey) {
+      el.classList.add('selected-field');
+    }
+  });
+}
+
+function updateCalibStudioUI(rebuildSelect = true) {
+  const isAr = (currentAppLang === 'ar');
+  const s = getPrintSettings();
+  const fo = s.field_offsets || {};
+
+  // 1. Rebuild select dropdown if requested
+  const selectEl = document.getElementById('calib-field-select');
+  if (selectEl && rebuildSelect) {
+    selectEl.innerHTML = CALIB_FIELDS_DEF.map(f => {
+      const label = isAr ? f.label_ar : f.label_fr;
+      return `<option value="${f.key}">${escapeHtml(label)}</option>`;
+    }).join('');
+    selectEl.value = calibActiveFieldKey;
+  }
+
+  // 2. Quick list of all fields
+  const quickListEl = document.getElementById('calib-fields-quick-list');
+  if (quickListEl) {
+    quickListEl.innerHTML = CALIB_FIELDS_DEF.map(f => {
+      const isSel = (f.key === calibActiveFieldKey);
+      const label = isAr ? f.label_ar : f.label_fr;
+      let offX = 0;
+      let offY = 0;
+      if (f.key === 'global') {
+        offX = parseFloat(s.offset_x) || 0;
+        offY = parseFloat(s.offset_y) || 0;
+      } else if (fo[f.key]) {
+        offX = parseFloat(fo[f.key].x) || 0;
+        offY = parseFloat(fo[f.key].y) || 0;
+      }
+      const hasOffset = (offX !== 0 || offY !== 0);
+      const offsetTxt = hasOffset ? `X:${offX > 0 ? '+' : ''}${offX} | Y:${offY > 0 ? '+' : ''}${offY}` : '0, 0';
+
+      return `
+        <div class="calib-field-row ${isSel ? 'active' : ''} ${hasOffset ? 'has-offset' : ''}" data-field-key="${f.key}" onclick="selectCalibField('${f.key}')">
+          <div class="calib-field-row-name">
+            <i class="ti ${f.icon}"></i>
+            <span>${escapeHtml(label)}</span>
+          </div>
+          <span class="calib-field-row-badge ${hasOffset ? 'badge-modified' : ''}">${offsetTxt}</span>
+        </div>
+      `;
+    }).join('');
+  }
+
+  // 3. Update inputs for active field
+  const def = CALIB_FIELDS_DEF.find(f => f.key === calibActiveFieldKey) || CALIB_FIELDS_DEF[0];
+  const activeLabel = isAr ? def.label_ar : def.label_fr;
+  const iconEl = document.getElementById('calib-active-icon');
+  const nameEl = document.getElementById('calib-active-name');
+  if (iconEl) iconEl.className = `ti ${def.icon}`;
+  if (nameEl) nameEl.textContent = activeLabel;
+
+  let valX = 0;
+  let valY = 0;
+  if (calibActiveFieldKey === 'global') {
+    valX = parseFloat(s.offset_x) || 0;
+    valY = parseFloat(s.offset_y) || 0;
+  } else if (fo[calibActiveFieldKey]) {
+    valX = parseFloat(fo[calibActiveFieldKey].x) || 0;
+    valY = parseFloat(fo[calibActiveFieldKey].y) || 0;
+  }
+
+  const inputX = document.getElementById('calib-active-input-x');
+  const inputY = document.getElementById('calib-active-input-y');
+  if (inputX) inputX.value = valX;
+  if (inputY) inputY.value = valY;
+
+  // 4. Update preview canvas
+  renderCalibStudioPreview();
 }
 
 // Print Document

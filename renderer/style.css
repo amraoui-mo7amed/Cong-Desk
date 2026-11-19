@@ -3604,3 +3604,357 @@ input[type="range"]::-webkit-slider-thumb:hover {
   color: #38bdf8;
   transform: translateY(-1px);
 }
+
+/* ================= CALIBRATION STUDIO (SPLIT SCREEN & LIVE PREVIEW) ================= */
+.calib-studio-split {
+  display: grid;
+  grid-template-columns: 1fr 1.05fr;
+  gap: 20px;
+  align-items: start;
+  margin-top: 14px;
+}
+
+@media (max-width: 1050px) {
+  .calib-studio-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.calib-studio-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.studio-card {
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .studio-card {
+  background: rgba(22, 33, 56, 0.65);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.studio-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.studio-card-header i {
+  color: var(--primary);
+  font-size: 16px;
+}
+
+/* Active Field Card */
+.active-field-card {
+  border: 1.5px solid rgba(37, 99, 235, 0.35);
+  background: rgba(37, 99, 235, 0.03);
+}
+
+[data-theme="dark"] .active-field-card {
+  background: rgba(37, 99, 235, 0.1);
+  border-color: rgba(59, 130, 246, 0.4);
+}
+
+.calib-active-field-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  background: rgba(37, 99, 235, 0.08);
+  border-radius: var(--radius-md);
+  margin-bottom: 12px;
+}
+
+[data-theme="dark"] .calib-active-field-bar {
+  background: rgba(37, 99, 235, 0.2);
+}
+
+.calib-active-field-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.calib-axis-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.calib-axis-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.calib-axis-lbl {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-main);
+  min-width: 80px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nudge-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-nudge {
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 800;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--surface-card);
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.btn-nudge:hover {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.nudge-input {
+  width: 60px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--surface-card);
+  color: var(--text-main);
+}
+
+/* Fields Summary Scroll List */
+.calib-fields-scroll-list {
+  max-height: 200px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-right: 4px;
+}
+
+.calib-field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: 12px;
+}
+
+.calib-field-row:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.calib-field-row.active {
+  background: rgba(37, 99, 235, 0.15);
+  border-color: var(--primary);
+  font-weight: 800;
+}
+
+.calib-field-row-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calib-field-row-offset {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  background: rgba(0, 0, 0, 0.04);
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.calib-field-row-offset.has-offset {
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.12);
+  font-weight: 800;
+}
+
+/* ================= LIVE PREVIEW CANVAS ================= */
+.calib-studio-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--glass-surface);
+  border: 1px solid var(--glass-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 14px;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .calib-studio-preview {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.calib-preview-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.preview-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.toolbar-pill-btn {
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border-color);
+  background: var(--surface-card);
+  color: var(--text-dim);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.toolbar-pill-btn:hover {
+  color: var(--text-main);
+  border-color: var(--primary);
+}
+
+.toolbar-pill-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.preview-scale-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+  background: rgba(148, 163, 184, 0.15);
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+}
+
+.calib-preview-viewport {
+  position: relative;
+  width: 100%;
+  min-height: 480px;
+  max-height: 560px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: #cbd5e1;
+  border-radius: var(--radius-md);
+  padding: 16px 8px;
+}
+
+[data-theme="dark"] .calib-preview-viewport {
+  background: #090d16;
+}
+
+.calib-preview-canvas {
+  transform-origin: top center;
+  transition: transform 0.2s ease;
+}
+
+/* Document Sheet in Studio */
+.calib-preview-canvas .document-page {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  margin: 0 auto;
+}
+
+.document-page .rights-values {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* Interactive Field Selection Highlights */
+.calib-preview-canvas [data-calib-field] {
+  pointer-events: auto !important;
+  cursor: pointer;
+  transition: outline 0.15s ease, background 0.15s ease;
+  border-radius: 3px;
+}
+
+.calib-preview-canvas .rights-values {
+  pointer-events: none !important;
+}
+
+.calib-preview-canvas .rights-values .field-item {
+  pointer-events: auto !important;
+  cursor: pointer;
+}
+
+.calib-preview-canvas [data-calib-field]:hover {
+  outline: 1.5px dashed #2563eb;
+  background: rgba(37, 99, 235, 0.12);
+}
+
+.calib-preview-canvas [data-calib-field].selected-field {
+  outline: 2px solid #2563eb !important;
+  background: rgba(37, 99, 235, 0.22) !important;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
+}
+
+.calib-preview-canvas .rights-values.selected-field .field-item {
+  outline: 2px solid #2563eb !important;
+  background: rgba(37, 99, 235, 0.22) !important;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.45);
+}
+
+.calib-preview-hint {
+  font-size: 11.5px;
+  color: var(--text-dim);
+  text-align: center;
+  padding-top: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
