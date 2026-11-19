@@ -149,6 +149,7 @@ const i18n = {
     calib_test_tip: "Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.",
     calib_btn_test: "Imprimer Feuille Test",
     calib_btn_reset: "Réinitialiser (0, 0)",
+    calib_lbl_modes_help: "Détails & Recommandations des Modes",
     drawer_calc_title: "Jours de Congé Restants",
     drawer_calc_badge: "Calcul Automatique",
     drawer_stat_n1: "Reliquat N-1",
@@ -310,6 +311,7 @@ const i18n = {
     calib_test_tip: "تلميح: اطبع صفحة تجريبية على ورق أبيض عادي ثم ضعها فوق المطبوع الرسمي أمام الضوء للتحقق من تطابق الأسطر بدقة.",
     calib_btn_test: "طباعة ورقة اختبار",
     calib_btn_reset: "إعادة ضبط (0, 0)",
+    calib_lbl_modes_help: "تفاصيل وتوجيهات أوضاع التغذية",
     drawer_calc_title: "أيام العطلة المتبقية",
     drawer_calc_badge: "حساب تلقائي",
     drawer_stat_n1: "متبقي N-1",
@@ -2069,42 +2071,48 @@ const DEFAULT_PRINT_SETTINGS = {
 const CALIB_FEED_MODES = [
   {
     id: 'official_140x220',
-    icon: 'ti-file-text',
-    title_fr: 'Papier Officiel CNAS (140 × 220 mm)',
-    title_ar: 'الورق الرسمي كناس (140 × 220 مم)',
+    icon: 'ti-file-invoice',
+    title_fr: 'Papier Officiel CNAS',
+    title_ar: 'الورق الرسمي كناس',
+    subtitle_fr: '(140 × 220 mm)',
+    subtitle_ar: '(140 × 220 مم)',
     badge_fr: 'Recommandé',
     badge_ar: 'موصى به',
     badge_class: 'badge-recommended',
-    desc_fr: 'Alimentation directe de la feuille officielle 140×220 mm dans le bac réglé à cette taille. Alignement natif parfait sans décalage.',
-    desc_ar: 'إدخال مباشر للورقة الرسمية بمقاس 140×220 مم في الدرج المخصص. محاذاة أصلية دقيقة بدون إزاحة.',
-    margin_fr: 'Marge gauche : 0 mm',
-    margin_ar: 'الهامش الأيسر: 0 مم'
+    desc_fr: 'Alimentation directe dans le bac réglé au format 140×220 mm. Alignement natif exact.',
+    desc_ar: 'إدخال مباشر للورقة بمقاس 140×220 مم في الدرج المخصص. محاذاة أصلية دقيقة.',
+    offset_pill_fr: 'Écart 0 mm',
+    offset_pill_ar: 'إزاحة 0 مم'
   },
   {
     id: 'a4_center',
     icon: 'ti-layout-align-middle',
     title_fr: 'Bac A4 — Centré avec guides',
-    title_ar: 'درج A4 — في الوسط بواسطة الموجهات',
+    title_ar: 'درج A4 — توسيط بموجهات الورق',
+    subtitle_fr: '',
+    subtitle_ar: '',
     badge_fr: 'HP / Canon / Epson',
     badge_ar: 'HP / Canon / Epson',
     badge_class: 'badge-standard',
-    desc_fr: 'Feuille 140×220 mm placée au centre du bac A4 avec les guides coulissants. Centrage automatique (+35 mm).',
-    desc_ar: 'وضع الورقة 140×220 مم في وسط درج A4 وضبط موجهات الورق المنزلقة. توسيط تلقائي (+35 مم).',
-    margin_fr: 'Centrage auto : +35 mm',
-    margin_ar: 'توسيط تلقائي: +35 مم'
+    desc_fr: 'Feuille placée au centre du bac A4 avec guides réglables. Centrage automatique (+35 mm).',
+    desc_ar: 'وضع الورقة في وسط درج A4 وضبط الموجهات. توسيط تلقائي بهامش +35 مم.',
+    offset_pill_fr: 'Auto +35 mm',
+    offset_pill_ar: 'تلقائي +35 مم'
   },
   {
     id: 'a4_left',
     icon: 'ti-layout-align-left',
-    title_fr: 'Bac A4 — Aligné bord gauche',
-    title_ar: 'درج A4 — محاذاة على الحافة اليسرى',
-    badge_fr: 'Marge 0 mm',
-    badge_ar: 'الهامش 0 مم',
+    title_fr: 'Bac A4 — Calé bord gauche',
+    title_ar: 'درج A4 — محاذاة للحافة اليسرى',
+    subtitle_fr: '',
+    subtitle_ar: '',
+    badge_fr: 'Bord référence',
+    badge_ar: 'حافة مرجعية',
     badge_class: 'badge-side',
-    desc_fr: 'Feuille 140×220 mm insérée collée contre le guide gauche du bac A4. Décalage nul par rapport au bord de référence.',
-    desc_ar: 'إدخال الورقة 140×220 مم ملتصقة بالحافة اليسرى لدرج A4. إزاحة ابتدائية 0 مم بالنسبة لحافة الدرج.',
-    margin_fr: 'Marge gauche : 0 mm',
-    margin_ar: 'الهامش الأيسر: 0 مم'
+    desc_fr: 'Feuille insérée collée contre le guide gauche du bac A4. Décalage d\'origine nul.',
+    desc_ar: 'وضع الورقة ملتصقة بالحافة اليسرى لدرج A4. إزاحة ابتدائية 0 مم.',
+    offset_pill_fr: 'Bord 0 mm',
+    offset_pill_ar: 'مبدئي 0 مم'
   }
 ];
 
@@ -2130,7 +2138,8 @@ function renderCalibDropdownAndCards() {
     // 1. Trigger label & badge
     const labelEl = document.getElementById(`${prefix}-calib-trigger-label`);
     const badgeEl = document.getElementById(`${prefix}-calib-trigger-badge`);
-    if (labelEl) labelEl.textContent = isAr ? activeObj.title_ar : activeObj.title_fr;
+    const fullTitle = (isAr ? activeObj.title_ar : activeObj.title_fr) + (activeObj.subtitle_fr ? ` ${isAr ? activeObj.subtitle_ar : activeObj.subtitle_fr}` : '');
+    if (labelEl) labelEl.textContent = fullTitle;
     if (badgeEl) {
       badgeEl.textContent = isAr ? activeObj.badge_ar : activeObj.badge_fr;
       badgeEl.className = `calib-badge ${activeObj.badge_class}`;
@@ -2142,19 +2151,20 @@ function renderCalibDropdownAndCards() {
       menuEl.innerHTML = CALIB_FEED_MODES.map(mode => {
         const isActive = (mode.id === currentMode);
         const title = isAr ? mode.title_ar : mode.title_fr;
+        const subtitle = isAr ? mode.subtitle_ar : mode.subtitle_fr;
         const badge = isAr ? mode.badge_ar : mode.badge_fr;
         const desc = isAr ? mode.desc_ar : mode.desc_fr;
-        const margin = isAr ? mode.margin_ar : mode.margin_fr;
+        const offsetPill = isAr ? mode.offset_pill_ar : mode.offset_pill_fr;
         return `
           <div class="calib-menu-item ${isActive ? 'active' : ''}" onclick="selectCalibFeedMode('${mode.id}', '${prefix}')">
             <div class="calib-item-icon-box"><i class="ti ${mode.icon}"></i></div>
             <div class="calib-item-content">
               <div class="calib-item-header">
-                <span class="calib-item-title">${escapeHtml(title)}</span>
+                <span class="calib-item-title">${escapeHtml(title)} ${subtitle ? `<span style="font-size: 11px; opacity: 0.7;">${escapeHtml(subtitle)}</span>` : ''}</span>
                 <span class="calib-badge ${mode.badge_class}">${escapeHtml(badge)}</span>
               </div>
               <div class="calib-item-desc">${escapeHtml(desc)}</div>
-              <div class="calib-item-margin"><i class="ti ti-ruler-2"></i> ${escapeHtml(margin)}</div>
+              <div class="calib-item-margin"><i class="ti ti-ruler-2"></i> ${escapeHtml(offsetPill)}</div>
             </div>
             ${isActive ? '<i class="ti ti-check" style="color: var(--primary); font-size: 18px; margin-top: 4px;"></i>' : ''}
           </div>
@@ -2162,30 +2172,36 @@ function renderCalibDropdownAndCards() {
       }).join('');
     }
 
-    // 3. Explanatory Cards (Stacked above each other)
+    // 3. Explanatory Cards (Redesigned Compact Stack)
     const cardsEl = document.getElementById(`${prefix}-calib-cards-grid`);
     if (cardsEl) {
       cardsEl.innerHTML = CALIB_FEED_MODES.map(mode => {
         const isActive = (mode.id === currentMode);
         const title = isAr ? mode.title_ar : mode.title_fr;
+        const subtitle = isAr ? mode.subtitle_ar : mode.subtitle_fr;
         const badge = isAr ? mode.badge_ar : mode.badge_fr;
         const desc = isAr ? mode.desc_ar : mode.desc_fr;
-        const margin = isAr ? mode.margin_ar : mode.margin_fr;
+        const offsetPill = isAr ? mode.offset_pill_ar : mode.offset_pill_fr;
         return `
           <div class="calib-card ${isActive ? 'active' : ''}" onclick="selectCalibFeedMode('${mode.id}', '${prefix}')">
-            <div class="calib-card-icon"><i class="ti ${mode.icon}"></i></div>
-            <div class="calib-card-body">
-              <div class="calib-card-header">
-                <span class="calib-card-title">${escapeHtml(title)}</span>
-                <span class="calib-badge ${mode.badge_class}">${escapeHtml(badge)}</span>
-              </div>
-              <div class="calib-card-desc">${escapeHtml(desc)}</div>
+            <div class="calib-card-radio">
+              ${isActive ? '<i class="ti ti-check"></i>' : ''}
             </div>
-            <div class="calib-card-meta">
-              <div class="calib-card-margin"><i class="ti ti-ruler-2"></i> ${escapeHtml(margin)}</div>
-              <div class="calib-card-radio">
-                ${isActive ? '<i class="ti ti-check"></i>' : ''}
+            <div class="calib-card-icon">
+              <i class="ti ${mode.icon}"></i>
+            </div>
+            <div class="calib-card-content">
+              <div class="calib-card-header-row">
+                <div class="calib-card-title-group">
+                  <span class="calib-card-title">${escapeHtml(title)}</span>
+                  ${subtitle ? `<span class="calib-card-subtitle">${escapeHtml(subtitle)}</span>` : ''}
+                </div>
+                <div class="calib-card-badges-group">
+                  <span class="calib-badge ${mode.badge_class}">${escapeHtml(badge)}</span>
+                  <span class="calib-offset-pill"><i class="ti ti-ruler-2"></i> ${escapeHtml(offsetPill)}</span>
+                </div>
               </div>
+              <p class="calib-card-desc">${escapeHtml(desc)}</p>
             </div>
           </div>
         `;

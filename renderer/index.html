@@ -421,67 +421,77 @@
               Ajustement millimétrique pour formulaires pré-imprimés CNAS GRH.22
             </p>
 
-            <div class="form-field" style="margin-bottom: 18px;">
-              <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
-              <div class="custom-dropdown custom-calib-dropdown" id="set-calib-dropdown">
-                <div class="custom-dropdown-trigger" id="set-calib-trigger" onclick="toggleCalibDropdown(event, 'set')">
-                  <div class="calib-trigger-text">
-                    <span class="dropdown-selected-label" id="set-calib-trigger-label"></span>
-                    <span class="calib-badge" id="set-calib-trigger-badge"></span>
+            <div class="calib-layout-row">
+              <!-- COLUMN 1: Printing Settings Controls -->
+              <div class="calib-settings-col">
+                <div class="form-field">
+                  <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
+                  <div class="custom-dropdown custom-calib-dropdown" id="set-calib-dropdown">
+                    <div class="custom-dropdown-trigger" id="set-calib-trigger" onclick="toggleCalibDropdown(event, 'set')">
+                      <div class="calib-trigger-text">
+                        <span class="dropdown-selected-label" id="set-calib-trigger-label"></span>
+                        <span class="calib-badge" id="set-calib-trigger-badge"></span>
+                      </div>
+                      <i class="ti ti-chevron-down dropdown-caret"></i>
+                    </div>
+                    <div class="custom-calib-menu" id="set-calib-menu" style="display: none;"></div>
                   </div>
-                  <i class="ti ti-chevron-down dropdown-caret"></i>
+                  <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
+                    Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
+                  </small>
                 </div>
-                <div class="custom-calib-menu" id="set-calib-menu" style="display: none;"></div>
-              </div>
-              <div class="calib-cards-grid" id="set-calib-cards-grid"></div>
-              <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
-                Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
-              </small>
-            </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-              <div class="form-field">
-                <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
-                <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', -1, true)">-1</button>
-                  <input type="number" step="0.5" id="set-calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('x')">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', 1, true)">+1</button>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+                  <div class="form-field">
+                    <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
+                    <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', -1, true)">-1</button>
+                      <input type="number" step="0.5" id="set-calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('x')">
+                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', 1, true)">+1</button>
+                    </div>
+                    <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
+                      (- Gauche / + Droite)
+                    </small>
+                  </div>
+
+                  <div class="form-field">
+                    <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
+                    <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', -1, true)">-1</button>
+                      <input type="number" step="0.5" id="set-calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('y')">
+                      <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', 1, true)">+1</button>
+                    </div>
+                    <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
+                      (- Haut / + Bas)
+                    </small>
+                  </div>
                 </div>
-                <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
-                  (- Gauche / + Droite)
-                </small>
-              </div>
 
-              <div class="form-field">
-                <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
-                <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', -1, true)">-1</button>
-                  <input type="number" step="0.5" id="set-calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('y')">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', 1, true)">+1</button>
+                <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-md); padding: 10px 12px; font-size: 11.5px; line-height: 1.45; color: var(--text-muted);">
+                  <i class="ti ti-info-circle" style="color: var(--primary); margin-right: 4px;"></i>
+                  <span data-i18n="calib_test_tip">Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.</span>
                 </div>
-                <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
-                  (- Haut / + Bas)
-                </small>
-              </div>
-            </div>
 
-            <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12px; line-height: 1.5; color: var(--text-muted); margin-bottom: 20px;">
-              <i class="ti ti-info-circle" style="color: var(--primary); margin-right: 4px;"></i>
-              <span data-i18n="calib_test_tip">Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.</span>
-            </div>
-
-            <div style="display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap;">
-              <div style="display: flex; gap: 8px;">
-                <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
-                  <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
-                </button>
-                <button type="button" class="btn btn-secondary" onclick="resetCalibrationOffsets(true)">
-                  <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset">Réinitialiser (0, 0)</span>
-                </button>
+                <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap;">
+                  <div style="display: flex; gap: 8px;">
+                    <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
+                      <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
+                    </button>
+                    <button type="button" class="btn btn-secondary" onclick="resetCalibrationOffsets(true)">
+                      <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset">Réinitialiser (0, 0)</span>
+                    </button>
+                  </div>
+                  <button type="button" class="btn btn-settings-primary" onclick="saveSettingsTabCalibration()">
+                    <i class="ti ti-check"></i> <span data-i18n="btn_save">Enregistrer</span>
+                  </button>
+                </div>
               </div>
-              <button type="button" class="btn btn-settings-primary" onclick="saveSettingsTabCalibration()">
-                <i class="ti ti-check"></i> <span data-i18n="btn_save">Enregistrer</span>
-              </button>
+
+              <!-- COLUMN 2: Explanatory Cards (Stacked above each other) -->
+              <div class="calib-cards-col">
+                <label style="font-weight: 700; margin-bottom: 2px; font-size: 13px;" data-i18n="calib_lbl_modes_help">Détails & Recommandations des Modes</label>
+                <div class="calib-cards-grid" id="set-calib-cards-grid"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -978,7 +988,7 @@
 
   <!-- PRINT CALIBRATION MODAL -->
   <div class="modal-overlay" id="modal-print-calibration" style="display: none;">
-    <div class="modal-dialog" style="max-width: 680px;">
+    <div class="modal-dialog" style="max-width: 840px;">
       <div class="modal-header">
         <div class="modal-title-group">
           <i class="ti ti-printer" style="color: var(--primary); font-size: 22px;"></i>
@@ -991,68 +1001,72 @@
       </div>
 
       <div class="modal-body" style="padding: 20px 24px;">
-        <!-- Paper Feeding Mode -->
-        <div class="form-field" style="margin-bottom: 18px;">
-          <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
-          <div class="custom-dropdown custom-calib-dropdown" id="modal-calib-dropdown">
-            <div class="custom-dropdown-trigger" id="modal-calib-trigger" onclick="toggleCalibDropdown(event, 'modal')">
-              <div class="calib-trigger-text">
-                <span class="dropdown-selected-label" id="modal-calib-trigger-label"></span>
-                <span class="calib-badge" id="modal-calib-trigger-badge"></span>
+        <div class="calib-layout-row">
+          <!-- COLUMN 1: Printing Settings Controls -->
+          <div class="calib-settings-col">
+            <div class="form-field">
+              <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
+              <div class="custom-dropdown custom-calib-dropdown" id="modal-calib-dropdown">
+                <div class="custom-dropdown-trigger" id="modal-calib-trigger" onclick="toggleCalibDropdown(event, 'modal')">
+                  <div class="calib-trigger-text">
+                    <span class="dropdown-selected-label" id="modal-calib-trigger-label"></span>
+                    <span class="calib-badge" id="modal-calib-trigger-badge"></span>
+                  </div>
+                  <i class="ti ti-chevron-down dropdown-caret"></i>
+                </div>
+                <div class="custom-calib-menu" id="modal-calib-menu" style="display: none;"></div>
               </div>
-              <i class="ti ti-chevron-down dropdown-caret"></i>
+              <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
+                Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
+              </small>
             </div>
-            <div class="custom-calib-menu" id="modal-calib-menu" style="display: none;"></div>
-          </div>
-          <div class="calib-cards-grid" id="modal-calib-cards-grid"></div>
-          <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
-            Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
-          </small>
-        </div>
 
-        <!-- Offset Controls -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
-          <!-- Offset X -->
-          <div class="form-field">
-            <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
-            <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', -1)">-1</button>
-              <input type="number" step="0.5" id="calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="onCalibrationChange()">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', 1)">+1</button>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;">
+              <div class="form-field">
+                <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
+                <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', -1)">-1</button>
+                  <input type="number" step="0.5" id="calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="onCalibrationChange()">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', 1)">+1</button>
+                </div>
+                <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
+                  (- Gauche / + Droite)
+                </small>
+              </div>
+
+              <div class="form-field">
+                <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
+                <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', -1)">-1</button>
+                  <input type="number" step="0.5" id="calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="onCalibrationChange()">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', 1)">+1</button>
+                </div>
+                <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
+                  (- Haut / + Bas)
+                </small>
+              </div>
             </div>
-            <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
-              (- Gauche / + Droite)
-            </small>
-          </div>
 
-          <!-- Offset Y -->
-          <div class="form-field">
-            <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
-            <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', -1)">-1</button>
-              <input type="number" step="0.5" id="calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="onCalibrationChange()">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', 1)">+1</button>
+            <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-md); padding: 10px 12px; font-size: 11.5px; line-height: 1.45; color: var(--text-muted);">
+              <i class="ti ti-info-circle" style="color: var(--primary); margin-right: 4px;"></i>
+              <span data-i18n="calib_test_tip">Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.</span>
             </div>
-            <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
-              (- Haut / + Bas)
-            </small>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+              <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
+                <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
+              </button>
+              <button type="button" class="btn btn-secondary" onclick="resetCalibrationOffsets()">
+                <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset">Réinitialiser (0, 0)</span>
+              </button>
+            </div>
           </div>
-        </div>
 
-        <!-- Info note -->
-        <div style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: var(--radius-md); padding: 12px 14px; font-size: 12px; line-height: 1.5; color: var(--text-muted); margin-bottom: 16px;">
-          <i class="ti ti-info-circle" style="color: var(--primary); margin-right: 4px;"></i>
-          <span data-i18n="calib_test_tip">Astuce : Imprimez une feuille de test sur papier blanc ordinaire et superposez-la sur votre imprimé officiel contre la lumière pour vérifier l'alignement.</span>
-        </div>
-
-        <!-- Test Print & Reset Buttons -->
-        <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
-          <button type="button" class="btn btn-secondary" onclick="printCalibrationTestPage()">
-            <i class="ti ti-printer"></i> <span data-i18n="calib_btn_test">Imprimer Feuille Test</span>
-          </button>
-          <button type="button" class="btn btn-secondary" onclick="resetCalibrationOffsets()">
-            <i class="ti ti-rotate"></i> <span data-i18n="calib_btn_reset">Réinitialiser (0, 0)</span>
-          </button>
+          <!-- COLUMN 2: Explanatory Cards (Stacked above each other) -->
+          <div class="calib-cards-col">
+            <label style="font-weight: 700; margin-bottom: 2px; font-size: 13px;" data-i18n="calib_lbl_modes_help">Détails & Recommandations des Modes</label>
+            <div class="calib-cards-grid" id="modal-calib-cards-grid"></div>
+          </div>
         </div>
       </div>
 
