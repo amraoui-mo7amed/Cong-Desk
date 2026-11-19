@@ -50,7 +50,8 @@
     }
   },
   "devDependencies": {
-    "electron": "^45.3.4"
+    "electron": "^45.3.4",
+    "electron-builder": "^26.18.0"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.3.1",
