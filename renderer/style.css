@@ -2951,6 +2951,327 @@ input[type="range"]::-webkit-slider-thumb:hover {
   color: var(--primary);
 }
 
+/* ================= CALIBRATION CUSTOM OVERFLOW DROPDOWN & EXPLANATORY CARDS ================= */
+.custom-calib-dropdown {
+  width: 100%;
+  min-width: 100%;
+}
+
+.custom-calib-dropdown .custom-dropdown-trigger {
+  min-height: 48px;
+  padding: 6px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.calib-trigger-text {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
+.calib-trigger-text .dropdown-selected-label {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.calib-badge {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+
+.calib-badge.badge-recommended {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.calib-badge.badge-standard {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563eb;
+  border: 1px solid rgba(37, 99, 235, 0.3);
+}
+
+.calib-badge.badge-side {
+  background: rgba(100, 116, 139, 0.12);
+  color: #475569;
+  border: 1px solid rgba(100, 116, 139, 0.25);
+}
+
+[data-theme="dark"] .calib-badge.badge-recommended {
+  background: rgba(16, 185, 129, 0.25);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
+[data-theme="dark"] .calib-badge.badge-standard {
+  background: rgba(37, 99, 235, 0.25);
+  color: #60a5fa;
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+[data-theme="dark"] .calib-badge.badge-side {
+  background: rgba(148, 163, 184, 0.2);
+  color: #cbd5e1;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+.custom-calib-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  width: 100%;
+  max-height: 420px;
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid rgba(203, 213, 225, 0.95);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.22), 0 6px 18px rgba(15, 23, 42, 0.10);
+  z-index: 9999;
+  padding: 4px 0;
+}
+
+[data-theme="dark"] .custom-calib-menu {
+  background: #0f172a;
+  border: 1px solid rgba(51, 65, 85, 0.95);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 8px 24px rgba(0, 0, 0, 0.65);
+}
+
+.calib-menu-item {
+  padding: 12px 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.65);
+  transition: all var(--transition-fast);
+}
+
+.calib-menu-item:last-child {
+  border-bottom: none;
+}
+
+[data-theme="dark"] .calib-menu-item {
+  border-bottom-color: rgba(51, 65, 85, 0.65);
+}
+
+.calib-menu-item:hover {
+  background: rgba(37, 99, 235, 0.08);
+}
+
+.calib-menu-item.active {
+  background: rgba(37, 99, 235, 0.12);
+  border-left: 3px solid var(--primary);
+}
+
+[dir="rtl"] .calib-menu-item.active {
+  border-left: none;
+  border-right: 3px solid var(--primary);
+}
+
+.calib-item-icon-box {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.calib-menu-item.active .calib-item-icon-box {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.calib-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.calib-item-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.calib-item-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-main);
+}
+
+.calib-item-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.45;
+  margin-bottom: 4px;
+}
+
+.calib-item-margin {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+/* ================= EXPLANATORY FEED CARDS (STACKED ROWS) ================= */
+.calib-cards-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.calib-card {
+  position: relative;
+  background: var(--glass-surface);
+  border: 1.5px solid var(--glass-border-subtle);
+  border-radius: var(--radius-lg);
+  padding: 13px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: all 0.22s ease;
+  user-select: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.calib-card:hover {
+  border-color: rgba(37, 99, 235, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(37, 99, 235, 0.12);
+}
+
+.calib-card.active {
+  border-color: var(--primary);
+  background: rgba(37, 99, 235, 0.06);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.22), 0 6px 20px rgba(37, 99, 235, 0.15);
+}
+
+[data-theme="dark"] .calib-card {
+  background: rgba(22, 33, 56, 0.65);
+}
+
+[data-theme="dark"] .calib-card.active {
+  background: rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.35), 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.calib-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(37, 99, 235, 0.12);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.calib-card.active .calib-card-icon {
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.calib-card-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.calib-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.calib-card-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--text-main);
+  line-height: 1.35;
+}
+
+.calib-card-desc {
+  font-size: 12px;
+  color: var(--text-dim);
+  line-height: 1.45;
+}
+
+.calib-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.calib-card-margin {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--primary);
+  background: rgba(37, 99, 235, 0.08);
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+[data-theme="dark"] .calib-card-margin {
+  background: rgba(37, 99, 235, 0.2);
+  color: #93c5fd;
+}
+
+.calib-card-radio {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(148, 163, 184, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #ffffff;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.calib-card.active .calib-card-radio {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+@media (max-width: 640px) {
+  .calib-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .calib-card-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
 .custom-dropdown-menu {
   position: absolute;
   top: calc(100% + 8px);

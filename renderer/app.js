@@ -386,6 +386,8 @@ function applyLanguage(lang) {
     renderWilayaDropdownItems(cachedWilayaList);
   }
 
+  renderCalibDropdownAndCards();
+
   filterAndRenderDirectors();
   if (currentView === 'home') updateHomeDashboard();
   if (currentView === 'history') renderHistoryTable();
@@ -585,12 +587,11 @@ function switchSettingsTab(tab) {
 
   if (tab === 'print') {
     const s = getPrintSettings();
-    const feedSet = document.getElementById('set-calib-paper-feed');
     const xSet = document.getElementById('set-calib-offset-x');
     const ySet = document.getElementById('set-calib-offset-y');
-    if (feedSet) feedSet.value = s.paper_feed;
     if (xSet) xSet.value = s.offset_x;
     if (ySet) ySet.value = s.offset_y;
+    renderCalibDropdownAndCards();
   }
 }
 
@@ -2065,6 +2066,48 @@ const DEFAULT_PRINT_SETTINGS = {
   offset_y: 0
 };
 
+const CALIB_FEED_MODES = [
+  {
+    id: 'official_140x220',
+    icon: 'ti-file-text',
+    title_fr: 'Papier Officiel CNAS (140 × 220 mm)',
+    title_ar: 'الورق الرسمي كناس (140 × 220 مم)',
+    badge_fr: 'Recommandé',
+    badge_ar: 'موصى به',
+    badge_class: 'badge-recommended',
+    desc_fr: 'Alimentation directe de la feuille officielle 140×220 mm dans le bac réglé à cette taille. Alignement natif parfait sans décalage.',
+    desc_ar: 'إدخال مباشر للورقة الرسمية بمقاس 140×220 مم في الدرج المخصص. محاذاة أصلية دقيقة بدون إزاحة.',
+    margin_fr: 'Marge gauche : 0 mm',
+    margin_ar: 'الهامش الأيسر: 0 مم'
+  },
+  {
+    id: 'a4_center',
+    icon: 'ti-layout-align-middle',
+    title_fr: 'Bac A4 — Centré avec guides',
+    title_ar: 'درج A4 — في الوسط بواسطة الموجهات',
+    badge_fr: 'HP / Canon / Epson',
+    badge_ar: 'HP / Canon / Epson',
+    badge_class: 'badge-standard',
+    desc_fr: 'Feuille 140×220 mm placée au centre du bac A4 avec les guides coulissants. Centrage automatique (+35 mm).',
+    desc_ar: 'وضع الورقة 140×220 مم في وسط درج A4 وضبط موجهات الورق المنزلقة. توسيط تلقائي (+35 مم).',
+    margin_fr: 'Centrage auto : +35 mm',
+    margin_ar: 'توسيط تلقائي: +35 مم'
+  },
+  {
+    id: 'a4_left',
+    icon: 'ti-layout-align-left',
+    title_fr: 'Bac A4 — Aligné bord gauche',
+    title_ar: 'درج A4 — محاذاة على الحافة اليسرى',
+    badge_fr: 'Marge 0 mm',
+    badge_ar: 'الهامش 0 مم',
+    badge_class: 'badge-side',
+    desc_fr: 'Feuille 140×220 mm insérée collée contre le guide gauche du bac A4. Décalage nul par rapport au bord de référence.',
+    desc_ar: 'إدخال الورقة 140×220 مم ملتصقة بالحافة اليسرى لدرج A4. إزاحة ابتدائية 0 مم بالنسبة لحافة الدرج.',
+    margin_fr: 'Marge gauche : 0 mm',
+    margin_ar: 'الهامش الأيسر: 0 مم'
+  }
+];
+
 function getPrintSettings() {
   try {
     const raw = localStorage.getItem('congedesk_print_settings');
@@ -2077,33 +2120,155 @@ function savePrintSettings(settings) {
   localStorage.setItem('congedesk_print_settings', JSON.stringify(settings));
 }
 
+function renderCalibDropdownAndCards() {
+  const isAr = (currentAppLang === 'ar');
+  const s = getPrintSettings();
+  const currentMode = s.paper_feed || 'official_140x220';
+  const activeObj = CALIB_FEED_MODES.find(m => m.id === currentMode) || CALIB_FEED_MODES[0];
+
+  ['set', 'modal'].forEach(prefix => {
+    // 1. Trigger label & badge
+    const labelEl = document.getElementById(`${prefix}-calib-trigger-label`);
+    const badgeEl = document.getElementById(`${prefix}-calib-trigger-badge`);
+    if (labelEl) labelEl.textContent = isAr ? activeObj.title_ar : activeObj.title_fr;
+    if (badgeEl) {
+      badgeEl.textContent = isAr ? activeObj.badge_ar : activeObj.badge_fr;
+      badgeEl.className = `calib-badge ${activeObj.badge_class}`;
+    }
+
+    // 2. Dropdown Menu Items
+    const menuEl = document.getElementById(`${prefix}-calib-menu`);
+    if (menuEl) {
+      menuEl.innerHTML = CALIB_FEED_MODES.map(mode => {
+        const isActive = (mode.id === currentMode);
+        const title = isAr ? mode.title_ar : mode.title_fr;
+        const badge = isAr ? mode.badge_ar : mode.badge_fr;
+        const desc = isAr ? mode.desc_ar : mode.desc_fr;
+        const margin = isAr ? mode.margin_ar : mode.margin_fr;
+        return `
+          <div class="calib-menu-item ${isActive ? 'active' : ''}" onclick="selectCalibFeedMode('${mode.id}', '${prefix}')">
+            <div class="calib-item-icon-box"><i class="ti ${mode.icon}"></i></div>
+            <div class="calib-item-content">
+              <div class="calib-item-header">
+                <span class="calib-item-title">${escapeHtml(title)}</span>
+                <span class="calib-badge ${mode.badge_class}">${escapeHtml(badge)}</span>
+              </div>
+              <div class="calib-item-desc">${escapeHtml(desc)}</div>
+              <div class="calib-item-margin"><i class="ti ti-ruler-2"></i> ${escapeHtml(margin)}</div>
+            </div>
+            ${isActive ? '<i class="ti ti-check" style="color: var(--primary); font-size: 18px; margin-top: 4px;"></i>' : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 3. Explanatory Cards (Stacked above each other)
+    const cardsEl = document.getElementById(`${prefix}-calib-cards-grid`);
+    if (cardsEl) {
+      cardsEl.innerHTML = CALIB_FEED_MODES.map(mode => {
+        const isActive = (mode.id === currentMode);
+        const title = isAr ? mode.title_ar : mode.title_fr;
+        const badge = isAr ? mode.badge_ar : mode.badge_fr;
+        const desc = isAr ? mode.desc_ar : mode.desc_fr;
+        const margin = isAr ? mode.margin_ar : mode.margin_fr;
+        return `
+          <div class="calib-card ${isActive ? 'active' : ''}" onclick="selectCalibFeedMode('${mode.id}', '${prefix}')">
+            <div class="calib-card-icon"><i class="ti ${mode.icon}"></i></div>
+            <div class="calib-card-body">
+              <div class="calib-card-header">
+                <span class="calib-card-title">${escapeHtml(title)}</span>
+                <span class="calib-badge ${mode.badge_class}">${escapeHtml(badge)}</span>
+              </div>
+              <div class="calib-card-desc">${escapeHtml(desc)}</div>
+            </div>
+            <div class="calib-card-meta">
+              <div class="calib-card-margin"><i class="ti ti-ruler-2"></i> ${escapeHtml(margin)}</div>
+              <div class="calib-card-radio">
+                ${isActive ? '<i class="ti ti-check"></i>' : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+  });
+}
+
+function toggleCalibDropdown(event, prefix) {
+  if (event) event.stopPropagation();
+  const menu = document.getElementById(`${prefix}-calib-menu`);
+  const trigger = document.getElementById(`${prefix}-calib-trigger`);
+  if (!menu) return;
+
+  const isVisible = (menu.style.display === 'block');
+  closeAllCalibDropdowns();
+
+  if (!isVisible) {
+    menu.style.display = 'block';
+    if (trigger) trigger.classList.add('active');
+  }
+}
+
+function closeAllCalibDropdowns() {
+  ['set', 'modal'].forEach(prefix => {
+    const menu = document.getElementById(`${prefix}-calib-menu`);
+    const trigger = document.getElementById(`${prefix}-calib-trigger`);
+    if (menu) menu.style.display = 'none';
+    if (trigger) trigger.classList.remove('active');
+  });
+}
+
+function selectCalibFeedMode(modeId, source) {
+  const s = getPrintSettings();
+  s.paper_feed = modeId;
+  savePrintSettings(s);
+  closeAllCalibDropdowns();
+  renderCalibDropdownAndCards();
+  renderDocumentPreview();
+}
+
+// Global click handler to close calib dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  const setDropdown = document.getElementById('set-calib-dropdown');
+  const modalDropdown = document.getElementById('modal-calib-dropdown');
+  if (setDropdown && !setDropdown.contains(e.target)) {
+    const setMenu = document.getElementById('set-calib-menu');
+    const setTrigger = document.getElementById('set-calib-trigger');
+    if (setMenu) setMenu.style.display = 'none';
+    if (setTrigger) setTrigger.classList.remove('active');
+  }
+  if (modalDropdown && !modalDropdown.contains(e.target)) {
+    const modalMenu = document.getElementById('modal-calib-menu');
+    const modalTrigger = document.getElementById('modal-calib-trigger');
+    if (modalMenu) modalMenu.style.display = 'none';
+    if (modalTrigger) modalTrigger.classList.remove('active');
+  }
+});
+
 function openPrintCalibrationModal() {
   const modal = document.getElementById('modal-print-calibration');
   if (!modal) return;
   const s = getPrintSettings();
-  const feedSelect = document.getElementById('calib-paper-feed');
   const inputX = document.getElementById('calib-offset-x');
   const inputY = document.getElementById('calib-offset-y');
-  if (feedSelect) feedSelect.value = s.paper_feed;
   if (inputX) inputX.value = s.offset_x;
   if (inputY) inputY.value = s.offset_y;
+  renderCalibDropdownAndCards();
   modal.style.display = 'flex';
 }
 
 function closePrintCalibrationModal() {
   const modal = document.getElementById('modal-print-calibration');
   if (modal) modal.style.display = 'none';
+  closeAllCalibDropdowns();
 }
 
 function onCalibrationChange() {
-  const feedSelect = document.getElementById('calib-paper-feed');
   const inputX = document.getElementById('calib-offset-x');
   const inputY = document.getElementById('calib-offset-y');
-  const s = {
-    paper_feed: feedSelect ? feedSelect.value : 'official_140x220',
-    offset_x: inputX ? parseFloat(inputX.value) || 0 : 0,
-    offset_y: inputY ? parseFloat(inputY.value) || 0 : 0
-  };
+  const s = getPrintSettings();
+  s.offset_x = inputX ? parseFloat(inputX.value) || 0 : 0;
+  s.offset_y = inputY ? parseFloat(inputY.value) || 0 : 0;
   savePrintSettings(s);
   renderDocumentPreview();
 }
@@ -2127,14 +2292,11 @@ function saveCalibrationModalSettings() {
 }
 
 function syncSettingsCalibration(type) {
-  const feedSelect = document.getElementById('set-calib-paper-feed');
   const inputX = document.getElementById('set-calib-offset-x');
   const inputY = document.getElementById('set-calib-offset-y');
-  const s = {
-    paper_feed: feedSelect ? feedSelect.value : 'official_140x220',
-    offset_x: inputX ? parseFloat(inputX.value) || 0 : 0,
-    offset_y: inputY ? parseFloat(inputY.value) || 0 : 0
-  };
+  const s = getPrintSettings();
+  s.offset_x = inputX ? parseFloat(inputX.value) || 0 : 0;
+  s.offset_y = inputY ? parseFloat(inputY.value) || 0 : 0;
   savePrintSettings(s);
   renderDocumentPreview();
 }
@@ -2148,18 +2310,15 @@ function saveSettingsTabCalibration() {
 function resetCalibrationOffsets(isSettingsTab = false) {
   const s = { ...DEFAULT_PRINT_SETTINGS };
   savePrintSettings(s);
-  const feedModal = document.getElementById('calib-paper-feed');
   const xModal = document.getElementById('calib-offset-x');
   const yModal = document.getElementById('calib-offset-y');
-  const feedSet = document.getElementById('set-calib-paper-feed');
   const xSet = document.getElementById('set-calib-offset-x');
   const ySet = document.getElementById('set-calib-offset-y');
-  if (feedModal) feedModal.value = s.paper_feed;
   if (xModal) xModal.value = s.offset_x;
   if (yModal) yModal.value = s.offset_y;
-  if (feedSet) feedSet.value = s.paper_feed;
   if (xSet) xSet.value = s.offset_x;
   if (ySet) ySet.value = s.offset_y;
+  renderCalibDropdownAndCards();
   renderDocumentPreview();
 }
 

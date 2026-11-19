@@ -423,11 +423,17 @@
 
             <div class="form-field" style="margin-bottom: 18px;">
               <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
-              <select id="set-calib-paper-feed" class="input-ctrl" onchange="syncSettingsCalibration('feed')">
-                <option value="official_140x220" data-i18n="calib_opt_140x220">Papier Officiel CNAS (140 × 220 mm) — Recommandé</option>
-                <option value="a4_center" data-i18n="calib_opt_a4_center">Bac A4 — Centré avec guides papier (HP / Canon / Epson)</option>
-                <option value="a4_left" data-i18n="calib_opt_a4_left">Bac A4 — Aligné sur le bord gauche</option>
-              </select>
+              <div class="custom-dropdown custom-calib-dropdown" id="set-calib-dropdown">
+                <div class="custom-dropdown-trigger" id="set-calib-trigger" onclick="toggleCalibDropdown(event, 'set')">
+                  <div class="calib-trigger-text">
+                    <span class="dropdown-selected-label" id="set-calib-trigger-label"></span>
+                    <span class="calib-badge" id="set-calib-trigger-badge"></span>
+                  </div>
+                  <i class="ti ti-chevron-down dropdown-caret"></i>
+                </div>
+                <div class="custom-calib-menu" id="set-calib-menu" style="display: none;"></div>
+              </div>
+              <div class="calib-cards-grid" id="set-calib-cards-grid"></div>
               <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
                 Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
               </small>
@@ -436,10 +442,10 @@
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
               <div class="form-field">
                 <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', -1, true)">-1</button>
-                  <input type="number" step="0.5" id="set-calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="syncSettingsCalibration('x')">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', 1, true)">+1</button>
+                <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', -1, true)">-1</button>
+                  <input type="number" step="0.5" id="set-calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('x')">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', 1, true)">+1</button>
                 </div>
                 <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
                   (- Gauche / + Droite)
@@ -448,10 +454,10 @@
 
               <div class="form-field">
                 <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
-                <div style="display: flex; align-items: center; gap: 6px;">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', -1, true)">-1</button>
-                  <input type="number" step="0.5" id="set-calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="syncSettingsCalibration('y')">
-                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', 1, true)">+1</button>
+                <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', -1, true)">-1</button>
+                  <input type="number" step="0.5" id="set-calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="syncSettingsCalibration('y')">
+                  <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', 1, true)">+1</button>
                 </div>
                 <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
                   (- Haut / + Bas)
@@ -972,7 +978,7 @@
 
   <!-- PRINT CALIBRATION MODAL -->
   <div class="modal-overlay" id="modal-print-calibration" style="display: none;">
-    <div class="modal-dialog" style="max-width: 540px;">
+    <div class="modal-dialog" style="max-width: 680px;">
       <div class="modal-header">
         <div class="modal-title-group">
           <i class="ti ti-printer" style="color: var(--primary); font-size: 22px;"></i>
@@ -988,11 +994,17 @@
         <!-- Paper Feeding Mode -->
         <div class="form-field" style="margin-bottom: 18px;">
           <label style="font-weight: 700; margin-bottom: 8px;" data-i18n="calib_lbl_feed">Mode d'Alimentation du Papier dans l'Imprimante</label>
-          <select id="calib-paper-feed" class="input-ctrl" onchange="onCalibrationChange()">
-            <option value="official_140x220" data-i18n="calib_opt_140x220">Papier Officiel CNAS (140 × 220 mm) — Recommandé</option>
-            <option value="a4_center" data-i18n="calib_opt_a4_center">Bac A4 — Centré avec guides papier (HP / Canon / Epson)</option>
-            <option value="a4_left" data-i18n="calib_opt_a4_left">Bac A4 — Aligné sur le bord gauche</option>
-          </select>
+          <div class="custom-dropdown custom-calib-dropdown" id="modal-calib-dropdown">
+            <div class="custom-dropdown-trigger" id="modal-calib-trigger" onclick="toggleCalibDropdown(event, 'modal')">
+              <div class="calib-trigger-text">
+                <span class="dropdown-selected-label" id="modal-calib-trigger-label"></span>
+                <span class="calib-badge" id="modal-calib-trigger-badge"></span>
+              </div>
+              <i class="ti ti-chevron-down dropdown-caret"></i>
+            </div>
+            <div class="custom-calib-menu" id="modal-calib-menu" style="display: none;"></div>
+          </div>
+          <div class="calib-cards-grid" id="modal-calib-cards-grid"></div>
           <small style="color: var(--text-dim); font-size: 11.5px; margin-top: 4px; display: block;" data-i18n="calib_feed_hint">
             Si votre imprimante utilise les guides réglables au centre du bac, choisissez 'Bac A4 — Centré'.
           </small>
@@ -1003,10 +1015,10 @@
           <!-- Offset X -->
           <div class="form-field">
             <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_x">Décalage Horizontal X (mm)</label>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', -1)">-1</button>
-              <input type="number" step="0.5" id="calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="onCalibrationChange()">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_x', 1)">+1</button>
+            <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', -1)">-1</button>
+              <input type="number" step="0.5" id="calib-offset-x" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="onCalibrationChange()">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_x', 1)">+1</button>
             </div>
             <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_x_hint">
               (- Gauche / + Droite)
@@ -1016,10 +1028,10 @@
           <!-- Offset Y -->
           <div class="form-field">
             <label style="font-weight: 700; margin-bottom: 6px;" data-i18n="calib_lbl_y">Décalage Vertical Y (mm)</label>
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', -1)">-1</button>
-              <input type="number" step="0.5" id="calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800;" value="0" onchange="onCalibrationChange()">
-              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800;" onclick="nudgeCalibration('offset_y', 1)">+1</button>
+            <div style="display: flex; align-items: center; gap: 6px;" dir="ltr">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', -1)">-1</button>
+              <input type="number" step="0.5" id="calib-offset-y" class="input-ctrl" style="text-align: center; font-weight: 800; direction: ltr; unicode-bidi: isolate;" value="0" onchange="onCalibrationChange()">
+              <button type="button" class="btn btn-secondary" style="padding: 6px 12px; font-weight: 800; direction: ltr; unicode-bidi: isolate;" onclick="nudgeCalibration('offset_y', 1)">+1</button>
             </div>
             <small style="color: var(--text-dim); font-size: 11px; text-align: center; display: block; margin-top: 4px;" data-i18n="calib_y_hint">
               (- Haut / + Bas)
